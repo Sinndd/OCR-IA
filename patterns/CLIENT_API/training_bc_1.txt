@@ -1,0 +1,120 @@
+Bon de Commande
+10/04/2025
+Commande N° 32721
+Code Region : R010 
+Code API : 01142 
+Code Client : 910922 
+snecma 
+RUE HENRI DEBRUIERES 
+91000 EVRY 
+Cyril Braun 
+PRO A PRO NORD CHALETTE 
+18 RUE ANDRE PETIT  BP 36 
+45120 CHALETTE SUR LOING 
+Expediteur : 
+Destinataire : 
+CodeRef
+Designation
+Qte
+Unité
+Prix U.
+Conso
+Livraison au : lundi 14 avr. 2025
+S.Total
+101852
+[A] Purée pomme bio bqt 100g x72 (France) 
+(BERGER DES FRUI)
+432,00
+Pièce de 100 Gr (6 
+Carton de 72 Pièce de 
+100 Gr)
+0,242 €
+16/04/2025
+104,544 €
+104,544 €
+Sous Total HT :
+[A]=Tarif Achat            [R]=Tarif Région            [U]=Tarif Utilisateur
+CodeRef
+Designation
+Qte
+Unité
+Prix U.
+Conso
+Livraison au : lundi 05 mai 2025
+S.Total
+52025
+[A] Amandes blanches en poudre 1K (Import) 
+(PAS DE MARQUE)
+1,00 Sachet de 1000 Gr
+8,877 €
+07/05/2025
+8,877 €
+151796
+[A] Curry doux 1K (Import) (SAISSE)
+1,00 Sachet de 1000 Gr
+7,152 €
+07/05/2025
+7,152 €
+151762
+[A] Graines de pavot 1K (UE) (SAISSE)
+1,00 Sac de 1 Kg
+8,443 €
+07/05/2025
+8,443 €
+22452
+[A] Huile Meravella 1 L (Union Européenne) 
+(BORGES)
+15,00
+Bouteille de 1 L (1 
+Carton de 15 Bouteille 
+de 1 L)
+4,471 €
+07/05/2025
+67,065 €
+21026
+[A] Huile colza 1L Prix/L Livré/COLIS de 1 L 
+Union Européenne (Union Européenne)
+15,00 Bouteille de 1 L
+1,934 €
+07/05/2025
+29,010 €
+100744
+[A] Paprika doux 1K (Import) (LA RONDE DES 
+EP)
+1,00 Sachet de 1000 Gr
+6,141 €
+07/05/2025
+6,141 €
+42138
+[A] Pulco citron ABC 70cl (PULCO)
+12,00
+Bouteille de 70 cl (1 
+Carton de 12 Bouteille 
+de 70
+3,972 €
+07/05/2025
+47,664 €
+54650
+[A] Sauce pesto alla genovese 500g 
+(BARILLA)
+1,00 Poche de 500 Gr
+5,240 €
+07/05/2025
+5,240 €
+34341
+[A] Sauce soja 1L (KIKKOMAN)
+6,00
+Bouteille de 1 L (1 
+Carton de 6 Bouteille de 
+1 L)
+7,129 €
+07/05/2025
+42,774 €
+222,366 €
+Sous Total HT :
+[A]=Tarif Achat            [R]=Tarif Région            [U]=Tarif Utilisateur
+Nombre de lignes :
+10
+TOTAL HT :
+326,910 €
+1/1

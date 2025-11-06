@@ -1,0 +1,55 @@
+{
+  "commandes": [
+    {
+      "entete": {
+        "origine": "API",
+        "codeEtablissement": "02313",
+        "codeFournisseur": "CHAPONNAY",
+        "codePostal": "69970",
+        "numCommande": "02313-02313-2",
+        "idCommande": "02313-02313-2",
+        "dateCommande": 20240103,
+        "heureCommande": "64000",
+        "dateLivraison": 20240115,
+        "commentaireEntete": "",
+        "modeTransport": "L",
+        "typeCommande": "220",
+        "origineCommande": "D",
+        "version": "ACE"
+      },
+      "detailCommande": {
+        "produits": [
+          {
+            "numLigne": 1,
+            "codeArticle": "32732",
+            "libelle": "[A] Cornichons fins (80/119) (Import) (LES JARDINS D'A)",
+            "quantite": 3.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 2,
+            "codeArticle": "153470",
+            "libelle": "[A] Duo cour.jaun/vert.Minute®2,5K (UE) (BONDUELLE)",
+            "quantite": 40.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 3,
+            "codeArticle": "114820",
+            "libelle": "[A] Pain bun brioché tran.77g x45 (Union Européenne) (SANS MARQUE)",
+            "quantite": 135.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 4,
+            "codeArticle": "191720",
+            "libelle": "[A] Farandole de champignons 1K (Import) (METRO CHEF)",
+            "quantite": 20.000,
+            "commentaire": ""
+          }
+        ],
+        "nbLignes": 4
+      }
+    }
+  ]
+}

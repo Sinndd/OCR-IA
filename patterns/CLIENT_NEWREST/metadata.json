@@ -1,0 +1,34 @@
+{
+  "client_id": "NEWREST",
+  "origine": "NEWREST",
+  "date_creation": "2025-11-06T14:23:10.358244",
+  "date_derniere_modification": "2025-11-06T14:30:44.406689",
+  "nb_exemples": 2,
+  "patterns_detectes": {
+    "mots_cles_detection": [
+      "BLAGNAC ",
+      "CONTACT FOURNISSEUR\nPRO A PRO SUD CHAPONNAY\n",
+      "COR022\n",
+      "FR84351442082\n",
+      "IME LA BATIE",
+      "NEWREST\nIME LA BATIE\n1-STOCKAGE\nMONT SALOMON\nCEDEX 001 E\nVIENNE",
+      "NR - NEWREST RESTAURATION",
+      "OPTION 1",
+      "PRO A PRO 2024",
+      "TD-U-07"
+    ],
+    "format_dates": [
+      "\\d{2}/\\d{2}/\\d{4}"
+    ],
+    "codes_articles_typiques": [],
+    "origines": [
+      "NEWREST"
+    ],
+    "filename_convention": null
+  },
+  "statistiques": {
+    "nb_bc_traites": 9,
+    "taux_reussite": 1.0,
+    "derniere_utilisation": "2025-11-06T14:53:07.914548"
+  }
+}

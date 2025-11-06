@@ -1,0 +1,34 @@
+{
+  "commandes": [
+    {
+      "entete": {
+        "origine": "API",
+        "codeEtablissement": "01142",
+        "codeFournisseur": "CHALETTE",
+        "codePostal": "45120",
+        "numCommande": "01142-32721-1",
+        "idCommande": "01142-32721-1",
+        "dateCommande": 20250410,
+        "heureCommande": 110108,
+        "dateLivraison": 20250414,
+        "commentaireEntete": "",
+        "modeTransport": "L",
+        "typeCommande": "220",
+        "origineCommande": "D",
+        "version": "ACE"
+      },
+      "detailCommande": {
+        "produits": [
+          {
+            "numLigne": 1,
+            "codeArticle": "101852",
+            "libelle": "Purée pomme bio bqt 100g x72 (France) (BERGER DES FRUITS)",
+            "quantite": 432.0,
+            "commentaire": ""
+          }
+        ],
+        "nbLignes": 1
+      }
+    }
+  ]
+}

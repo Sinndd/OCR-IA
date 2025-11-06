@@ -1,0 +1,33 @@
+{
+  "client_id": "API",
+  "origine": "API",
+  "date_creation": "2025-11-04T14:29:55.977205",
+  "date_derniere_modification": "2025-11-04T14:29:55.977213",
+  "nb_exemples": 1,
+  "patterns_detectes": {
+    "mots_cles_detection": [
+      "BERGER DES FRUI",
+      "BORGES",
+      "COLIS ",
+      "LA RONDE DES \nEP",
+      "PAS DE MARQUE",
+      "PRO A PRO NORD CHALETTE \n18 RUE ANDRE PETIT  BP 36 \n45120 CHALETTE SUR LOING \n",
+      "R010 \n",
+      "RUE HENRI DEBRUIERES \n91000 EVRY \n",
+      "SAISSE"
+    ],
+    "format_dates": [
+      "\\d{2}/\\d{2}/\\d{4}"
+    ],
+    "codes_articles_typiques": [],
+    "origines": [
+      "API"
+    ],
+    "filename_convention": "{codeEtablissement}-{numCommande}-{index}"
+  },
+  "statistiques": {
+    "nb_bc_traites": 19,
+    "taux_reussite": 1.0,
+    "derniere_utilisation": "2025-11-06T15:08:28.907359"
+  }
+}
