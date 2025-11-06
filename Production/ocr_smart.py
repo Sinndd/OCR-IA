@@ -581,9 +581,29 @@ RÈGLES MÉTIER IMPORTANTES:
   * Sinon: nombre entre PARENTHÈSES dans le libellé (ex: "PRODUIT#488(150508)" → "150508")
 - **Codes articles perso**: nombre après le DIÈSE # (ex: "PRODUIT#488(150508)" → "488")
 
-RÈGLES DE SÉPARATION:
-- Si le BC contient plusieurs sections avec dates de livraison DIFFÉRENTES, crée une commande SÉPARÉE pour chaque date
-- Chaque commande ne contient QUE les produits de sa section
+RÈGLES DE SÉPARATION PAR DATE DE LIVRAISON:
+- **CRITÈRE PRINCIPAL** : Cherche les titres de section "Livraison au : DATE" dans le BC
+- Si le BC contient plusieurs sections avec ces titres, crée une commande SÉPARÉE pour chaque date
+- Chaque commande contient UNIQUEMENT les produits listés ENTRE son titre de section et le titre suivant (ou "Sous Total HT")
+- **IMPORTANT** : Un même produit peut apparaître dans plusieurs sections = c'est normal, garde-les tous séparément
+- **IGNORER** : La colonne "Conso" (date de consommation) n'est PAS la date de livraison
+- **EXEMPLE RÉEL** :
+  ```
+  Livraison au : lundi 08 jan. 2024
+  32732  [A] Cornichons fins...
+  01454  [A] Câpres fines...
+  115195 [A] Frites...
+  Sous Total HT : 261,092 €
+  
+  Livraison au : mercredi 10 jan. 2024  
+  155472 [A] Cheddar fondu...
+  11845  [A] Mélange 3 riz...
+  Sous Total HT : 152,664 €
+  
+  → Génère 2 commandes:
+    - Commande 1 (08 jan) : 3 produits (32732, 01454, 115195)
+    - Commande 2 (10 jan) : 2 produits (155472, 11845)
+  ```
 
 CHAMPS OBLIGATOIRES (toujours présents):
 - modeTransport: "L"
@@ -619,19 +639,26 @@ INSTRUCTIONS SPÉCIFIQUES:
    - codeFournisseur: Cherche la VILLE d'où vient la commande (expéditeur), compare avec liste agences
    - codePostal: Une fois la ville trouvée, utilise le code postal associé dans la liste
 
-2. **Extraction des produits**:
-   - Extrais TOUS les produits sans exception
-   - Pour chaque produit, cherche: référence, libellé, quantité
-   - Si tableau avec colonnes: utilise les colonnes (CodeRef, Désignation, Qté...)
-   - Si format libre: parse intelligemment le texte
+2. **Extraction des produits PAR SECTION - MÉTHODE RIGOUREUSE**:
+   - **ÉTAPE 1** : Localise TOUS les titres "Livraison au : DATE" dans le texte du BC
+   - **ÉTAPE 2** : Pour chaque section :
+     a) Identifie le DÉBUT = le titre "Livraison au : DATE"
+     b) Identifie la FIN = le prochain titre "Livraison au :" OU "Sous Total HT"
+     c) Dans cette zone, extrais UNIQUEMENT les lignes de produits (commençant par un CodeRef à 5-6 chiffres)
+   - **ÉTAPE 3** : Crée un objet commande distinct pour chaque section
+   - **RÈGLE D'OR** : Si un produit (même CodeRef) apparaît dans 2 sections différentes → crée 2 lignes distinctes dans 2 commandes différentes
+   - Pour chaque produit: CodeRef, Designation, Qte (IGNORER la colonne "Conso")
 
 3. **Dates et heures**:
    - Convertis toutes les dates en YYYYMMDD (ex: "14 avril 2025" → 20250414)
    - Heures au format HHMMSS (ex: "14h30" → "143000")
 
-4. **Séparation des commandes**:
-   - Si plusieurs dates de livraison → plusieurs objets commande
-   - Une commande = une date de livraison + ses produits
+4. **Séparation des commandes - PROCÉDURE DÉTAILLÉE**:
+   a) Parcours le texte du BC et repère chaque titre "Livraison au : [DATE]"
+   b) Pour chaque titre trouvé, crée un objet commande distinct
+   c) Assigne à cette commande UNIQUEMENT les produits situés entre ce titre et le suivant
+   d) La dateLivraison de la commande = la date indiquée dans le titre de section
+   e) **Vérifie** : Le total de produits dans toutes les commandes doit égaler le nombre total de lignes dans le BC
 
 5. **Génération du numCommande**:
    - Format standard: "codeEtablissement-numeroCommande-index"
