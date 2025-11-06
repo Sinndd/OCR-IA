@@ -1,16 +1,21 @@
 #!/usr/bin/env python3
 """
-OCR Smart - Production avec auto-apprentissage
-Détection automatique du client et chargement des patterns spécifiques
-Fallback vers exemples génériques si client inconnu
+OCR Smart - Production avec auto-apprentissage OPTIMISÉ
++ Tri intelligent des exemples par similarité
++ Détection de similarité multi-critères
++ Cache de patterns généralisés
++ Prompts moins spécifiques pour plus de flexibilité
 """
 
 import argparse
 import json
 import re
+import hashlib
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 from datetime import datetime
+from collections import Counter
+from difflib import SequenceMatcher
 import requests
 
 import fitz  # PyMuPDF
@@ -30,10 +35,10 @@ FORCED_TYPE_COMMANDE = "220"
 
 class SmartExtractor:
     """
-    Extracteur intelligent avec auto-apprentissage
-    - Détecte automatiquement le client
-    - Charge les patterns spécifiques appris
-    - Fallback vers exemples génériques si inconnu
+    Extracteur intelligent avec auto-apprentissage OPTIMISÉ
+    + Tri intelligent des exemples
+    + Détection de similarité
+    + Cache de patterns généralisés
     """
     
     def __init__(
@@ -46,13 +51,41 @@ class SmartExtractor:
         ollama_url: str = OLLAMA_URL_DEFAULT,
         debug: bool = False
     ):
-        self.debug = debug  # Initialiser debug en premier
+        self.debug = debug
         self.patterns_dir = patterns_dir
         self.agences = self._load_reference_file(agences_file)
         self.clients = self._load_reference_file(clients_file)
         self.generic_examples_dir = generic_examples_dir or Path(".")
         self.model = model
         self.ollama_url = ollama_url
+        
+        # NOUVEAU: Cache de patterns généralisés
+        self.patterns_cache = {}
+        self.cache_file = patterns_dir / "patterns_cache.json"
+        self._load_patterns_cache()
+    
+    def _load_patterns_cache(self):
+        """Charge le cache des patterns généralisés"""
+        if self.cache_file.exists():
+            try:
+                with open(self.cache_file, 'r', encoding='utf-8') as f:
+                    self.patterns_cache = json.load(f)
+                if self.debug:
+                    print(f"📦 Cache chargé: {len(self.patterns_cache)} patterns")
+            except Exception as e:
+                if self.debug:
+                    print(f"⚠️  Erreur chargement cache: {e}")
+                self.patterns_cache = {}
+    
+    def _save_patterns_cache(self):
+        """Sauvegarde le cache des patterns"""
+        try:
+            self.cache_file.parent.mkdir(parents=True, exist_ok=True)
+            with open(self.cache_file, 'w', encoding='utf-8') as f:
+                json.dump(self.patterns_cache, f, indent=2, ensure_ascii=False)
+        except Exception as e:
+            if self.debug:
+                print(f"⚠️  Erreur sauvegarde cache: {e}")
     
     def _load_reference_file(self, filepath: Path) -> List[str]:
         """Charge un fichier de référence"""
@@ -63,6 +96,235 @@ class SmartExtractor:
         
         with open(filepath, 'r', encoding='utf-8') as f:
             return [line.strip() for line in f if line.strip()]
+    
+    def _compute_text_signature(self, text: str) -> str:
+        """Calcule une signature du texte pour cache et similarité"""
+        # Nettoyer et normaliser
+        clean_text = re.sub(r'\s+', ' ', text.lower())
+        clean_text = re.sub(r'\d+', 'N', clean_text)  # Remplacer nombres par N
+        
+        # Hash court
+        return hashlib.md5(clean_text[:5000].encode()).hexdigest()[:16]
+    
+    def _extract_text_features(self, text: str) -> Dict[str, Any]:
+        """
+        Extrait les features caractéristiques d'un texte de BC
+        Pour la détection de similarité
+        """
+        features = {
+            "length": len(text),
+            "has_table": bool(re.search(r'(Code\s+Ref|Référence|Désignation)', text, re.I)),
+            "date_format": None,
+            "number_density": len(re.findall(r'\d+', text)) / max(len(text), 1),
+        }
+        
+        # Détecter format de date dominant
+        if re.search(r'\d{2}/\d{2}/\d{4}', text):
+            features["date_format"] = "dd/mm/yyyy"
+        elif re.search(r'\d{4}-\d{2}-\d{2}', text):
+            features["date_format"] = "yyyy-mm-dd"
+        elif re.search(r'\d{2}\s+\w+\s+\d{4}', text, re.I):
+            features["date_format"] = "dd month yyyy"
+        
+        # Mots-clés fréquents
+        words = re.findall(r'\b[a-zàéèêë]{4,}\b', text.lower())
+        features["top_keywords"] = [w for w, _ in Counter(words).most_common(10)]
+        
+        # Structure détectée
+        features["has_header"] = bool(re.search(r'(expéditeur|destinataire|commande)', text[:1000], re.I))
+        features["has_footer"] = bool(re.search(r'(total|signature|page)', text[-1000:], re.I))
+        
+        return features
+    
+    def _compute_similarity(self, features1: Dict, features2: Dict) -> float:
+        """
+        Calcule un score de similarité entre deux BC (0-1)
+        Basé sur leurs features
+        """
+        score = 0.0
+        weights_sum = 0.0
+        
+        # Format de date (poids: 0.3)
+        if features1.get("date_format") == features2.get("date_format"):
+            score += 0.3
+        weights_sum += 0.3
+        
+        # Présence de tableau (poids: 0.2)
+        if features1.get("has_table") == features2.get("has_table"):
+            score += 0.2
+        weights_sum += 0.2
+        
+        # Mots-clés communs (poids: 0.3)
+        kw1 = set(features1.get("top_keywords", []))
+        kw2 = set(features2.get("top_keywords", []))
+        if kw1 and kw2:
+            kw_overlap = len(kw1 & kw2) / max(len(kw1), len(kw2))
+            score += 0.3 * kw_overlap
+        weights_sum += 0.3
+        
+        # Densité numérique similaire (poids: 0.2)
+        dens1 = features1.get("number_density", 0)
+        dens2 = features2.get("number_density", 0)
+        if dens1 > 0 and dens2 > 0:
+            dens_sim = 1 - abs(dens1 - dens2) / max(dens1, dens2)
+            score += 0.2 * dens_sim
+        weights_sum += 0.2
+        
+        return score / weights_sum if weights_sum > 0 else 0.0
+    
+    def _rank_examples_by_similarity(
+        self,
+        bc_text: str,
+        examples: List[Dict],
+        max_examples: int = 5
+    ) -> List[Dict]:
+        """
+        AMÉLIORATION 1 & 2: Tri intelligent + Détection de similarité
+        Sélectionne les exemples les plus pertinents pour le BC
+        """
+        if not examples or len(examples) <= max_examples:
+            return examples
+        
+        if self.debug:
+            print(f"\n🔍 Analyse de similarité ({len(examples)} exemples disponibles)...")
+        
+        # Extraire features du BC cible
+        bc_features = self._extract_text_features(bc_text)
+        
+        # Calculer scores pour chaque exemple
+        scored_examples = []
+        
+        for ex in examples:
+            # Essayer de récupérer le texte original de l'exemple
+            ex_text = ex.get("_source_text", "")
+            
+            if not ex_text:
+                # Reconstruire approximativement depuis le JSON
+                ex_text = json.dumps(ex, ensure_ascii=False)
+            
+            ex_features = self._extract_text_features(ex_text)
+            similarity = self._compute_similarity(bc_features, ex_features)
+            
+            scored_examples.append((similarity, ex))
+            
+            if self.debug:
+                # Identifier l'exemple
+                ex_id = "unknown"
+                if "commandes" in ex and ex["commandes"]:
+                    entete = ex["commandes"][0].get("entete", {})
+                    ex_id = f"{entete.get('origine', '?')}-{entete.get('numCommande', '?')}"
+                print(f"  📊 {ex_id}: similarité = {similarity:.3f}")
+        
+        # Trier par score décroissant
+        scored_examples.sort(key=lambda x: x[0], reverse=True)
+        
+        # Prendre les top N
+        selected = [ex for _, ex in scored_examples[:max_examples]]
+        
+        if self.debug:
+            print(f"  ✓ {len(selected)} exemples sélectionnés (les plus similaires)")
+        
+        return selected
+    
+    def _get_or_build_generalized_pattern(
+        self,
+        client_id: str,
+        examples: List[Dict]
+    ) -> Dict[str, Any]:
+        """
+        AMÉLIORATION 3: Cache de patterns généralisés
+        Extrait ou construit un pattern généralisé pour le client
+        """
+        cache_key = f"CLIENT_{client_id}"
+        
+        # Vérifier cache
+        if cache_key in self.patterns_cache:
+            if self.debug:
+                print(f"  ⚡ Pattern généralisé trouvé en cache")
+            return self.patterns_cache[cache_key]
+        
+        if self.debug:
+            print(f"  🔨 Construction du pattern généralisé...")
+        
+        # Construire pattern généralisé
+        pattern = {
+            "structure": {},
+            "field_types": {},
+            "common_fields": [],
+            "optional_fields": [],
+            "field_constraints": {}
+        }
+        
+        if not examples:
+            return pattern
+        
+        # Analyser tous les exemples
+        all_entete_fields = []
+        all_produit_fields = []
+        field_types = {}
+        
+        for ex in examples:
+            if "commandes" not in ex or not ex["commandes"]:
+                continue
+            
+            cmd = ex["commandes"][0]
+            
+            # Collecter champs entête
+            if "entete" in cmd:
+                entete_fields = list(cmd["entete"].keys())
+                all_entete_fields.append(set(entete_fields))
+                
+                # Analyser types
+                for field, value in cmd["entete"].items():
+                    if field not in field_types:
+                        field_types[field] = []
+                    field_types[field].append(type(value).__name__)
+            
+            # Collecter champs produits
+            if "detailCommande" in cmd and "produits" in cmd["detailCommande"]:
+                produits = cmd["detailCommande"]["produits"]
+                if produits:
+                    produit_fields = list(produits[0].keys())
+                    all_produit_fields.append(set(produit_fields))
+                    
+                    # Analyser types
+                    for field, value in produits[0].items():
+                        prod_field = f"produit.{field}"
+                        if prod_field not in field_types:
+                            field_types[prod_field] = []
+                        field_types[prod_field].append(type(value).__name__)
+        
+        # Déterminer champs communs (présents dans tous)
+        if all_entete_fields:
+            common_entete = set.intersection(*all_entete_fields)
+            pattern["common_fields"].extend([f"entete.{f}" for f in common_entete])
+            
+            # Champs optionnels (présents dans au moins un)
+            all_entete_union = set.union(*all_entete_fields)
+            optional_entete = all_entete_union - common_entete
+            pattern["optional_fields"].extend([f"entete.{f}" for f in optional_entete])
+        
+        if all_produit_fields:
+            common_produit = set.intersection(*all_produit_fields)
+            pattern["common_fields"].extend([f"produit.{f}" for f in common_produit])
+            
+            all_produit_union = set.union(*all_produit_fields)
+            optional_produit = all_produit_union - common_produit
+            pattern["optional_fields"].extend([f"produit.{f}" for f in optional_produit])
+        
+        # Types majoritaires pour chaque champ
+        for field, types in field_types.items():
+            most_common_type = Counter(types).most_common(1)[0][0]
+            pattern["field_types"][field] = most_common_type
+        
+        # Sauvegarder en cache
+        self.patterns_cache[cache_key] = pattern
+        self._save_patterns_cache()
+        
+        if self.debug:
+            print(f"  ✓ Pattern construit: {len(pattern['common_fields'])} champs communs")
+        
+        return pattern
     
     def extract_text_from_pdf(self, pdf_path: Path) -> str:
         """Extrait le texte du PDF"""
@@ -144,9 +406,7 @@ class SmartExtractor:
     def load_client_patterns(self, client_id: str) -> List[Dict]:
         """
         Charge les patterns (exemples) spécifiques d'un client
-        
-        Returns:
-            Liste des JSONs d'exemple pour ce client
+        + Enrichit avec métadonnées pour similarité
         """
         client_dir = self.patterns_dir / f"CLIENT_{client_id}"
         
@@ -160,7 +420,15 @@ class SmartExtractor:
         for json_file in sorted(client_dir.glob("training_json_*.json")):
             try:
                 with open(json_file, 'r', encoding='utf-8') as f:
-                    patterns.append(json.load(f))
+                    pattern = json.load(f)
+                
+                # Essayer de charger le texte source associé si disponible
+                txt_file = json_file.with_suffix('.txt')
+                if txt_file.exists():
+                    with open(txt_file, 'r', encoding='utf-8') as f:
+                        pattern["_source_text"] = f.read()
+                
+                patterns.append(pattern)
                 
                 if self.debug:
                     print(f"  📚 Pattern chargé: {json_file.name}")
@@ -222,107 +490,158 @@ class SmartExtractor:
         self,
         bc_text: str,
         examples: List[Dict],
-        filename_convention: Optional[str] = None
+        filename_convention: Optional[str] = None,
+        client_id: Optional[str] = None
     ) -> Dict[str, Any]:
         """
-        Extraction intelligente avec LLM
-        Utilise les exemples fournis pour guider l'extraction
-        
-        Args:
-            bc_text: Texte du BC
-            examples: Liste des JSONs d'exemple
-            filename_convention: Convention de nommage pour construire numCommande composite
+        Extraction intelligente avec LLM - Version OPTIMISÉE
+        + Sélection intelligente des exemples
+        + Utilisation du pattern généralisé
         """
         
         if not examples:
             raise RuntimeError("Aucun exemple disponible pour l'extraction")
         
-        # Prendre le premier exemple comme référence de structure
-        example_json = examples[0]
+        # AMÉLIORATION 1 & 2: Sélectionner exemples les plus similaires
+        selected_examples = self._rank_examples_by_similarity(bc_text, examples, max_examples=5)
         
-        # Simplifier l'exemple pour éviter surcharge
-        example_str = json.dumps(example_json, indent=2, ensure_ascii=False)
-        if len(example_str) > 2000:
-            # Tronquer si trop long
-            example_str = example_str[:2000] + "\n  ...\n}"
+        # AMÉLIORATION 3: Récupérer pattern généralisé
+        generalized_pattern = None
+        if client_id:
+            generalized_pattern = self._get_or_build_generalized_pattern(client_id, examples)
         
+        # Formater les exemples
+        examples_formatted = []
+        for i, ex in enumerate(selected_examples, 1):
+            ex_str = json.dumps(ex, indent=2, ensure_ascii=False)
+            if len(ex_str) > 1500:
+                lines = ex_str.split('\n')
+                ex_str = '\n'.join(lines[:30]) + "\n      ...(produits supprimés)...\n" + '\n'.join(lines[-5:])
+            examples_formatted.append(f"EXEMPLE {i}:\n{ex_str}")
+        
+        examples_block = "\n\n".join(examples_formatted)
+        
+        # Ajouter pattern généralisé au prompt
+        pattern_guidance = ""
+        if generalized_pattern:
+            common_fields_str = ", ".join(generalized_pattern.get("common_fields", [])[:20])
+            pattern_guidance = f"""
+PATTERN GÉNÉRALISÉ (basé sur {len(examples)} BCs similaires):
+- Champs OBLIGATOIRES: {common_fields_str}
+- Types attendus: {json.dumps(generalized_pattern.get("field_types", {}), indent=2)[:500]}
+"""
+
         system = """Tu es un expert en extraction de données de bons de commande.
-Tu dois extraire les informations et générer un JSON qui correspond EXACTEMENT à la structure de l'exemple fourni.
 
-Règles STRICTES:
-1. La structure doit être IDENTIQUE à l'exemple (mêmes champs, même ordre)
-2. NE PAS ajouter de champs qui ne sont pas dans l'exemple
-3. NE PAS retirer de champs présents dans l'exemple
-4. Les dates au format YYYYMMDD (int) - ATTENTION: Année sur 4 chiffres, Mois sur 2, Jour sur 2
-5. Les quantités en float avec 3 décimales (ex: 1.000)
-6. Respecter EXACTEMENT les types de données (string, int, float)
-7. Pour les champs vides, utiliser "" (string vide) ou null selon l'exemple
-8. Pour "codeEtablissement", utiliser le CODE NUMÉRIQUE (ex: "02323"), PAS le nom de ville
-9. Pour "origine" et "codeFournisseur", utiliser UNIQUEMENT les valeurs des listes de référence"""
+Tu dois extraire les informations et générer un JSON structuré selon le format des exemples fournis.
 
-        # Préparer les listes de référence
-        ref_clients = "\n".join(f"  - {c}" for c in self.clients) if self.clients else "  (aucun)"
-        ref_agences = "\n".join(f"  - {a}" for a in self.agences) if self.agences else "  (aucun)"
+PRINCIPES FONDAMENTAUX:
+1. **Analyse des exemples** : Les exemples fournis ont été sélectionnés car ils sont SIMILAIRES au BC à traiter
+2. **Flexibilité** : Adapte-toi aux variations de format du BC
+3. **Cohérence** : Maintiens la même structure de sortie que les exemples
+4. **Complétude** : Extrais TOUS les produits, du premier au dernier
 
-        user_prompt = f"""EXEMPLE DE STRUCTURE ATTENDUE (à copier EXACTEMENT):
-{example_str}
+RÈGLES DE STRUCTURE:
+- Utilise une structure {"commandes": [...]} avec un tableau d'objets commande
+- Chaque commande contient: "entete" et "detailCommande"
+- L'entête contient les infos générales (dates, codes, origine...)
+- Le détail contient un tableau "produits" et un "nbLignes"
 
-ATTENTION PARTICULIÈRE:
-- Pour "codeEtablissement": Utiliser le CODE NUMÉRIQUE à 5 chiffres (ex: "02323", "01142", "02313"), PAS le nom de ville
-- Pour "codeFournisseur": Utiliser le NOM DE LA VILLE du fournisseur/expéditeur (ex: "CHAPONNAY", "CHALETTE"), PAS le code numérique
-- Pour "dateCommande": Format YYYYMMDD (Année-Mois-Jour), ex: 20240214 = 14 février 2024
-- Pour "dateLivraison": Format YYYYMMDD (Année-Mois-Jour), ex: 20240219 = 19 février 2024
-- Pour "heureCommande": Format HHMMSS (Heure-Minute-Seconde), ex: "143000" = 14h30
-- Pour "quantite": Toujours en float avec 3 décimales, ex: 3.000, 10.000, 1.500
-- Pour "numCommande" et "idCommande": Format "codeEtablissement-numeroCommande" (ex: si codeEtablissement="910956" et numero="1435312", alors numCommande="910956-1435312")
-- Pour les produits:
-  * "codeArticle": Cherche d'abord dans la colonne "CodeRef" du tableau. Si absent, cherche le nombre entre PARENTHÈSES à la fin du libellé, ex: dans "PRODUIT#488(150508)", codeArticle="150508"
-  * "codeArticlePerso": Cherche le nombre après le DIÈSE # dans le libellé, ex: dans "PRODUIT#488(150508)", codeArticlePerso="488"
-  * Si un code n'est pas trouvé, utilise "" (chaîne vide)
-- **SÉPARATION PAR DATE DE LIVRAISON**: Si le BC contient plusieurs sections "Livraison au : DATE", crée UN objet commande séparé pour CHAQUE date avec UNIQUEMENT les produits de cette section.
-- NE PAS ajouter de champs supplémentaires comme "unite", "prixUnitaire", "consommation", etc.
+RÈGLES DE TYPES:
+- Dates: format YYYYMMDD (int) - ex: 20250214 = 14 février 2025
+- Heures: format HHMMSS (string) - ex: "143000" = 14h30
+- Quantités: float avec décimales - ex: 3.0, 10.5, 1.000
+- Codes: strings, même s'ils contiennent que des chiffres
+- Champs vides: "" (string) ou null selon le contexte
 
-LISTES DE RÉFÉRENCE (à utiliser pour validation):
+RÈGLES MÉTIER IMPORTANTES:
+- **codeEtablissement**: Code numérique du site (ex: "02323", "910956")
+- **codeFournisseur**: Nom de la VILLE du fournisseur/expéditeur
+- **origine**: Nom du CLIENT qui passe commande
+- **Codes articles**: 
+  * Cherche d'abord dans colonne "CodeRef" si elle existe
+  * Sinon: nombre entre PARENTHÈSES dans le libellé (ex: "PRODUIT#488(150508)" → "150508")
+- **Codes articles perso**: nombre après le DIÈSE # (ex: "PRODUIT#488(150508)" → "488")
 
-Clients autorisés (pour "origine" - NOM DU CLIENT qui commande):
+RÈGLES DE SÉPARATION:
+- Si le BC contient plusieurs sections avec dates de livraison DIFFÉRENTES, crée une commande SÉPARÉE pour chaque date
+- Chaque commande ne contient QUE les produits de sa section
+
+CHAMPS OBLIGATOIRES (toujours présents):
+- modeTransport: "L"
+- typeCommande: "220"
+- origineCommande: "D"
+- version: "ACE"
+"""
+
+        # Préparer les listes de référence (limitées)
+        ref_clients = "\n".join(f"  - {c}" for c in self.clients[:30]) if self.clients else "  (aucun)"
+        ref_agences = "\n".join(f"  - {a}" for a in self.agences[:50]) if self.agences else "  (aucun)"
+
+        user_prompt = f"""EXEMPLES SÉLECTIONNÉS (les plus similaires à ton BC):
+
+{examples_block}
+
+{pattern_guidance}
+
+LISTES DE RÉFÉRENCE (extraits):
+
+Clients autorisés (pour "origine"):
 {ref_clients}
+{f"  ... et {len(self.clients)-30} autres" if len(self.clients) > 30 else ""}
 
-Villes/Agences autorisées avec codes postaux (format: VILLE, CODE_POSTAL):
+Agences autorisées (format: VILLE, CODE_POSTAL):
 {ref_agences}
+{f"  ... et {len(self.agences)-50} autres" if len(self.agences) > 50 else ""}
 
-INSTRUCTIONS IMPORTANTES:
-- "codeFournisseur": Cherche la VILLE du fournisseur/expéditeur dans le BC. Compare cette ville avec la liste ci-dessous pour trouver la correspondance exacte (ignore la casse et les accents). Utilise le nom de ville EXACTEMENT comme dans la liste.
-- "codePostal": Une fois la ville identifiée, utilise le CODE POSTAL qui apparaît APRÈS LA VIRGULE sur la même ligne dans la liste ci-dessus. Exemple: si tu trouves "LONGUEIL" dans le BC, cherche "LONGUEIL, XXXXX" dans la liste et utilise XXXXX comme codePostal.
-- "codeEtablissement": Cherche dans le bon de commande selon le format du client (exemples: "Code site Frns: COR022", "Code client: 12345", code numérique, etc.). Utilise EXACTEMENT le même format que dans l'exemple JSON fourni.
+INSTRUCTIONS SPÉCIFIQUES:
 
-TEXTE DU BON DE COMMANDE À TRAITER:
-{bc_text[:20000]}
+1. **Identification des codes**:
+   - codeEtablissement: Cherche mentions "Code site", "Code client", codes numériques proches du destinataire
+   - codeFournisseur: Cherche la VILLE d'où vient la commande (expéditeur), compare avec liste agences
+   - codePostal: Une fois la ville trouvée, utilise le code postal associé dans la liste
 
-INSTRUCTIONS FINALES:
-1. Génère le JSON en suivant EXACTEMENT la même structure que l'exemple
-2. Utilise UNIQUEMENT les champs présents dans l'exemple
-3. Pour "codeEtablissement", suis le FORMAT de l'exemple (alphanumérique ou numérique selon le client)
-4. Pour "codeFournisseur", cherche le nom de la ville d'où provient la commande (fournisseur/expéditeur)
-5. Pour "origine", utilise UNIQUEMENT les valeurs de la liste de référence ci-dessus
-6. **IMPORTANT: Extraie TOUS les produits présents dans le bon de commande, du premier au dernier, sans exception**
-7. **CODES ARTICLES**: Pour chaque produit, cherche le codeArticle dans la colonne "CodeRef" du tableau. Si cette colonne existe, utilise-la en priorité.
-8. **SÉPARATION DES COMMANDES**: Si le BC contient plusieurs sections avec des dates de livraison différentes (ex: "Livraison au : lundi 14 avr. 2025", puis "Livraison au : lundi 05 mai 2025"), crée UN objet commande DISTINCT pour CHAQUE date, en incluant UNIQUEMENT les produits listés sous cette date.
-9. Vérifie les formats de dates: YYYYMMDD (année complète sur 4 chiffres)
-10. Vérifie que les quantités sont en float avec décimales (ex: 3.0, pas 3)
-11. Continue jusqu'à ce que TOUS les produits soient extraits, ne t'arrête pas avant la fin de la liste"""
+2. **Extraction des produits**:
+   - Extrais TOUS les produits sans exception
+   - Pour chaque produit, cherche: référence, libellé, quantité
+   - Si tableau avec colonnes: utilise les colonnes (CodeRef, Désignation, Qté...)
+   - Si format libre: parse intelligemment le texte
+
+3. **Dates et heures**:
+   - Convertis toutes les dates en YYYYMMDD (ex: "14 avril 2025" → 20250414)
+   - Heures au format HHMMSS (ex: "14h30" → "143000")
+
+4. **Séparation des commandes**:
+   - Si plusieurs dates de livraison → plusieurs objets commande
+   - Une commande = une date de livraison + ses produits
+
+5. **Génération du numCommande**:
+   - Format standard: "codeEtablissement-numeroCommande-index"
+   - Exemple: si codeEtablissement="02323" et numéro="7992" → "02323-7992-1"
+
+TEXTE DU BON DE COMMANDE:
+{bc_text[:25000]}
+
+GÉNÈRE le JSON en suivant la structure des exemples ci-dessus.
+Les exemples fournis sont SIMILAIRES à ce BC, donc leur structure est particulièrement pertinente.
+Assure-toi d'extraire TOUS les produits présents dans le bon de commande."""
 
         if self.debug:
-            print(f"\n[DEBUG] Prompt LLM ({len(user_prompt)} chars)")
-            print(f"[DEBUG] Modèle: {self.model}")
+            print(f"\n[DEBUG] Prompt LLM optimisé")
+            print(f"  - {len(selected_examples)} exemples sélectionnés (sur {len(examples)} disponibles)")
+            print(f"  - Pattern généralisé: {'OUI' if generalized_pattern else 'NON'}")
+            print(f"  - Taille prompt: {len(user_prompt)} chars")
+            print(f"  - Modèle: {self.model}")
         
         # Appel LLM
         llm_response = self._call_llm(system, user_prompt)
         
-        # Validation et correction structure avec convention de nommage
-        validated = self._validate_and_fix_structure(
-            llm_response, 
-            example_json,
-            filename_convention
+        # Validation SOUPLE avec pattern généralisé
+        validated = self._validate_and_fix_structure_flexible(
+            llm_response,
+            selected_examples,
+            filename_convention,
+            generalized_pattern
         )
         
         return validated
@@ -385,6 +704,138 @@ INSTRUCTIONS FINALES:
             return match.group(0)
         
         return raw
+    
+    def _extract_common_fields(self, examples: List[Dict]) -> List[str]:
+        """
+        Extrait les champs COMMUNS des produits dans tous les exemples
+        """
+        if not examples:
+            return []
+        
+        fields_sets = []
+        
+        for ex in examples:
+            if "commandes" in ex and len(ex["commandes"]) > 0:
+                cmd = ex["commandes"][0]
+                if "detailCommande" in cmd and "produits" in cmd["detailCommande"]:
+                    produits = cmd["detailCommande"]["produits"]
+                    if produits and len(produits) > 0:
+                        fields_sets.append(set(produits[0].keys()))
+        
+        if not fields_sets:
+            return []
+        
+        # Intersection de tous les champs
+        common = fields_sets[0]
+        for fields in fields_sets[1:]:
+            common &= fields
+        
+        return sorted(list(common))
+    
+    def _validate_and_fix_structure_flexible(
+        self,
+        llm_json: Dict,
+        examples: List[Dict],
+        filename_convention: Optional[str] = None,
+        generalized_pattern: Optional[Dict] = None
+    ) -> Dict[str, Any]:
+        """
+        Validation FLEXIBLE avec utilisation du pattern généralisé
+        """
+        
+        # Envelopper si nécessaire
+        if "commandes" not in llm_json:
+            llm_json = {"commandes": [llm_json]}
+        
+        # Extraire les champs communs (priorité au pattern généralisé)
+        if generalized_pattern and generalized_pattern.get("common_fields"):
+            # Extraire uniquement les champs produits
+            common_produit_fields = [
+                f.replace("produit.", "") 
+                for f in generalized_pattern["common_fields"] 
+                if f.startswith("produit.")
+            ]
+        else:
+            common_produit_fields = self._extract_common_fields(examples)
+        
+        for index, cmd in enumerate(llm_json["commandes"], start=1):
+            # S'assurer de la structure minimale
+            if "entete" not in cmd:
+                cmd["entete"] = {}
+            if "detailCommande" not in cmd:
+                cmd["detailCommande"] = {"produits": [], "nbLignes": 0}
+            
+            entete = cmd["entete"]
+            detail = cmd["detailCommande"]
+            
+            # Construire numCommande composite si convention définie
+            if filename_convention and "{codeEtablissement}" in filename_convention:
+                code_etab = entete.get("codeEtablissement", "")
+                num_cmd_base = entete.get("numCommande", "")
+                
+                if code_etab and num_cmd_base:
+                    if "-" in str(num_cmd_base):
+                        parts = str(num_cmd_base).split("-")
+                        num_cmd_clean = parts[1] if len(parts) >= 3 else parts[0]
+                    else:
+                        num_cmd_clean = str(num_cmd_base)
+                    
+                    composite_id = f"{code_etab}-{num_cmd_clean}-{index}"
+                    entete["numCommande"] = composite_id
+                    entete["idCommande"] = composite_id
+            
+            # Forcer heureCommande si absente
+            if not entete.get("heureCommande"):
+                from datetime import datetime
+                entete["heureCommande"] = datetime.now().strftime("%H%M%S")
+            
+            # Forcer champs obligatoires
+            entete["modeTransport"] = FORCED_MODE_TRANSPORT
+            entete["typeCommande"] = FORCED_TYPE_COMMANDE
+            entete["origineCommande"] = FORCED_ORIGINE_COMMANDE
+            entete["version"] = FORCED_VERSION
+            
+            # Nettoyer produits selon pattern
+            if common_produit_fields and detail.get("produits"):
+                cleaned_produits = []
+                for produit in detail["produits"]:
+                    cleaned = {}
+                    for field in common_produit_fields:
+                        value = produit.get(field)
+                        
+                        # Validation de type si pattern disponible
+                        if generalized_pattern:
+                            expected_type = generalized_pattern.get("field_types", {}).get(f"produit.{field}")
+                            if expected_type == "float" and value is not None:
+                                try:
+                                    value = float(value)
+                                except (ValueError, TypeError):
+                                    value = 0.0
+                            elif expected_type == "int" and value is not None:
+                                try:
+                                    value = int(value)
+                                except (ValueError, TypeError):
+                                    value = 0
+                            elif expected_type == "str" and value is not None:
+                                value = str(value)
+                        
+                        # Normaliser quantité par défaut
+                        if field == "quantite" and value is not None:
+                            try:
+                                value = float(value)
+                            except (ValueError, TypeError):
+                                value = 0.0
+                        
+                        cleaned[field] = value
+                    
+                    cleaned_produits.append(cleaned)
+                
+                detail["produits"] = cleaned_produits
+            
+            # Mettre à jour nbLignes
+            detail["nbLignes"] = len(detail.get("produits", []))
+        
+        return llm_json
     
     def _validate_and_fix_structure(
         self,
@@ -552,7 +1003,7 @@ INSTRUCTIONS FINALES:
         print("[3/4] Extraction avec LLM...")
         print(f"  🤖 Modèle: {self.model}")
         
-        result = self.extract_with_llm(bc_text, examples, filename_convention)
+        result = self.extract_with_llm(bc_text, examples, filename_convention, client_id)
         
         print(f"  ✓ Extraction terminée")
         
