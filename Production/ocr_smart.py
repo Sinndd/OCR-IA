@@ -648,6 +648,11 @@ INSTRUCTIONS SPÉCIFIQUES:
    - **ÉTAPE 3** : Crée un objet commande distinct pour chaque section
    - **RÈGLE D'OR** : Si un produit (même CodeRef) apparaît dans 2 sections différentes → crée 2 lignes distinctes dans 2 commandes différentes
    - Pour chaque produit: CodeRef, Designation, Qte (IGNORER la colonne "Conso")
+   - **NETTOYAGE DES LIBELLÉS** :
+     * Supprime les préfixes de catégories comme "F-PRODUIT LAITIER - FROMAGE ENTIER / PREDECOUPE"
+     * Supprime "F-CHARCUTERIE -", "F-OVO PRODUIT -", etc.
+     * Garde uniquement la partie descriptive du produit (ex: "BEURRE DOUX 250G#2967(67156)")
+     * Le libellé final doit commencer directement par le nom du produit
 
 3. **Dates et heures**:
    - Convertis toutes les dates en YYYYMMDD (ex: "14 avril 2025" → 20250414)

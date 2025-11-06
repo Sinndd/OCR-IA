@@ -1,0 +1,49 @@
+{
+  "CLIENT_API": {
+    "structure": {},
+    "field_types": {
+      "origine": "str",
+      "codeEtablissement": "str",
+      "codeFournisseur": "str",
+      "codePostal": "str",
+      "numCommande": "str",
+      "idCommande": "str",
+      "dateCommande": "int",
+      "heureCommande": "int",
+      "dateLivraison": "int",
+      "commentaireEntete": "str",
+      "modeTransport": "str",
+      "typeCommande": "str",
+      "origineCommande": "str",
+      "version": "str",
+      "produit.numLigne": "int",
+      "produit.codeArticle": "str",
+      "produit.libelle": "str",
+      "produit.quantite": "float",
+      "produit.commentaire": "str"
+    },
+    "common_fields": [
+      "entete.heureCommande",
+      "entete.commentaireEntete",
+      "entete.codePostal",
+      "entete.codeFournisseur",
+      "entete.modeTransport",
+      "entete.origineCommande",
+      "entete.idCommande",
+      "entete.typeCommande",
+      "entete.origine",
+      "entete.codeEtablissement",
+      "entete.dateLivraison",
+      "entete.numCommande",
+      "entete.version",
+      "entete.dateCommande",
+      "produit.numLigne",
+      "produit.codeArticle",
+      "produit.libelle",
+      "produit.quantite",
+      "produit.commentaire"
+    ],
+    "optional_fields": [],
+    "field_constraints": {}
+  }
+}

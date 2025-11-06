@@ -1,598 +1,408 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OCR PRO A PRO - Extraction</title>
-    <style>
-        :root {
-            --primary: #667eea;
-            --secondary: #764ba2;
-            --success: #10b981;
-            --error: #ef4444;
-            --warning: #f59e0b;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .nav {
-            max-width: 1400px;
-            margin: 0 auto 30px;
-            display: flex;
-            gap: 15px;
-        }
-        
-        .nav-btn {
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            color: white;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            padding: 12px 24px;
-            border-radius: 15px;
-            font-size: 1em;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-            font-weight: 600;
-        }
-        
-        .nav-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-        }
-        
-        .nav-btn.active {
-            background: white;
-            color: var(--primary);
-        }
-        
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr 350px;
-            gap: 30px;
-        }
-        
-        @media (max-width: 1200px) {
-            .container {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        .main-card {
-            background: white;
-            border-radius: 25px;
-            box-shadow: 0 25px 70px rgba(0,0,0,0.3);
-            padding: 40px;
-        }
-        
-        .sidebar {
-            background: white;
-            border-radius: 25px;
-            box-shadow: 0 25px 70px rgba(0,0,0,0.3);
-            padding: 30px;
-            height: fit-content;
-        }
-        
-        h1 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 2.2em;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .subtitle {
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 1.05em;
-        }
-        
-        .upload-area {
-            border: 3px dashed var(--primary);
-            border-radius: 20px;
-            padding: 80px 20px;
-            text-align: center;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .upload-area::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
-            animation: pulse 3s ease-in-out infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 0.5; }
-            50% { transform: scale(1.1); opacity: 0.8; }
-        }
-        
-        .upload-area:hover {
-            border-color: var(--secondary);
-            background: linear-gradient(135deg, #e8ebff 0%, #e0e4ff 100%);
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.2);
-        }
-        
-        .upload-area.dragover {
-            border-color: var(--secondary);
-            background: linear-gradient(135deg, #d8dcff 0%, #d0d6ff 100%);
-            transform: scale(1.02);
-            box-shadow: 0 20px 50px rgba(102, 126, 234, 0.3);
-        }
-        
-        .upload-icon {
-            font-size: 5em;
-            margin-bottom: 20px;
-            position: relative;
-            z-index: 1;
-            animation: float 3s ease-in-out infinite;
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-        
-        .upload-text {
-            color: #333;
-            font-size: 1.3em;
-            margin-bottom: 10px;
-            font-weight: 600;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .upload-hint {
-            color: #666;
-            font-size: 1em;
-            position: relative;
-            z-index: 1;
-        }
-        
-        input[type="file"] {
-            display: none;
-        }
-        
-        .btn {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-            border: none;
-            padding: 18px 40px;
-            border-radius: 30px;
-            font-size: 1.15em;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 25px;
-            transition: all 0.3s ease;
-            font-weight: 700;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-        
-        .btn:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-        
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
-        }
-        
-        .btn:active {
-            transform: translateY(-1px);
-        }
-        
-        .btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-        
-        .btn span {
-            position: relative;
-            z-index: 1;
-        }
-        
-        .files-list {
-            margin-top: 25px;
-            display: none;
-        }
-        
-        .files-list.show {
-            display: block;
-        }
-        
-        .files-list-title {
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 15px;
-            font-size: 1.1em;
-        }
-        
-        .file-item {
-            background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%);
-            padding: 15px 20px;
-            border-radius: 15px;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-left: 4px solid var(--primary);
-            transition: all 0.3s ease;
-        }
-        
-        .file-item:hover {
-            transform: translateX(5px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.15);
-        }
-        
-        .file-info-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex: 1;
-        }
-        
-        .file-icon {
-            font-size: 2em;
-        }
-        
-        .file-details {
-            flex: 1;
-        }
-        
-        .file-name {
-            color: #333;
-            font-weight: 600;
-            margin-bottom: 3px;
-            word-break: break-word;
-        }
-        
-        .file-size {
-            color: #666;
-            font-size: 0.85em;
-        }
-        
-        .remove-file {
-            background: none;
-            border: none;
-            color: var(--error);
-            cursor: pointer;
-            font-size: 1.5em;
-            padding: 5px 10px;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-        }
-        
-        .remove-file:hover {
-            background: rgba(239, 68, 68, 0.1);
-            transform: scale(1.1);
-        }
-        
-        .alert {
-            padding: 18px 20px;
-            border-radius: 15px;
-            margin-bottom: 25px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            animation: slideIn 0.3s ease;
-        }
-        
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .alert-error {
-            background: #fee;
-            color: #c33;
-            border: 2px solid #fcc;
-        }
-        
-        .alert-warning {
-            background: #ffc;
-            color: #860;
-            border: 2px solid #fc6;
-        }
-        
-        .alert-success {
-            background: #efe;
-            color: #3a3;
-            border: 2px solid #cfc;
-        }
-        
-        .loading {
-            display: none;
-            text-align: center;
-            margin-top: 25px;
-        }
-        
-        .loading.show {
-            display: block;
-        }
-        
-        .spinner {
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid var(--primary);
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .sidebar-title {
-            font-size: 1.3em;
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .client-item {
-            background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%);
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 12px;
-            border-left: 4px solid var(--primary);
-        }
-        
-        .client-name {
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 5px;
-        }
-        
-        .client-stats {
-            font-size: 0.85em;
-            color: #666;
-        }
-        
-        .empty-state {
-            text-align: center;
-            color: #999;
-            padding: 20px;
-            font-style: italic;
-        }
-    </style>
-</head>
-<body>
-    <nav class="nav">
-        <a href="/" class="nav-btn active">
-            📤 Extraction
-        </a>
-        <a href="/training" class="nav-btn">
-            🎓 Entraînement
-        </a>
-    </nav>
+{% extends "base.html" %}
 
-    <div class="container">
-        <div class="main-card">
-            <h1>📄 Extraction de bons de commande</h1>
-            <p class="subtitle">Téléchargez un ou plusieurs bons de commande PDF pour extraction automatique</p>
-            
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ category }}">
-                            <span style="font-size: 1.5em;">
-                                {% if category == 'error' %}❌{% elif category == 'success' %}✅{% else %}⚠️{% endif %}
-                            </span>
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-            
-            <form id="uploadForm" action="/upload" method="post" enctype="multipart/form-data">
-                <div class="upload-area" id="uploadArea">
-                    <div class="upload-icon">📁</div>
-                    <div class="upload-text">Glissez-déposez vos bons de commande ici</div>
-                    <div class="upload-hint">ou cliquez pour sélectionner des fichiers PDF (sélection multiple possible)</div>
-                    <input type="file" id="fileInput" name="files" accept=".pdf" multiple required>
-                </div>
-                
-                <div class="files-list" id="filesList">
-                    <div class="files-list-title">📋 Fichiers sélectionnés</div>
-                    <div id="filesContainer"></div>
-                </div>
-                
-                <button type="submit" class="btn" id="submitBtn">
-                    <span>🚀 Analyser les bons de commande</span>
-                </button>
-            </form>
-            
-            <div class="loading" id="loading">
-                <div class="spinner"></div>
-                <div style="font-weight: 600; color: #333;">Extraction en cours...</div>
-                <div style="color: #666; font-size: 0.9em; margin-top: 8px;">Cela peut prendre quelques minutes selon le nombre de fichiers</div>
-            </div>
-        </div>
-        
-        <div class="sidebar">
-            <div class="sidebar-title">
-                🤖 Clients entraînés
-            </div>
-            
-            {% if clients %}
-                {% for client in clients %}
-                    <div class="client-item">
-                        <div class="client-name">{{ client.id }}</div>
-                        <div class="client-stats">{{ client.nb_exemples }} exemple(s) d'entraînement</div>
-                    </div>
-                {% endfor %}
-            {% else %}
-                <div class="empty-state">
-                    Aucun client entraîné.<br>
-                    Allez dans l'onglet Entraînement pour commencer.
-                </div>
-            {% endif %}
-        </div>
+{% block title %}Extraction OCR - PRO A PRO{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero {
+        text-align: center;
+        padding: 3rem 0;
+    }
+
+    .hero h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, #ffffff, #a0a0a0);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .hero p {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .upload-section {
+        margin-top: 3rem;
+    }
+
+    .upload-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .drop-zone {
+        border: 2px dashed var(--border-color);
+        border-radius: 1rem;
+        padding: 3rem;
+        text-align: center;
+        transition: var(--transition);
+        cursor: pointer;
+        background: var(--bg-card);
+    }
+
+    .drop-zone:hover,
+    .drop-zone.dragover {
+        border-color: var(--accent);
+        background: var(--bg-card-hover);
+    }
+
+    .drop-zone-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    .drop-zone h3 {
+        font-size: 1.3rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .drop-zone p {
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+    }
+
+    .drop-zone input[type="file"] {
+        display: none;
+    }
+
+    .file-list {
+        margin-top: 1.5rem;
+    }
+
+    .file-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem;
+        background: var(--bg-card-hover);
+        border-radius: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .file-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .file-icon {
+        font-size: 1.5rem;
+    }
+
+    .file-name {
+        font-weight: 500;
+    }
+
+    .file-size {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .file-remove {
+        background: var(--error);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .file-remove:hover {
+        opacity: 0.8;
+    }
+
+    .client-select-card {
+        padding: 2rem;
+    }
+
+    .client-select-card h3 {
+        font-size: 1.3rem;
+        margin-bottom: 1rem;
+    }
+
+    .select-wrapper {
+        position: relative;
+    }
+
+    select {
+        width: 100%;
+        padding: 1rem;
+        background: var(--bg-card-hover);
+        border: 1px solid var(--border-color);
+        border-radius: 0.5rem;
+        color: var(--text-primary);
+        font-size: 1rem;
+        cursor: pointer;
+        transition: var(--transition);
+        appearance: none;
+    }
+
+    select:focus {
+        outline: none;
+        border-color: var(--accent);
+    }
+
+    .select-wrapper::after {
+        content: '▼';
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+        color: var(--text-secondary);
+    }
+
+    .client-info {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        background: var(--bg-card-hover);
+        border-radius: 0.5rem;
+        display: none;
+    }
+
+    .client-info.active {
+        display: block;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .info-row:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        color: var(--text-secondary);
+    }
+
+    .info-value {
+        font-weight: 600;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+    }
+
+    .btn-large {
+        padding: 1rem 2.5rem;
+        font-size: 1.1rem;
+    }
+
+    @media (max-width: 968px) {
+        .upload-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .hero h1 {
+            font-size: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="hero">
+        <h1>🚀 Extraction Intelligente</h1>
+        <p>Uploadez vos bons de commande PDF et laissez l'IA extraire automatiquement les données structurées</p>
     </div>
-    
-    <script>
-        const uploadArea = document.getElementById('uploadArea');
-        const fileInput = document.getElementById('fileInput');
-        const filesList = document.getElementById('filesList');
-        const filesContainer = document.getElementById('filesContainer');
-        const uploadForm = document.getElementById('uploadForm');
-        const submitBtn = document.getElementById('submitBtn');
-        const loading = document.getElementById('loading');
-        
-        let selectedFiles = [];
-        
-        // Click to upload
-        uploadArea.addEventListener('click', () => {
-            fileInput.click();
-        });
-        
-        // Drag & drop
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('dragover');
-        });
-        
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('dragover');
-        });
-        
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('dragover');
-            
-            const files = Array.from(e.dataTransfer.files).filter(f => f.name.endsWith('.pdf'));
-            addFiles(files);
-        });
-        
-        // File selection
-        fileInput.addEventListener('change', (e) => {
-            const files = Array.from(e.target.files);
-            addFiles(files);
-        });
-        
-        // Add files to list
-        function addFiles(files) {
-            selectedFiles = [...selectedFiles, ...files];
-            displayFiles();
-        }
-        
-        // Display files
-        function displayFiles() {
-            filesContainer.innerHTML = '';
-            
-            if (selectedFiles.length === 0) {
-                filesList.classList.remove('show');
-                return;
-            }
-            
-            filesList.classList.add('show');
-            
-            selectedFiles.forEach((file, index) => {
-                const fileItem = document.createElement('div');
-                fileItem.className = 'file-item';
-                fileItem.innerHTML = `
-                    <div class="file-info-wrapper">
-                        <div class="file-icon">📄</div>
-                        <div class="file-details">
-                            <div class="file-name">${file.name}</div>
-                            <div class="file-size">${formatFileSize(file.size)}</div>
+
+    <div class="upload-section">
+        <form id="uploadForm" method="POST" action="{{ url_for('upload_file') }}" enctype="multipart/form-data">
+            <div class="upload-grid">
+                <div class="drop-zone" id="dropZone">
+                    <div class="drop-zone-icon">📁</div>
+                    <h3>Glisser-déposer vos fichiers</h3>
+                    <p>ou cliquez pour sélectionner</p>
+                    <input type="file" id="fileInput" name="files" multiple accept=".pdf" required>
+                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('fileInput').click()">
+                        Parcourir les fichiers
+                    </button>
+                </div>
+
+                <div class="card client-select-card">
+                    <h3>👤 Sélectionner le client</h3>
+                    <div class="select-wrapper">
+                        <select id="clientSelect" name="client_id" required>
+                            <option value="">-- Choisir un client --</option>
+                            {% for client in clients %}
+                            <option value="{{ client }}">{{ client }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="client-info" id="clientInfo">
+                        <div class="info-row">
+                            <span class="info-label">Type d'extraction</span>
+                            <span class="info-value">Intelligente</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Moteur</span>
+                            <span class="info-value">Multi-exemples</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Modèle LLM</span>
+                            <span class="info-value">Qwen 2.5 (7B)</span>
                         </div>
                     </div>
-                    <button type="button" class="remove-file" onclick="removeFile(${index})">×</button>
-                `;
-                filesContainer.appendChild(fileItem);
-            });
-            
-            // Update file input
-            const dataTransfer = new DataTransfer();
-            selectedFiles.forEach(file => dataTransfer.items.add(file));
-            fileInput.files = dataTransfer.files;
-        }
-        
-        // Remove file
-        function removeFile(index) {
-            selectedFiles.splice(index, 1);
-            displayFiles();
-        }
-        
-        // Format file size
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
-        }
-        
-        // Form submission
-        uploadForm.addEventListener('submit', (e) => {
-            if (selectedFiles.length === 0) {
-                e.preventDefault();
-                alert('Veuillez sélectionner au moins un fichier');
-                return;
-            }
-            
-            submitBtn.disabled = true;
-            loading.classList.add('show');
+                </div>
+            </div>
+
+            <div class="file-list" id="fileList"></div>
+
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text" id="progressText">Initialisation...</div>
+            </div>
+
+            <div class="action-buttons">
+                <button type="submit" class="btn btn-primary btn-large" id="submitBtn" disabled>
+                    ⚡ Lancer l'extraction
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const fileList = document.getElementById('fileList');
+    const clientSelect = document.getElementById('clientSelect');
+    const clientInfo = document.getElementById('clientInfo');
+    const submitBtn = document.getElementById('submitBtn');
+    const uploadForm = document.getElementById('uploadForm');
+    const progressContainer = document.getElementById('progressContainer');
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+
+    let selectedFiles = [];
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'), false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false);
+    });
+
+    dropZone.addEventListener('drop', handleDrop, false);
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        handleFiles(files);
+    }
+
+    fileInput.addEventListener('change', (e) => {
+        handleFiles(e.target.files);
+    });
+
+    function handleFiles(files) {
+        selectedFiles = Array.from(files);
+        displayFiles();
+        checkFormValidity();
+    }
+
+    function displayFiles() {
+        fileList.innerHTML = '';
+        selectedFiles.forEach((file, index) => {
+            const fileItem = document.createElement('div');
+            fileItem.className = 'file-item';
+            fileItem.innerHTML = `
+                <div class="file-info">
+                    <span class="file-icon">📄</span>
+                    <div>
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-size">${formatFileSize(file.size)}</div>
+                    </div>
+                </div>
+                <button type="button" class="file-remove" onclick="removeFile(${index})">✕</button>
+            `;
+            fileList.appendChild(fileItem);
         });
-    </script>
-</body>
-</html>
+    }
+
+    function removeFile(index) {
+        selectedFiles.splice(index, 1);
+        
+        const dt = new DataTransfer();
+        selectedFiles.forEach(file => dt.items.add(file));
+        fileInput.files = dt.files;
+        
+        displayFiles();
+        checkFormValidity();
+    }
+
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+    }
+
+    clientSelect.addEventListener('change', () => {
+        if (clientSelect.value) {
+            clientInfo.classList.add('active');
+        } else {
+            clientInfo.classList.remove('active');
+        }
+        checkFormValidity();
+    });
+
+    function checkFormValidity() {
+        submitBtn.disabled = !(selectedFiles.length > 0 && clientSelect.value);
+    }
+
+    uploadForm.addEventListener('submit', (e) => {
+        // Afficher la progression
+        progressContainer.classList.add('active');
+        submitBtn.disabled = true;
+        submitBtn.textContent = '⏳ Traitement en cours...';
+        
+        // Simuler la progression
+        let progress = 0;
+        const progressInterval = setInterval(() => {
+            progress += Math.random() * 15;
+            if (progress > 90) progress = 90;
+            progressFill.style.width = progress + '%';
+            progressText.textContent = `Extraction en cours... ${Math.round(progress)}%`;
+        }, 500);
+        
+        // Nettoyer après 30 secondes max (au cas où)
+        setTimeout(() => {
+            clearInterval(progressInterval);
+        }, 30000);
+        
+        // Laisser le formulaire se soumettre normalement
+    });
+</script>
+{% endblock %}

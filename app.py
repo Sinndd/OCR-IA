@@ -29,19 +29,16 @@ def index():
                 try:
                     with open(metadata_file, 'r', encoding='utf-8') as f:
                         metadata = json.load(f)
-                        clients.append({
-                            'id': metadata.get('client_id', ''),
-                            'nb_exemples': metadata.get('patterns_detectes', {}).get('nb_exemples', 0)
-                        })
+                        clients.append(client_dir.name)
                 except:
                     pass
-    return render_template('index.html', clients=clients)
+    return render_template('index.html', clients=sorted(clients))
 
 @app.route('/training')
 def training():
     """Page d'entraînement"""
     # Charger les statistiques des clients
-    clients_stats = []
+    clients = []
     if PATTERNS_DIR.exists():
         for client_dir in PATTERNS_DIR.glob("CLIENT_*"):
             metadata_file = client_dir / "metadata.json"
@@ -50,92 +47,91 @@ def training():
                     with open(metadata_file, 'r', encoding='utf-8') as f:
                         metadata = json.load(f)
                         patterns = metadata.get('patterns_detectes', {})
-                        stats = metadata.get('statistiques', {})
                         
-                        # Gérer le cas où taux_reussite peut être None
-                        taux = stats.get('taux_reussite', 1.0)
-                        if taux is None:
-                            taux = 1.0
+                        # Compter les exemples
+                        examples_count = patterns.get('nb_exemples', 0) or 0
                         
-                        # Gérer le cas où filename_convention peut être None
-                        convention = patterns.get('filename_convention', 'Non définie')
-                        if convention is None:
-                            convention = 'Non définie'
+                        # Compter les patterns (training files)
+                        patterns_count = len(list(client_dir.glob("training_*.txt")))
                         
-                        clients_stats.append({
-                            'id': metadata.get('client_id', 'UNKNOWN'),
-                            'nb_exemples': patterns.get('nb_exemples', 0) or 0,
-                            'nb_bc_traites': stats.get('nb_bc_traites', 0) or 0,
-                            'taux_reussite': float(taux) * 100,
-                            'derniere_utilisation': stats.get('derniere_utilisation', 'Jamais') or 'Jamais',
-                            'convention': str(convention)
+                        # Date de dernière modification
+                        training_date = "Récemment"
+                        if metadata_file.stat().st_mtime:
+                            from datetime import datetime
+                            dt = datetime.fromtimestamp(metadata_file.stat().st_mtime)
+                            training_date = dt.strftime("%d/%m/%y")
+                        
+                        clients.append({
+                            'name': client_dir.name,
+                            'examples_count': examples_count,
+                            'patterns_count': patterns_count,
+                            'training_date': training_date
                         })
                 except Exception as e:
                     print(f"⚠️  Erreur lecture metadata {client_dir}: {e}")
                     pass
     
-    return render_template('training.html', clients=clients_stats)
+    return render_template('training.html', clients=sorted(clients, key=lambda x: x['name']))
 
 @app.route('/train', methods=['POST'])
 def train():
     """Endpoint pour entraîner un nouveau client"""
     client_id = request.form.get('client_id', '').strip()
-    bc_files = request.files.getlist('bc_files')
-    json_files = request.files.getlist('json_files')
+    
+    if 'bc_file' not in request.files or 'json_file' not in request.files:
+        flash('Fichiers BC et JSON requis', 'error')
+        return redirect(url_for('training'))
+    
+    bc_file = request.files['bc_file']
+    json_file = request.files['json_file']
     
     if not client_id:
-        return jsonify({'success': False, 'error': 'ID client requis'}), 400
+        flash('ID client requis', 'error')
+        return redirect(url_for('training'))
     
-    if not bc_files or not json_files:
-        return jsonify({'success': False, 'error': 'Fichiers BC et JSON requis'}), 400
-    
-    if len(bc_files) != len(json_files):
-        return jsonify({'success': False, 'error': 'Nombre de BC et JSON doit correspondre'}), 400
+    if bc_file.filename == '' or json_file.filename == '':
+        flash('Fichiers BC et JSON requis', 'error')
+        return redirect(url_for('training'))
     
     try:
         # Sauvegarder les fichiers temporairement
         temp_dir = Path(tempfile.mkdtemp())
-        bc_paths = []
-        json_paths = []
+        bc_path = temp_dir / bc_file.filename
+        json_path = temp_dir / json_file.filename
         
-        for bc_file in bc_files:
-            bc_path = temp_dir / bc_file.filename
-            bc_file.save(str(bc_path))
-            bc_paths.append(str(bc_path))
-        
-        for json_file in json_files:
-            json_path = temp_dir / json_file.filename
-            json_file.save(str(json_path))
-            json_paths.append(str(json_path))
+        bc_file.save(str(bc_path))
+        json_file.save(str(json_path))
         
         # Exécuter l'entraînement
         cmd = [
             sys.executable,
             'Administration/ocr_train.py',
             '--client-id', client_id,
-            '--bc-samples'] + bc_paths + [
-            '--expected-json'] + json_paths
+            '--bc-samples', str(bc_path),
+            '--expected-json', str(json_path)
+        ]
         
         result = subprocess.run(cmd, capture_output=True, text=True, cwd=Path.cwd())
         
         # Nettoyer
-        for path in bc_paths + json_paths:
-            try:
-                Path(path).unlink()
-            except:
-                pass
         try:
+            bc_path.unlink()
+            json_path.unlink()
             temp_dir.rmdir()
         except:
             pass
         
         if result.returncode == 0:
-            return jsonify({'success': True, 'message': f'Client {client_id} entraîné avec succès'})
+            flash(f'✅ Client {client_id} entraîné avec succès !', 'success')
+            return redirect(url_for('training'))
         else:
-            return jsonify({'success': False, 'error': result.stderr}), 500
+            error_msg = result.stderr if result.stderr else "Erreur inconnue"
+            flash(f'❌ Erreur lors de l\'entraînement: {error_msg[:200]}', 'error')
+            return redirect(url_for('training'))
             
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+        flash(f'❌ Erreur: {str(e)}', 'error')
+        return redirect(url_for('training'))
 
 @app.route('/evaluate/<client_id>')
 def evaluate(client_id):
@@ -180,6 +176,7 @@ def upload_file():
         return redirect(url_for('index'))
     
     files = request.files.getlist('files')
+    client_id = request.form.get('client_id', 'UNKNOWN')
     
     if not files or files[0].filename == '':
         flash('Aucun fichier sélectionné', 'error')
@@ -227,8 +224,8 @@ def upload_file():
                     if f.stat().st_mtime > timestamp_avant
                 ]
                 
-                # Trier par date de modification (plus récent en premier)
-                json_files = sorted(json_files, key=lambda p: p.stat().st_mtime, reverse=True)
+                # Trier par nom de fichier (ordre croissant: -1, -2, -3)
+                json_files = sorted(json_files, key=lambda p: p.name)
                 
                 print(f"DEBUG: {len(json_files)} fichiers JSON créés pour {file.filename}")
                 
@@ -275,8 +272,38 @@ def upload_file():
         
         flash(f'{len(processed_files)} fichier(s) traité(s) avec succès', 'success')
         
+        # Préparer les données pour le nouveau template results.html
+        results = []
+        total_products = 0
+        
+        for i, cmd_data in enumerate(all_commandes):
+            entete = cmd_data.get('entete', {})
+            detail = cmd_data.get('detailCommande', {})
+            products = detail.get('produits', [])
+            total_products += len(products)
+            
+            # Construire le nom du fichier
+            num_commande = entete.get('numCommande', entete.get('idCommande', f'commande_{i+1}'))
+            filename = f"{num_commande}.json"
+            
+            results.append({
+                'filename': filename,
+                'data': {
+                    'numeroBon': entete.get('numCommande', entete.get('idCommande', '')),
+                    'numeroClient': entete.get('codeEtablissement', ''),
+                    'dateCommande': str(entete.get('dateCommande', '')),
+                    'dateLivraison': str(entete.get('dateLivraison', '')),
+                    'agence': entete.get('codeFournisseur', ''),
+                    'entite': entete.get('origine', ''),
+                    'produitsCommandes': products
+                }
+            })
+        
         try:
-            return render_template('results.html', commandes=all_commandes, filenames=processed_files)
+            return render_template('results.html', 
+                                 results=results, 
+                                 total_products=total_products,
+                                 client_id=client_id)
         except Exception as e:
             print(f"ERROR render_template: {e}")
             import traceback

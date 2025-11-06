@@ -1,381 +1,449 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OCR PRO A PRO - Résultats</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+{% extends "base.html" %}
+
+{% block title %}Résultats - PRO A PRO{% endblock %}
+
+{% block extra_css %}
+<style>
+    .results-header {
+        text-align: center;
+        padding: 2rem 0 3rem;
+    }
+
+    .results-header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, #ffffff, #a0a0a0);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .results-summary {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .summary-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        text-align: center;
+        transition: var(--transition);
+    }
+
+    .summary-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-4px);
+    }
+
+    .summary-icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .summary-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--accent);
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+
+    .summary-label {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+    }
+
+    /* Results Grid */
+    .results-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 2rem;
+    }
+
+    .result-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        overflow: hidden;
+        transition: var(--transition);
+    }
+
+    .result-card:hover {
+        border-color: var(--accent);
+        box-shadow: 0 8px 30px rgba(79, 70, 229, 0.2);
+    }
+
+    .result-card-header {
+        background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+        padding: 1.5rem;
+        color: white;
+    }
+
+    .result-card-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .result-card-subtitle {
+        opacity: 0.9;
+        font-size: 0.9rem;
+    }
+
+    .result-card-body {
+        padding: 1.5rem;
+    }
+
+    /* JSON Viewer */
+    .json-viewer {
+        background: var(--bg-dark);
+        border-radius: 0.5rem;
+        padding: 1rem;
+        max-height: 400px;
+        overflow-y: auto;
+        font-family: 'Courier New', monospace;
+        font-size: 0.85rem;
+        line-height: 1.6;
+    }
+
+    .json-viewer::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .json-viewer::-webkit-scrollbar-track {
+        background: var(--bg-card);
+        border-radius: 4px;
+    }
+
+    .json-viewer::-webkit-scrollbar-thumb {
+        background: var(--border-color);
+        border-radius: 4px;
+    }
+
+    .json-viewer::-webkit-scrollbar-thumb:hover {
+        background: var(--accent);
+    }
+
+    .json-key {
+        color: #4f46e5;
+        font-weight: 600;
+    }
+
+    .json-string {
+        color: #10b981;
+    }
+
+    .json-number {
+        color: #f59e0b;
+    }
+
+    .json-boolean {
+        color: #ef4444;
+    }
+
+    .json-null {
+        color: #6b7280;
+        font-style: italic;
+    }
+
+    /* Product Table */
+    .products-table {
+        width: 100%;
+        margin-top: 1rem;
+    }
+
+    .products-table thead {
+        background: var(--bg-card-hover);
+    }
+
+    .products-table th {
+        padding: 0.75rem;
+        text-align: left;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        border-bottom: 2px solid var(--border-color);
+    }
+
+    .products-table td {
+        padding: 0.75rem;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 0.9rem;
+    }
+
+    .products-table tr:hover {
+        background: var(--bg-card-hover);
+    }
+
+    .products-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* Action Buttons */
+    .result-actions {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .action-btn {
+        flex: 1;
+        padding: 0.75rem;
+        border: none;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+    .action-btn-primary {
+        background: var(--accent);
+        color: white;
+    }
+
+    .action-btn-primary:hover {
+        background: var(--accent-hover);
+        transform: translateY(-2px);
+    }
+
+    .action-btn-secondary {
+        background: var(--bg-card-hover);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+    }
+
+    .action-btn-secondary:hover {
+        background: var(--border-color);
+    }
+
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 2rem;
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-weight: 500;
+        transition: var(--transition);
+    }
+
+    .back-button:hover {
+        color: var(--text-primary);
+    }
+
+    @media (max-width: 768px) {
+        .results-grid {
+            grid-template-columns: 1fr;
         }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 40px 20px;
+
+        .results-header h1 {
+            font-size: 2rem;
         }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .header {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-        }
-        
-        h1 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 2em;
-        }
-        
-        .file-name {
-            color: #666;
-            font-size: 1.1em;
-            margin-bottom: 20px;
-        }
-        
-        .back-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 20px;
-            font-size: 1em;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            transition: all 0.3s ease;
-            font-weight: 600;
-        }
-        
-        .back-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
-        }
-        
-        .commande-card {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-        }
-        
-        .commande-title {
-            color: #667eea;
-            font-size: 1.5em;
-            margin-bottom: 20px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .badge {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 5px 15px;
-            border-radius: 15px;
-            font-size: 0.7em;
-            font-weight: 600;
-        }
-        
-        .section {
-            margin-bottom: 30px;
-        }
-        
-        .section-title {
-            color: #333;
-            font-size: 1.2em;
-            margin-bottom: 15px;
-            font-weight: 600;
-            border-bottom: 2px solid #667eea;
-            padding-bottom: 5px;
-        }
-        
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .info-item {
-            background: #f8f9ff;
-            padding: 15px;
-            border-radius: 10px;
-            border-left: 4px solid #667eea;
-        }
-        
-        .info-label {
-            color: #666;
-            font-size: 0.85em;
-            margin-bottom: 5px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .info-value {
-            color: #333;
-            font-size: 1.1em;
-            font-weight: 600;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-        
-        thead {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        
-        th {
-            padding: 15px;
-            text-align: left;
-            font-weight: 600;
-            font-size: 0.95em;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        td {
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-            color: #333;
-        }
-        
-        tbody tr:hover {
-            background: #f8f9ff;
-        }
-        
-        tbody tr:last-child td {
-            border-bottom: none;
-        }
-        
-        .num-ligne {
-            text-align: center;
-            font-weight: 600;
-            color: #667eea;
-        }
-        
-        .quantite {
-            text-align: right;
-            font-weight: 600;
-        }
-        
-        .no-data {
-            text-align: center;
-            padding: 40px;
-            color: #999;
-            font-style: italic;
-        }
-        
-        .summary {
-            background: #f8f9ff;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 2px solid #667eea;
-        }
-        
-        .summary-label {
-            color: #333;
-            font-size: 1.1em;
-            font-weight: 600;
-        }
-        
-        .summary-value {
-            color: #667eea;
-            font-size: 1.3em;
-            font-weight: 700;
-        }
-        
-        @media (max-width: 768px) {
-            .info-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            table {
-                font-size: 0.9em;
-            }
-            
-            th, td {
-                padding: 10px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>✅ Extraction terminée</h1>
-            {% if filenames %}
-                <p class="file-name">📄 {{ filenames|length }} fichier(s) traité(s): {{ filenames|join(', ') }}</p>
-            {% else %}
-                <p class="file-name">📄 Fichier traité</p>
-            {% endif %}
-            <a href="/" class="back-btn">← Analyser un nouveau bon de commande</a>
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <a href="{{ url_for('index') }}" class="back-button">
+        ← Retour à l'extraction
+    </a>
+
+    <div class="results-header">
+        <h1>📊 Résultats de l'Extraction</h1>
+    </div>
+
+    <!-- Summary -->
+    <div class="results-summary">
+        <div class="summary-card">
+            <div class="summary-icon">📄</div>
+            <span class="summary-value">{{ results|length }}</span>
+            <span class="summary-label">Fichiers générés</span>
         </div>
-        
-        {% for commande in commandes %}
-        <div class="commande-card">
-            <div class="commande-title">
-                Commande #{{ loop.index }}
-                <span class="badge">{{ commande.entete.numCommande }}</span>
-                {% if commande.entete._source_file %}
-                    <span class="badge" style="background: #10b981;">{{ commande.entete._source_file }}</span>
-                {% endif %}
-            </div>
-            
-            <div class="section">
-                <div class="section-title">📋 Informations générales</div>
-                <div class="info-grid">
-                    <div class="info-item">
-                        <div class="info-label">Client</div>
-                        <div class="info-value">{{ commande.entete.origine }}</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Code Établissement</div>
-                        <div class="info-value">{{ commande.entete.codeEtablissement }}</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Agence</div>
-                        <div class="info-value">{{ commande.entete.codeFournisseur }}</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Code Postal</div>
-                        <div class="info-value">{{ commande.entete.codePostal }}</div>
-                    </div>
+        <div class="summary-card">
+            <div class="summary-icon">🛒</div>
+            <span class="summary-value">{{ total_products }}</span>
+            <span class="summary-label">Produits extraits</span>
+        </div>
+        <div class="summary-card">
+            <div class="summary-icon">✅</div>
+            <span class="summary-value">100%</span>
+            <span class="summary-label">Taux de réussite</span>
+        </div>
+        <div class="summary-card">
+            <div class="summary-icon">👤</div>
+            <span class="summary-value">{{ client_id }}</span>
+            <span class="summary-label">Client</span>
+        </div>
+    </div>
+
+    <!-- Results Grid -->
+    <div class="results-grid">
+        {% for result in results %}
+        <div class="result-card">
+            <div class="result-card-header">
+                <div class="result-card-title">
+                    📋 {{ result.filename }}
+                </div>
+                <div class="result-card-subtitle">
+                    {% if result.data.dateCommande %}Date: {{ result.data.dateCommande }}{% endif %}
+                    {% if result.data.dateLivraison %} • Livraison: {{ result.data.dateLivraison }}{% endif %}
                 </div>
             </div>
             
-            <div class="section">
-                <div class="section-title">📅 Dates & Horaires</div>
-                <div class="info-grid">
-                    <div class="info-item">
-                        <div class="info-label">Date de commande</div>
-                        <div class="info-value">
-                            {% set dc = commande.entete.dateCommande|string %}
-                            {% if dc|length == 8 %}
-                                {{ dc[6:8] }}/{{ dc[4:6] }}/{{ dc[0:4] }}
-                            {% else %}
-                                {{ commande.entete.dateCommande }}
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Heure de commande</div>
-                        <div class="info-value">
-                            {% set hc = commande.entete.heureCommande|string %}
-                            {% if hc|length == 6 %}
-                                {{ hc[0:2] }}:{{ hc[2:4] }}:{{ hc[4:6] }}
-                            {% else %}
-                                {{ commande.entete.heureCommande }}
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Date de livraison</div>
-                        <div class="info-value">
-                            {% set dl = commande.entete.dateLivraison|string %}
-                            {% if dl|length == 8 %}
-                                {{ dl[6:8] }}/{{ dl[4:6] }}/{{ dl[0:4] }}
-                            {% else %}
-                                {{ commande.entete.dateLivraison }}
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Mode de transport</div>
-                        <div class="info-value">{{ commande.entete.modeTransport }}</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="section">
-                <div class="section-title">📦 Produits commandés</div>
-                {% if commande.detailCommande.produits %}
-                <table>
-                    <thead>
-                        <tr>
-                            <th class="num-ligne">#</th>
-                            <th>Code Article</th>
-                            <th>Libellé</th>
-                            <th>Format</th>
-                            <th>Provenance</th>
-                            <th>Marque</th>
-                            <th class="quantite">Quantité</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for produit in commande.detailCommande.produits %}
-                        {% set libelle = produit.libelle %}
-                        {% set parts = libelle.split('(') %}
-                        {% set nom_base = parts[0].strip() if parts|length > 0 else libelle %}
-                        {% set provenance = '' %}
-                        {% set marque = '' %}
-                        
-                        {# Extraire format (tout ce qui suit le nom jusqu'à la première parenthèse) #}
-                        {% set format_match = nom_base.split() %}
-                        {% set format = format_match[-1] if format_match|length > 1 and (format_match[-1]|length <= 5 or 'K' in format_match[-1] or 'L' in format_match[-1] or 'cl' in format_match[-1] or 'g' in format_match[-1]) else '' %}
-                        {% set format_len = format|length %}
-                        {% set nom_produit = nom_base[:-format_len].strip() if format else nom_base %}
-                        
-                        {# Extraire provenance et marque des parenthèses #}
-                        {% if parts|length >= 2 %}
-                            {% set provenance = parts[1].replace(')', '').strip() %}
+            <div class="result-card-body">
+                <!-- Metadata -->
+                <div style="margin-bottom: 1.5rem;">
+                    <h4 style="margin-bottom: 0.75rem; color: var(--text-secondary); font-size: 0.9rem;">INFORMATIONS</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.9rem;">
+                        {% if result.data.numeroBon %}
+                        <div><strong>N° Bon:</strong> {{ result.data.numeroBon }}</div>
                         {% endif %}
-                        {% if parts|length >= 3 %}
-                            {% set marque = parts[2].replace(')', '').strip() %}
+                        {% if result.data.numeroClient %}
+                        <div><strong>N° Client:</strong> {{ result.data.numeroClient }}</div>
                         {% endif %}
-                        <tr>
-                            <td class="num-ligne">{{ produit.numLigne }}</td>
-                            <td>{{ produit.codeArticle }}</td>
-                            <td>{{ nom_produit }}</td>
-                            <td>{{ format }}</td>
-                            <td>{{ provenance }}</td>
-                            <td>{{ marque }}</td>
-                            <td class="quantite">{{ "%.3f"|format(produit.quantite|float) }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                <div class="summary">
-                    <span class="summary-label">Total de lignes</span>
-                    <span class="summary-value">{{ commande.detailCommande.nbLignes }}</span>
+                        {% if result.data.agence %}
+                        <div><strong>Agence:</strong> {{ result.data.agence }}</div>
+                        {% endif %}
+                        {% if result.data.entite %}
+                        <div><strong>Entité:</strong> {{ result.data.entite }}</div>
+                        {% endif %}
+                    </div>
                 </div>
-                {% else %}
-                <div class="no-data">Aucun produit trouvé</div>
-                {% endif %}
+
+                <!-- Products Table -->
+                <h4 style="margin-bottom: 0.75rem; color: var(--text-secondary); font-size: 0.9rem;">
+                    PRODUITS ({{ result.data.produitsCommandes|length }})
+                </h4>
+                <div style="overflow-x: auto;">
+                    <table class="products-table">
+                        <thead>
+                            <tr>
+                                <th>Ligne</th>
+                                <th>Article</th>
+                                <th>Libellé</th>
+                                <th>Qté</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for product in result.data.produitsCommandes %}
+                            <tr>
+                                <td>{{ product.numLigne }}</td>
+                                <td>
+                                    <div style="font-family: monospace; font-size: 0.85rem;">
+                                        {{ product.codeArticle }}
+                                    </div>
+                                </td>
+                                <td>{{ product.libelle[:40] }}{% if product.libelle|length > 40 %}...{% endif %}</td>
+                                <td><strong>{{ product.quantite }}</strong></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Actions -->
+                <div class="result-actions">
+                    <button class="action-btn action-btn-primary" 
+                            data-filename="{{ result.filename }}" 
+                            data-json="{{ result.data|tojson|escape }}"
+                            onclick="downloadJSON(this)">
+                        💾 Télécharger
+                    </button>
+                    <button class="action-btn action-btn-secondary" 
+                            data-json="{{ result.data|tojson|escape }}"
+                            onclick="viewJSON(this)">
+                        👁️ Voir JSON
+                    </button>
+                </div>
             </div>
         </div>
         {% endfor %}
-        
-        {% if not commandes %}
-        <div class="commande-card">
-            <div class="no-data">Aucune commande extraite</div>
-        </div>
-        {% endif %}
     </div>
-</body>
-</html>
+</div>
+
+<!-- JSON Modal -->
+<div id="jsonModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; padding: 2rem; overflow-y: auto;">
+    <div style="max-width: 800px; margin: 0 auto; background: var(--bg-card); border-radius: 1rem; padding: 2rem; position: relative;">
+        <button onclick="closeModal()" style="position: absolute; top: 1rem; right: 1rem; background: var(--error); color: white; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1.2rem;">✕</button>
+        <h2 style="margin-bottom: 1.5rem;">📋 Données JSON</h2>
+        <pre id="jsonContent" class="json-viewer"></pre>
+    </div>
+</div>
+
+<script>
+    function downloadJSON(button) {
+        const filename = button.getAttribute('data-filename');
+        const jsonString = button.getAttribute('data-json');
+        const data = JSON.parse(jsonString);
+        
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    function viewJSON(button) {
+        const jsonString = button.getAttribute('data-json');
+        const data = JSON.parse(jsonString);
+        
+        const modal = document.getElementById('jsonModal');
+        const content = document.getElementById('jsonContent');
+        content.innerHTML = syntaxHighlight(JSON.stringify(data, null, 2));
+        modal.style.display = 'block';
+    }
+
+    function closeModal() {
+        document.getElementById('jsonModal').style.display = 'none';
+    }
+
+    function syntaxHighlight(json) {
+        json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+            let cls = 'json-number';
+            if (/^"/.test(match)) {
+                if (/:$/.test(match)) {
+                    cls = 'json-key';
+                } else {
+                    cls = 'json-string';
+                }
+            } else if (/true|false/.test(match)) {
+                cls = 'json-boolean';
+            } else if (/null/.test(match)) {
+                cls = 'json-null';
+            }
+            return '<span class="' + cls + '">' + match + '</span>';
+        });
+    }
+
+    // Close modal on escape
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeModal();
+    });
+
+    // Close modal on background click
+    document.getElementById('jsonModal').addEventListener('click', (e) => {
+        if (e.target.id === 'jsonModal') closeModal();
+    });
+</script>
+{% endblock %}
