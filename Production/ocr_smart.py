@@ -306,7 +306,25 @@ class SmartExtractor:
         
         if all_produit_fields:
             common_produit = set.intersection(*all_produit_fields)
-            pattern["common_fields"].extend([f"produit.{f}" for f in common_produit])
+            
+            # ORDRE FIXE pour les champs produits
+            preferred_order = [
+                "numLigne",
+                "codeArticle", 
+                "codeArticlePerso",
+                "libelle",
+                "quantite",
+                "commentaire"
+            ]
+            
+            # Ajouter les champs dans l'ordre préféré d'abord
+            for field in preferred_order:
+                if field in common_produit:
+                    pattern["common_fields"].append(f"produit.{field}")
+            
+            # Ajouter les champs restants (s'il y en a)
+            remaining = sorted([f for f in common_produit if f not in preferred_order])
+            pattern["common_fields"].extend([f"produit.{f}" for f in remaining])
             
             all_produit_union = set.union(*all_produit_fields)
             optional_produit = all_produit_union - common_produit
@@ -708,6 +726,7 @@ Assure-toi d'extraire TOUS les produits présents dans le bon de commande."""
     def _extract_common_fields(self, examples: List[Dict]) -> List[str]:
         """
         Extrait les champs COMMUNS des produits dans tous les exemples
+        AVEC ORDRE SPÉCIFIQUE
         """
         if not examples:
             return []
@@ -730,7 +749,27 @@ Assure-toi d'extraire TOUS les produits présents dans le bon de commande."""
         for fields in fields_sets[1:]:
             common &= fields
         
-        return sorted(list(common))
+        # ORDRE FIXE SOUHAITÉ pour les produits
+        preferred_order = [
+            "numLigne",
+            "codeArticle", 
+            "codeArticlePerso",
+            "libelle",
+            "quantite",
+            "commentaire"
+        ]
+        
+        # Construire liste ordonnée: d'abord les champs dans l'ordre préféré, puis les autres
+        ordered_fields = []
+        for field in preferred_order:
+            if field in common:
+                ordered_fields.append(field)
+        
+        # Ajouter les champs restants (s'il y en a) triés alphabétiquement
+        remaining = sorted([f for f in common if f not in preferred_order])
+        ordered_fields.extend(remaining)
+        
+        return ordered_fields
     
     def _validate_and_fix_structure_flexible(
         self,
@@ -825,6 +864,10 @@ Assure-toi d'extraire TOUS les produits présents dans le bon de commande."""
                                 value = float(value)
                             except (ValueError, TypeError):
                                 value = 0.0
+                        
+                        # Forcer commentaire à string vide si null/None
+                        if field == "commentaire" and (value is None or value == "null"):
+                            value = ""
                         
                         cleaned[field] = value
                     
