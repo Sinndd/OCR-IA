@@ -272,7 +272,10 @@
             <div class="logo">⚡ OCR PRO A PRO</div>
             <ul class="nav-links">
                 <li><a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">📄 Extraction</a></li>
+                <li><a href="{{ url_for('stats') }}" class="{% if request.endpoint == 'stats' %}active{% endif %}">📊 Statistiques</a></li>
                 <li><a href="{{ url_for('training') }}" class="{% if request.endpoint == 'training' %}active{% endif %}">🎓 Entraînement</a></li>
+                <li><a href="{{ url_for('monitoring') }}" class="{% if request.endpoint == 'monitoring' %}active{% endif %}">📡 Monitoring</a></li>
+                <li><a href="{{ url_for('failed_jobs') }}" class="{% if request.endpoint == 'failed_jobs' %}active{% endif %}">🔧 Échecs</a></li>
             </ul>
         </div>
     </nav>

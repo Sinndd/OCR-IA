@@ -1,0 +1,37 @@
+{
+  "client_id": "CLIENT_D",
+  "description": "Formulaire administratif multi-sections avec totaux estimés",
+  "format_type": "formulaire_administratif",
+  "structure": {
+    "header": "Sections numérotées avec en-tête === DEMANDE D'APPROVISIONNEMENT ===",
+    "sections": [
+      "SECTION 1 - IDENTIFICATION (numéro, date, service, priorité)",
+      "SECTION 2 - FOURNISSEUR & LOGISTIQUE (code fournisseur, incoterm, transport, devise)",
+      "SECTION 3 - OBSERVATIONS (texte libre)",
+      "SECTION 4 - ARTICLES DEMANDES (tableau avec totaux)"
+    ],
+    "table_format": "tableau_avec_prix_unitaires_et_totaux"
+  },
+  "patterns": {
+    "numero_commande": "N° de demande:\\s*(\\d+)",
+    "date": "Date d'émission:\\s*([\\d/]+)",
+    "service": "Service demandeur:\\s*(\\d+)",
+    "priorite": "Priorité:\\s*(NORMALE|HAUTE|CRITIQUE)",
+    "fournisseur": "Code fournisseur:\\s*([A-Z-]+(?:\\s[A-Z-]+)*)",
+    "incoterm": "Incoterm:\\s*([A-Z]{3})",
+    "transport": "Mode de transport:\\s*([A-Z]+)",
+    "devise": "Devise:\\s*([A-Z]{3})",
+    "total": "TOTAL ESTIMÉ \\(EUR\\):\\s*([\\d.]+)"
+  },
+  "detection_keywords": [
+    "DEMANDE D'APPROVISIONNEMENT",
+    "SECTION 1 - IDENTIFICATION",
+    "SECTION 2 - FOURNISSEUR",
+    "Priorité:",
+    "Incoterm:",
+    "TOTAL ESTIMÉ"
+  ],
+  "examples_count": 3,
+  "last_updated": "2026-03-02",
+  "bc_reference": "BC_2986847_StyleD"
+}

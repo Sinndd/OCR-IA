@@ -1,0 +1,52 @@
+{
+  "client_id": "CLIENT_H",
+  "description": "Réquisition d'achat avec zones de signature",
+  "format_type": "requisition_achat",
+  "structure": {
+    "header": "RÉQUISITION D'ACHAT avec date d'impression",
+    "formulaire": "Grille avec labels et valeurs dans des cellules de tableau",
+    "champs": [
+      "N° Réquisition",
+      "Date",
+      "Demandeur",
+      "Fournisseur suggéré",
+      "Code postal",
+      "Mode livraison",
+      "Type commande"
+    ],
+    "validation": "Cases à cocher: [ ] Chef de service, [ ] Achats, [ ] Direction",
+    "observations": "Zone texte Observations:",
+    "table": "Tableau articles: Ligne, Référence, Libellé, Quantité, Unité, Date livr.",
+    "signatures": "Bloc SIGNATURES: avec 3 colonnes (Demandeur, Responsable achats, Directeur)"
+  },
+  "patterns": {
+    "numero_requisition": "N° Réquisition:\\s*(\\d+)",
+    "date": "Date:\\s*([\\d/]+)",
+    "date_impression": "Date d'impression:\\s+([\\d/]+\\s+[\\d:]+)",
+    "demandeur": "Demandeur:\\s*(\\d+)",
+    "fournisseur": "Fournisseur suggéré:\\s*([A-Z]+(?:[\\s-][A-Z]+)*)",
+    "code_postal": "Code postal:\\s*(\\d{5})",
+    "mode_livraison": "Mode livraison:\\s*([A-Z]+)",
+    "type_commande": "Type commande:\\s*([A-Z]+)",
+    "validation": "\\[([X ])\\]\\s+(Chef de service|Achats|Direction)",
+    "article_ligne": "^(\\d+)\\s+(\\w+)\\s+(.+?)\\s+(\\d+)\\s+(\\w+)\\s+([\\d/]+)$"
+  },
+  "detection_keywords": [
+    "RÉQUISITION D'ACHAT",
+    "Date d'impression:",
+    "N° Réquisition:",
+    "Fournisseur suggéré:",
+    "Validation requise:",
+    "[ ] Chef de service",
+    "[ ] Achats",
+    "[ ] Direction",
+    "Articles demandés:",
+    "SIGNATURES:",
+    "Demandeur:",
+    "Responsable achats:",
+    "Directeur:"
+  ],
+  "examples_count": 1,
+  "last_updated": "2026-03-03",
+  "bc_reference": "BC_682671_StyleH"
+}

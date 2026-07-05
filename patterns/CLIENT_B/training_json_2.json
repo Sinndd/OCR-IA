@@ -1,0 +1,55 @@
+{
+  "commandes": [
+    {
+      "entete": {
+        "origine": "CLIENT_B",
+        "codeEtablissement": "02313",
+        "codeFournisseur": "CHAPONNAY",
+        "codePostal": "69970",
+        "numCommande": "02313-7992-2",
+        "idCommande": "02313-7992-2",
+        "dateCommande": 20240108,
+        "heureCommande": 64000,
+        "dateLivraison": 20240110,
+        "commentaireEntete": "",
+        "modeTransport": "L",
+        "typeCommande": "220",
+        "origineCommande": "D",
+        "version": "ACE"
+      },
+      "detailCommande": {
+        "produits": [
+          {
+            "numLigne": 1,
+            "codeArticle": "155472",
+            "libelle": "[A] Cheddar fondu 84T 26% 1,033K (Union Européenne) (METRO CHEF)",
+            "quantite": 1.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 2,
+            "codeArticle": "11845",
+            "libelle": "[A] Mélange 3 riz gourmet 2,5K (Import) (VIVIEN PAILLE)",
+            "quantite": 6.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 3,
+            "codeArticle": "161515",
+            "libelle": "[A] Pain bun brioché tran.77g x45 (Union Européenne) (SANS MARQUE)",
+            "quantite": 135.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 4,
+            "codeArticle": "32180",
+            "libelle": "[A] Vinaigre alcool blc.8°PET 1,5L (UE) (BEAUFOR/DESBOIS)",
+            "quantite": 10.0,
+            "commentaire": ""
+          }
+        ],
+        "nbLignes": 4
+      }
+    }
+  ]
+}

@@ -1,0 +1,175 @@
+{
+  "commandes": [
+    {
+      "entete": {
+        "origine": "PRO A PRO SUD CHAPONNAY",
+        "codeEtablissement": "02313",
+        "codeFournisseur": "CHAPONNAY",
+        "codePostal": "69970",
+        "numCommande": "02313-7992-1",
+        "idCommande": "02313-7992-1",
+        "dateCommande": 20260112,
+        "heureCommande": "060000",
+        "dateLivraison": 20260119,
+        "commentaireEntete": "",
+        "modeTransport": "L",
+        "typeCommande": "220",
+        "origineCommande": "D",
+        "version": "ACE"
+      },
+      "detailCommande": {
+        "produits": [
+          {
+            "numLigne": 1,
+            "codeArticle": "157358",
+            "libelle": "[A] Beaufilet colin pané 70g 5,6K (SANS MARQUE)",
+            "quantite": 16.800,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 2,
+            "codeArticle": "142094",
+            "libelle": "[A] Agent démoulage 600ml (Import) (METRO CHEF)",
+            "quantite": 2.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 3,
+            "codeArticle": "157156",
+            "libelle": "[A] Beurre doux 250g (Union Européenne)",
+            "quantite": 4.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 4,
+            "codeArticle": "157545",
+            "libelle": "[A] Boulette agneau 33% 30g 5K (Import) (SANS MARQUE)",
+            "quantite": 20.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 5,
+            "codeArticle": "167493",
+            "libelle": "[A] Brie 25% 3,3K (France) (PAYSAN BRETON)",
+            "quantite": 2.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 6,
+            "codeArticle": "158733",
+            "libelle": "[A] Chx-fleurs fleurettes bio 2,5K (France) (PAYSAN BRETON)",
+            "quantite": 3.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 7,
+            "codeArticle": "166495",
+            "libelle": "[A] Confiture de fraises 1K (Import)",
+            "quantite": 2.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 8,
+            "codeArticle": "32734",
+            "libelle": "[A] Cornichons EF (150 et +) (Import) (LES JARDINS D'ADRIEN)",
+            "quantite": 1.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 9,
+            "codeArticle": "164239",
+            "libelle": "[A] Crème liquide 18% UHT 1L (Espagne) (INNOVA)",
+            "quantite": 6.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 10,
+            "codeArticle": "55304",
+            "libelle": "[A] Double concentré de tomate 28% (France) (LES JARDINS D'ADRIEN)",
+            "quantite": 2.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 11,
+            "codeArticle": "33245",
+            "libelle": "[A] Epices couscous 375g (Import) (DUCROS)",
+            "quantite": 1.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 12,
+            "codeArticle": "13005",
+            "libelle": "[A] Farine de blé ménagère T55 1K (France)",
+            "quantite": 10.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 13,
+            "codeArticle": "157558",
+            "libelle": "[A] Lait 1/2 écrémé bio UHT 1L (France) (LA VACHE)",
+            "quantite": 6.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 14,
+            "codeArticle": "01880",
+            "libelle": "[A] Macédoine de légumes (Union Européenne) (LES JARDINS D'ADRIEN)",
+            "quantite": 3.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 15,
+            "codeArticle": "166464",
+            "libelle": "[A] Penne bio 5K (Union Européenne) (PANZANI)",
+            "quantite": 2.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 16,
+            "codeArticle": "34823",
+            "libelle": "[A] Moutarde de Dijon 1K (Import) (DIJONA)",
+            "quantite": 1.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 17,
+            "codeArticle": "36907",
+            "libelle": "[A] Rosette de Lyon 50T 250g x2 (UE) (COLOMBO)",
+            "quantite": 12.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 18,
+            "codeArticle": "34341",
+            "libelle": "[A] Sauce soja 1L (Import) (KIKKOMAN)",
+            "quantite": 1.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 19,
+            "codeArticle": "160113",
+            "libelle": "[A] Semoule de blé fine 5K (Union Européenne) (LUSTUCRU)",
+            "quantite": 2.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 20,
+            "codeArticle": "159320",
+            "libelle": "[A] Échalotes en morceaux 1K (Import) (PAS DE MARQUE)",
+            "quantite": 5.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 21,
+            "codeArticle": "67179",
+            "libelle": "[A] Tomme blanche 26% 2K (France) (MONTSALVY)",
+            "quantite": 3.000,
+            "commentaire": ""
+          }
+        ],
+        "nombreLignes": 25,
+        "nbLignes": 21
+      }
+    }
+  ]
+}

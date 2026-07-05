@@ -1,0 +1,75 @@
+{
+  "commandes": [
+    {
+      "entete": {
+        "origine": "CLIENT_H",
+        "codeEtablissement": "4137",
+        "codeFournisseur": "AIXEN-PROVENCE",
+        "codePostal": "44000",
+        "numCommande": "682671",
+        "idCommande": "4137-682671-1",
+        "dateCommande": 20260205,
+        "heureCommande": "",
+        "dateLivraison": 20260212,
+        "commentaireEntete": "Standard - Respecter normes CE\nEmballage individuel requis",
+        "modeTransport": "L",
+        "typeCommande": "220",
+        "origineCommande": "D",
+        "version": "ACE"
+      },
+      "detailCommande": {
+        "produits": [
+          {
+            "numLigne": 1,
+            "codeArticle": "7004",
+            "codeArticlePerso": "7004",
+            "libelle": "DÉSINFECTANT CHLORHEXIDINE 500ml",
+            "quantite": 127.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 2,
+            "codeArticle": "71487",
+            "codeArticlePerso": "71487",
+            "libelle": "PANSEMENT ADHÉSIF 6cmx5m x10",
+            "quantite": 405.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 3,
+            "codeArticle": "698624",
+            "codeArticlePerso": "698624",
+            "libelle": "THERMOMÈTRE DIGITAL Sans contact",
+            "quantite": 311.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 4,
+            "codeArticle": "142692",
+            "codeArticlePerso": "142692",
+            "libelle": "THERMOMÈTRE DIGITAL Sans contact",
+            "quantite": 277.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 5,
+            "codeArticle": "4878",
+            "codeArticlePerso": "4878",
+            "libelle": "AMOXICILLINE 1g - Flacon 12 gél",
+            "quantite": 99.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 6,
+            "codeArticle": "872081",
+            "codeArticlePerso": "872081",
+            "libelle": "PANSEMENT ADHÉSIF 6cmx5m x10",
+            "quantite": 431.0,
+            "commentaire": ""
+          }
+        ],
+        "nbLignes": 6
+      }
+    }
+  ]
+}

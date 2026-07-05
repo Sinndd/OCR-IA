@@ -1,0 +1,47 @@
+{
+  "commandes": [
+    {
+      "entete": {
+        "origine": "CLIENT_C",
+        "codeEtablissement": "ETAB-61",
+        "codeFournisseur": "856414",
+        "codePostal": "94150",
+        "numCommande": "856414-1480012-2",
+        "idCommande": "856414-1480012-2",
+        "dateCommande": 20260106,
+        "dateLivraison": 20260121,
+        "commentaireEntete": "Livraison fractionnée\nFragile !",
+        "modeTransport": "L",
+        "typeCommande": "220",
+        "origineCommande": "D",
+        "version": "ACE"
+      },
+      "detailCommande": {
+        "produits": [
+          {
+            "numLigne": 1,
+            "codeArticle": "289006",
+            "libelle": "Sauce Tomate Basilic",
+            "quantite": 97.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 2,
+            "codeArticle": "604613",
+            "libelle": "Moutarde de Dijon",
+            "quantite": 28.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 3,
+            "codeArticle": "262555",
+            "libelle": "Sauce Tomate Basilic",
+            "quantite": 1.0,
+            "commentaire": ""
+          }
+        ],
+        "nbLignes": 3
+      }
+    }
+  ]
+}

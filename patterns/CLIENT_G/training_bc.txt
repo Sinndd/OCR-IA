@@ -1,0 +1,62 @@
+BON DE COMMANDE COMMERCIAL
+Avec calcul automatique des montants
+VENDEUR
+Fournisseur: PERPIGNAN
+CP: 75001
+Transport: ROUTE
+Incoterm: EXW
+ACHETEUR
+Etablissement: 8563
+Type: 220
+Devise: EUR
+Priorité: HAUTE
+Commande N° 8347075 du 06/02/2026
+Livraison prévue: 13/02/2026
+URGENT - Priorité production
+Livraison directe atelier
+Pos
+Code
+Description
+Qté
+Unité
+P.U. (EUR)
+Total (EUR)
+1
+8644
+PCB 4-LAYERS FR-4 1.6mm (Ref: AZ-9012)
+260
+L
+916.02
+238165.20
+2
+79898
+PCB 4-LAYERS FR-4 1.6mm (Ref: AZ-9012)
+298
+M
+211.73
+63095.54
+3
+697280
+CONNECTEUR USB-C Femelle 24P SMD
+266
+PKG
+436.94
+116226.04
+4
+49646
+CONNECTEUR USB-C Femelle 24P SMD
+128
+KG
+407.79
+52197.12
+5
+74410
+CONNECTEUR USB-C Femelle 24P SMD
+157
+KG
+858.10
+134721.70
+Sous-total HT: 604405.60 EUR
+TVA (20%): 120881.12 EUR
+TOTAL TTC:725286.72 EUR
+Page 1 - Style G

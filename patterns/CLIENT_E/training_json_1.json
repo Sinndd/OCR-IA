@@ -1,0 +1,35 @@
+{
+  "commandes": [
+    {
+      "entete": {
+        "origine": "CLIENT_E",
+        "codeEtablissement": "76709",
+        "codeFournisseur": "CAEN",
+        "codePostal": "75001",
+        "numCommande": "4394297",
+        "idCommande": "76709-4394297-1",
+        "dateCommande": 20260131,
+        "heureCommande": "",
+        "dateLivraison": 20260203,
+        "commentaireEntete": "URGENT - Priorité production\nLivraison directe atelier",
+        "modeTransport": "L",
+        "typeCommande": "220",
+        "origineCommande": "D",
+        "version": "ACE"
+      },
+      "detailCommande": {
+        "produits": [
+          {
+            "numLigne": 1,
+            "codeArticle": "314060",
+            "codeArticlePerso": "314060",
+            "libelle": "COMPRESSES STÉRILES 10x10cm x100",
+            "quantite": 92.0,
+            "commentaire": "Emballage renforcé"
+          }
+        ],
+        "nbLignes": 1
+      }
+    }
+  ]
+}

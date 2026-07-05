@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block title %}Jobs Échoués - OCR{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">🔧 Gestion des Jobs Échoués</h2>
+    
+    <div id="success-message" class="alert alert-success d-none" role="alert">
+        Job relancé avec succès !
+    </div>
+    
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Jobs en Échec</h5>
+            <button class="btn btn-sm btn-primary" onclick="refreshFailedJobs()">
+                🔄 Rafraîchir
+            </button>
+        </div>
+        <div class="card-body" id="failed-jobs-container">
+            <p class="text-muted">Chargement...</p>
+        </div>
+    </div>
+</div>
+
+<style>
+.failed-job-card {
+    border-left: 4px solid #dc3545;
+    margin-bottom: 1rem;
+}
+
+.error-details {
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+    padding: 0.75rem;
+    font-size: 0.9rem;
+    color: #721c24;
+}
+
+.job-meta {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.btn-retry {
+    transition: all 0.3s ease;
+}
+
+.btn-retry:hover {
+    transform: scale(1.05);
+}
+
+.job-logs {
+    max-height: 200px;
+    overflow-y: auto;
+    font-size: 0.8rem;
+    background: #f8f9fa;
+    padding: 0.5rem;
+    border-radius: 4px;
+}
+</style>
+
+<script>
+// Charger les jobs échoués
+function refreshFailedJobs() {
+    fetch('/api/jobs?status=failed')
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                renderFailedJobs(data.jobs);
+            }
+        })
+        .catch(err => {
+            console.error('Erreur chargement jobs:', err);
+        });
+}
+
+// Rendre la liste
+function renderFailedJobs(jobs) {
+    const container = document.getElementById('failed-jobs-container');
+    
+    if (jobs.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-5">
+                <h4 class="text-success">✓ Aucun job en échec</h4>
+                <p class="text-muted">Tous les traitements sont OK</p>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = jobs.map(job => createFailedJobCard(job)).join('');
+}
+
+// Créer une carte de job échoué
+function createFailedJobCard(job) {
+    const createdDate = new Date(job.created_at * 1000).toLocaleString('fr-FR');
+    const logs = job.logs ? job.logs.slice(-5) : [];
+    
+    return `
+        <div class="card failed-job-card" id="failed-job-${job.id}">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="mb-1">${job.filename}</h5>
+                        <div class="job-meta">
+                            <span>ID: ${job.id.substring(0, 8)}...</span> | 
+                            <span>Créé: ${createdDate}</span>
+                            ${job.client_id ? ` | <span>Client: ${job.client_id}</span>` : ''}
+                        </div>
+                    </div>
+                    <button class="btn btn-warning btn-retry" onclick="retryJob('${job.id}')">
+                        🔄 Relancer
+                    </button>
+                </div>
+                
+                <div class="error-details mb-3">
+                    <strong>❌ Erreur:</strong><br>
+                    ${job.error_message || 'Erreur inconnue'}
+                </div>
+                
+                ${logs.length > 0 ? `
+                    <details>
+                        <summary style="cursor: pointer;">Voir les logs (${logs.length})</summary>
+                        <div class="job-logs mt-2">
+                            ${logs.map(log => {
+                                const logDate = new Date(log.timestamp * 1000).toLocaleTimeString('fr-FR');
+                                return `<div><strong>[${logDate}] ${log.step}:</strong> ${log.message}</div>`;
+                            }).join('')}
+                        </div>
+                    </details>
+                ` : ''}
+            </div>
+        </div>
+    `;
+}
+
+// Relancer un job
+function retryJob(jobId) {
+    if (!confirm('Voulez-vous vraiment relancer ce job ?')) {
+        return;
+    }
+    
+    const card = document.getElementById(`failed-job-${jobId}`);
+    const retryBtn = card.querySelector('.btn-retry');
+    
+    retryBtn.disabled = true;
+    retryBtn.innerHTML = '⏳ Relance...';
+    
+    fetch(`/api/retry/${jobId}`, {
+        method: 'POST'
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            // Afficher message de succès
+            const successMsg = document.getElementById('success-message');
+            successMsg.classList.remove('d-none');
+            
+            // Retirer la carte avec animation
+            card.style.transition = 'opacity 0.5s ease';
+            card.style.opacity = '0';
+            setTimeout(() => {
+                card.remove();
+                refreshFailedJobs();
+            }, 500);
+            
+            // Cacher le message après 3s
+            setTimeout(() => {
+                successMsg.classList.add('d-none');
+            }, 3000);
+        } else {
+            alert('Erreur lors de la relance: ' + data.error);
+            retryBtn.disabled = false;
+            retryBtn.innerHTML = '🔄 Relancer';
+        }
+    })
+    .catch(err => {
+        console.error('Erreur retry:', err);
+        alert('Erreur lors de la relance');
+        retryBtn.disabled = false;
+        retryBtn.innerHTML = '🔄 Relancer';
+    });
+}
+
+// Charger au démarrage
+refreshFailedJobs();
+
+// Rafraîchir toutes les 30 secondes
+setInterval(refreshFailedJobs, 30000);
+</script>
+{% endblock %}

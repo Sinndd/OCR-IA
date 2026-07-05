@@ -1,0 +1,34 @@
+{
+  "client_id": "CLIENT_A",
+  "origine": "CLIENT_A",
+  "date_creation": "2025-11-06T14:23:10.358244",
+  "date_derniere_modification": "2025-11-06T14:30:44.406689",
+  "nb_exemples": 2,
+  "patterns_detectes": {
+    "mots_cles_detection": [
+      "BLAGNAC ",
+      "CONTACT FOURNISSEUR\nFOURNISSEUR SUD CHAPONNAY\n",
+      "COR022\n",
+      "FR84351442082\n",
+      "IME LA BATIE",
+      "CLIENT A\nIME LA BATIE\n1-STOCKAGE\nMONT SALOMON\nCEDEX 001 E\nVIENNE",
+      "NR - CLIENT A RESTAURATION",
+      "OPTION 1",
+      "FOURNISSEUR 2024",
+      "TD-U-07"
+    ],
+    "format_dates": [
+      "\\d{2}/\\d{2}/\\d{4}"
+    ],
+    "codes_articles_typiques": [],
+    "origines": [
+      "CLIENT_A"
+    ],
+    "filename_convention": null
+  },
+  "statistiques": {
+    "nb_bc_traites": 28,
+    "taux_reussite": 1.0,
+    "derniere_utilisation": "2026-01-13T12:14:15.109202"
+  }
+}

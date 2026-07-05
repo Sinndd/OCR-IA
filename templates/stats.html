@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+
+{% block title %}Statistiques - OCR{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 1400px; margin: 0 auto; padding: 2rem;">
+    <div class="header" style="margin-bottom: 2rem;">
+        <h1 style="font-size: 2rem; font-weight: 700; color: #ffffff; margin-bottom: 0.5rem;">
+            📊 Statistiques en temps réel
+        </h1>
+        <p style="color: #888; font-size: 0.95rem;">
+            Performances et métriques d'extraction
+        </p>
+    </div>
+
+    <!-- Cartes de statistiques globales -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+        <!-- Total Extractions -->
+        <div class="card" style="background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%); border: none;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="font-size: 2.5rem;">📦</div>
+                <div>
+                    <div style="font-size: 2rem; font-weight: 700; color: #ffffff;">
+                        {{ stats.global_stats.total_extractions }}
+                    </div>
+                    <div style="color: rgba(255,255,255,0.8); font-size: 0.9rem;">
+                        Extractions totales
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Produits -->
+        <div class="card" style="background: linear-gradient(135deg, #10b981 0%, #34d399 100%); border: none;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="font-size: 2.5rem;">🛒</div>
+                <div>
+                    <div style="font-size: 2rem; font-weight: 700; color: #ffffff;">
+                        {{ stats.global_stats.total_products }}
+                    </div>
+                    <div style="color: rgba(255,255,255,0.8); font-size: 0.9rem;">
+                        Produits extraits
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Validations -->
+        <div class="card" style="background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%); border: none;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="font-size: 2.5rem;">✅</div>
+                <div>
+                    <div style="font-size: 2rem; font-weight: 700; color: #ffffff;">
+                        {{ stats.global_stats.total_validated }}
+                    </div>
+                    <div style="color: rgba(255,255,255,0.8); font-size: 0.9rem;">
+                        Validations
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Corrections -->
+        <div class="card" style="background: linear-gradient(135deg, #ef4444 0%, #f87171 100%); border: none;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="font-size: 2.5rem;">✏️</div>
+                <div>
+                    <div style="font-size: 2rem; font-weight: 700; color: #ffffff;">
+                        {{ stats.global_stats.total_corrected }}
+                    </div>
+                    <div style="color: rgba(255,255,255,0.8); font-size: 0.9rem;">
+                        Corrections
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistiques par client -->
+    <div class="card" style="margin-bottom: 2rem;">
+        <h2 style="font-size: 1.5rem; font-weight: 600; color: #ffffff; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+            <span>📈</span> Performance par client
+        </h2>
+        
+        {% if stats.clients %}
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: separate; border-spacing: 0;">
+                <thead>
+                    <tr style="background: #1a1a1a;">
+                        <th style="padding: 1rem; text-align: left; color: #888; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">Client</th>
+                        <th style="padding: 1rem; text-align: center; color: #888; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">Extractions</th>
+                        <th style="padding: 1rem; text-align: center; color: #888; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">Produits</th>
+                        <th style="padding: 1rem; text-align: center; color: #888; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">Validés</th>
+                        <th style="padding: 1rem; text-align: center; color: #888; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">Corrigés</th>
+                        <th style="padding: 1rem; text-align: center; color: #888; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">Taux de réussite</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for client_id, client_stats in stats.clients.items() %}
+                    <tr style="border-top: 1px solid #2a2a2a;">
+                        <td style="padding: 1rem; color: #ffffff; font-weight: 500;">
+                            {{ client_id }}
+                        </td>
+                        <td style="padding: 1rem; text-align: center; color: #ffffff;">
+                            {{ client_stats.extractions }}
+                        </td>
+                        <td style="padding: 1rem; text-align: center; color: #ffffff;">
+                            {{ client_stats.products }}
+                        </td>
+                        <td style="padding: 1rem; text-align: center;">
+                            <span style="color: #10b981; font-weight: 600;">{{ client_stats.validated }}</span>
+                        </td>
+                        <td style="padding: 1rem; text-align: center;">
+                            <span style="color: #f59e0b; font-weight: 600;">{{ client_stats.corrected }}</span>
+                        </td>
+                        <td style="padding: 1rem; text-align: center;">
+                            {% set total_processed = client_stats.validated + client_stats.corrected %}
+                            {% set success_rate = ((client_stats.validated / total_processed) * 100) if total_processed > 0 else 0 %}
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                                <div style="background: #1a1a1a; border-radius: 999px; height: 8px; width: 100px; overflow: hidden;">
+                                    <div style="background: {% if success_rate >= 80 %}#10b981{% elif success_rate >= 50 %}#f59e0b{% else %}#ef4444{% endif %}; height: 100%; width: {{ success_rate }}%; transition: width 0.3s;"></div>
+                                </div>
+                                <span style="color: #ffffff; font-weight: 600; font-size: 0.9rem;">{{ "%.1f"|format(success_rate) }}%</span>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 3rem; color: #666;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">📊</div>
+            <p>Aucune statistique disponible pour le moment</p>
+            <p style="font-size: 0.9rem; margin-top: 0.5rem;">Effectuez des extractions pour voir les statistiques</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Historique récent -->
+    <div class="card">
+        <h2 style="font-size: 1.5rem; font-weight: 600; color: #ffffff; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+            <span>🕐</span> Historique récent
+        </h2>
+        
+        {% if stats.extractions %}
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+            {% for extraction in stats.extractions[-10:]|reverse %}
+            <div style="background: #1a1a1a; border-radius: 0.5rem; padding: 1rem; border-left: 3px solid #4f46e5;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="color: #ffffff; font-weight: 500; margin-bottom: 0.25rem;">
+                            {{ extraction.filename }}
+                        </div>
+                        <div style="color: #888; font-size: 0.85rem;">
+                            {{ extraction.client }} • {{ extraction.products }} produits
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="color: #888; font-size: 0.85rem; margin-bottom: 0.25rem;">
+                            {{ extraction.timestamp }}
+                        </div>
+                        {% if extraction.status == 'validated' %}
+                        <span style="background: #10b98120; color: #10b981; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.85rem; font-weight: 500;">✅ Validé</span>
+                        {% elif extraction.status == 'corrected' %}
+                        <span style="background: #f59e0b20; color: #f59e0b; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.85rem; font-weight: 500;">✏️ Corrigé</span>
+                        {% else %}
+                        <span style="background: #4f46e520; color: #4f46e5; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.85rem; font-weight: 500;">⏳ En attente</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 3rem; color: #666;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🕐</div>
+            <p>Aucun historique disponible</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .card {
+        background: #151515;
+        border: 1px solid #2a2a2a;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .card:hover {
+        border-color: #4f46e5;
+        box-shadow: 0 0 20px rgba(79, 70, 229, 0.1);
+    }
+
+    table tr {
+        transition: background 0.2s;
+    }
+
+    table tr:hover {
+        background: #1a1a1a;
+    }
+</style>
+{% endblock %}

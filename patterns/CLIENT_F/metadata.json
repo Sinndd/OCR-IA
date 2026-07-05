@@ -1,0 +1,41 @@
+{
+  "client_id": "CLIENT_F",
+  "description": "Format cascade ASCII avec caractères box-drawing",
+  "format_type": "cascade_ascii",
+  "structure": {
+    "header": "+- COMMANDE ----------------------------------------+",
+    "body": "Chaque ligne commence par | avec flèches -> pour sous-éléments",
+    "sections": [
+      "REF-CMD et DATE",
+      "SUPPLIER avec sous-éléments -> SITE et -> ZIP",
+      "TRANSPORT et INCOTERM",
+      "NOTES",
+      "ITEMS avec structure | [NN] CODE puis |     -> description puis |        QTY/DLV"
+    ],
+    "footer": "+---------------------------------------------------+"
+  },
+  "patterns": {
+    "ref_cmd": "\\| REF-CMD\\s+:\\s+(\\d+)",
+    "date": "\\| DATE\\s+:\\s+([\\d/]+)",
+    "supplier": "\\| SUPPLIER\\s+:\\s+([A-Z]+(?:[\\s-][A-Z]+)*)",
+    "site": "\\|\\s+-> SITE\\s+:\\s+(\\d+)",
+    "zip": "\\|\\s+-> ZIP\\s+:\\s+(\\d{5})",
+    "transport": "\\| TRANSPORT\\s+:\\s+([A-Z]+)",
+    "incoterm": "\\| INCOTERM\\s+:\\s+([A-Z/]{3})",
+    "item_header": "\\| \\[(\\d{2})\\]\\s+(\\w+)",
+    "item_desc": "\\|\\s+->\\s+(.+)",
+    "item_qty": "\\|\\s+QTY:\\s+(\\d+)\\s+(\\w+)\\s+\\|\\s+DLV:\\s+([\\d/]+)"
+  },
+  "detection_keywords": [
+    "+- COMMANDE",
+    "| REF-CMD",
+    "| SUPPLIER",
+    "-> SITE",
+    "+- ITEMS",
+    "|     ->",
+    "|        QTY:"
+  ],
+  "examples_count": 3,
+  "last_updated": "2026-03-02",
+  "bc_reference": "BC_8662571_StyleF"
+}

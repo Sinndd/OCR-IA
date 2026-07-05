@@ -1,0 +1,78 @@
+RÉQUISITION D'ACHAT
+Date d'impression: 02/03/2026 16:01
+N° Réquisition:
+682671
+Date:
+05/02/2026
+Date livraison:
+12/02/2026
+Demandeur:
+4137
+Fournisseur suggéré:
+AIXEN-PROVENCE
+Code postal:
+44000
+Mode livraison:
+EXPRESS
+Type commande:
+URGENT
+Incoterm:
+FCA
+Devise:
+USD
+Priorité:
+CRITIQUE
+Validation requise:
+[ ] Chef de service
+[ ] Achats
+[ ] Direction
+Observations: Standard - Respecter normes CE
+Emballage individuel requis
+Articles demandés:
+Ligne
+Référence
+Libellé
+Quantité
+Unité
+Date livr.
+1
+7004
+DÉSINFECTANT CHLORHEXIDINE 500ml
+127
+L
+12/02/2026
+2
+71487
+PANSEMENT ADHÉSIF 6cmx5m x10
+405
+SET
+12/02/2026
+3
+698624
+THERMOMÈTRE DIGITAL Sans contact
+311
+M³
+12/02/2026
+4
+142692
+THERMOMÈTRE DIGITAL Sans contact
+277
+PKG
+12/02/2026
+5
+4878
+AMOXICILLINE 1g - Flacon 12 gél
+99
+L
+12/02/2026
+6
+872081
+PANSEMENT ADHÉSIF 6cmx5m x10
+431
+M
+12/02/2026
+SIGNATURES:
+Demandeur:
+Responsable achats:
+Directeur:
+Page 1 - Style H

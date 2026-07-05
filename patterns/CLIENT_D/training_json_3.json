@@ -1,0 +1,43 @@
+{
+  "commandes": [
+    {
+      "entete": {
+        "origine": "CLIENT_D",
+        "codeEtablissement": "1449",
+        "codeFournisseur": "BORDEAUX",
+        "codePostal": "75001",
+        "numCommande": "2986847",
+        "idCommande": "1449-2986847-3",
+        "dateCommande": 20260207,
+        "heureCommande": "",
+        "dateLivraison": 20260222,
+        "commentaireEntete": "Commande groupée - Multi-sites\nFacturation centralisée",
+        "modeTransport": "L",
+        "typeCommande": "220",
+        "origineCommande": "D",
+        "version": "ACE"
+      },
+      "detailCommande": {
+        "produits": [
+          {
+            "numLigne": 1,
+            "codeArticle": "104135",
+            "codeArticlePerso": "104135",
+            "libelle": "VERIN PNEUMATIQUE ISO-6431 D63",
+            "quantite": 298.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 2,
+            "codeArticle": "306614",
+            "codeArticlePerso": "306614",
+            "libelle": "CAPTEUR PROXIMITE M18 PNP-NO",
+            "quantite": 187.0,
+            "commentaire": ""
+          }
+        ],
+        "nbLignes": 2
+      }
+    }
+  ]
+}

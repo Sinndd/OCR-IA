@@ -1,0 +1,36 @@
+{
+  "commandes": [
+    {
+      "entete": {
+        "origine": "CLIENT_F",
+        "codeEtablissement": "90786",
+        "codeFournisseur": "MONTPELLIER",
+        "codePostal": "75001",
+        "numCommande": "8662571",
+        "idCommande": "90786-8662571-1",
+        "dateCommande": 20260213,
+        "heureCommande": "",
+        "dateLivraison": 20260216,
+        "commentaireEntete": "Commande groupée - Multi-sites\nFacturation centralisée",
+        "modeTransport": "L",
+        "typeCommande": "220",
+        "origineCommande": "D",
+        "version": "ACE"
+      },
+      "detailCommande": {
+        "produits": [
+          {
+            "numLigne": 1,
+            "codeArticle": "640353",
+            "codeArticlePerso": "640353",
+            "libelle": "JOINT HYDRAULIQUE NBR-70 Shore",
+            "quantite": 201.0,
+            "commentaire": ""
+          }
+        ],
+        "nbLignes": 1
+      }
+    }
+  ]
+}
+

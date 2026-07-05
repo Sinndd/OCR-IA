@@ -111,7 +111,7 @@ class PatternTrainer:
             print(f"[1/1] Traitement de {bc_path.name}...")
             
             # 1. Extraction texte du BC (une seule fois)
-            bc_text = self._extract_text_from_pdf(bc_path)
+            bc_text = self._extract_text(bc_path)
             if not bc_text:
                 print(f"  ❌ Impossible d'extraire le texte")
                 return False
@@ -177,7 +177,7 @@ class PatternTrainer:
                         print(f"  ✓ Convention détectée: {filename_pattern}")
                 
                 # 1. Extraction texte du BC
-                bc_text = self._extract_text_from_pdf(bc_path)
+                bc_text = self._extract_text(bc_path)
                 if not bc_text:
                     print(f"  ❌ Impossible d'extraire le texte")
                     continue
@@ -265,7 +265,7 @@ class PatternTrainer:
         print(f"\n🔧 Ajout d'un exemple au client {client_id}...")
         
         # Extraction texte
-        bc_text = self._extract_text_from_pdf(bc_sample)
+        bc_text = self._extract_text(bc_sample)
         if not bc_text:
             print(f"❌ Impossible d'extraire le texte")
             return False
@@ -305,6 +305,20 @@ class PatternTrainer:
         
         return True
     
+    def _extract_text(self, file_path: Path) -> str:
+        """Extrait le texte d'un fichier (PDF, HTML ou TXT)"""
+        ext = file_path.suffix.lower()
+        
+        if ext == '.pdf':
+            return self._extract_text_from_pdf(file_path)
+        elif ext in ['.html', '.htm']:
+            return self._extract_text_from_html(file_path)
+        elif ext == '.txt':
+            return self._extract_text_from_txt(file_path)
+        else:
+            print(f"⚠️  Format non supporté: {ext}")
+            return ""
+    
     def _extract_text_from_pdf(self, pdf_path: Path) -> str:
         """Extrait le texte d'un PDF"""
         try:
@@ -314,6 +328,42 @@ class PatternTrainer:
             return text
         except Exception as e:
             print(f"❌ Erreur extraction PDF: {e}")
+            return ""
+    
+    def _extract_text_from_html(self, html_path: Path) -> str:
+        """Extrait le texte d'un fichier HTML"""
+        try:
+            with open(html_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # Supprimer les scripts et styles
+            import re
+            content = re.sub(r'<script[^>]*>.*?</script>', '', content, flags=re.DOTALL | re.IGNORECASE)
+            content = re.sub(r'<style[^>]*>.*?</style>', '', content, flags=re.DOTALL | re.IGNORECASE)
+            
+            # Supprimer les balises HTML
+            content = re.sub(r'<[^>]+>', ' ', content)
+            
+            # Décoder les entités HTML
+            import html as html_module
+            content = html_module.unescape(content)
+            
+            # Nettoyer les espaces multiples
+            content = re.sub(r'\s+', ' ', content)
+            content = content.strip()
+            
+            return content
+        except Exception as e:
+            print(f"❌ Erreur extraction HTML: {e}")
+            return ""
+    
+    def _extract_text_from_txt(self, txt_path: Path) -> str:
+        """Extrait le texte d'un fichier TXT"""
+        try:
+            with open(txt_path, 'r', encoding='utf-8') as f:
+                return f.read()
+        except Exception as e:
+            print(f"❌ Erreur extraction TXT: {e}")
             return ""
     
     def _detect_filename_convention(self, filename: str) -> str:

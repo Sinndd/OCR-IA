@@ -1,0 +1,40 @@
+{
+  "commandes": [
+    {
+      "entete": {
+        "origine": "CLIENT_C",
+        "codeEtablissement": "ETAB-61",
+        "codeFournisseur": "856414",
+        "codePostal": "94150",
+        "numCommande": "856414-1480012-1",
+        "idCommande": "856414-1480012-1",
+        "dateCommande": 20260106,
+        "dateLivraison": 20260113,
+        "commentaireEntete": "Livraison fractionnée\nFragile !",
+        "modeTransport": "L",
+        "typeCommande": "220",
+        "origineCommande": "D",
+        "version": "ACE"
+      },
+      "detailCommande": {
+        "produits": [
+          {
+            "numLigne": 1,
+            "codeArticle": "613980",
+            "libelle": "Sauce Tomate Basilic",
+            "quantite": 27.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 2,
+            "codeArticle": "305096",
+            "libelle": "Pâtes Spaghetti 500g",
+            "quantite": 63.0,
+            "commentaire": ""
+          }
+        ],
+        "nbLignes": 2
+      }
+    }
+  ]
+}

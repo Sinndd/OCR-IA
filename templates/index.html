@@ -30,13 +30,6 @@
         margin-top: 3rem;
     }
 
-    .upload-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 2rem;
-        margin-bottom: 2rem;
-    }
-
     .drop-zone {
         border: 2px dashed var(--border-color);
         border-radius: 1rem;
@@ -120,56 +113,11 @@
         opacity: 0.8;
     }
 
-    .client-select-card {
-        padding: 2rem;
-    }
-
-    .client-select-card h3 {
-        font-size: 1.3rem;
-        margin-bottom: 1rem;
-    }
-
-    .select-wrapper {
-        position: relative;
-    }
-
-    select {
-        width: 100%;
-        padding: 1rem;
-        background: var(--bg-card-hover);
-        border: 1px solid var(--border-color);
-        border-radius: 0.5rem;
-        color: var(--text-primary);
-        font-size: 1rem;
-        cursor: pointer;
-        transition: var(--transition);
-        appearance: none;
-    }
-
-    select:focus {
-        outline: none;
-        border-color: var(--accent);
-    }
-
-    .select-wrapper::after {
-        content: '▼';
-        position: absolute;
-        right: 1rem;
-        top: 50%;
-        transform: translateY(-50%);
-        pointer-events: none;
-        color: var(--text-secondary);
-    }
-
     .client-info {
         margin-top: 1.5rem;
         padding: 1rem;
         background: var(--bg-card-hover);
         border-radius: 0.5rem;
-        display: none;
-    }
-
-    .client-info.active {
         display: block;
     }
 
@@ -204,10 +152,6 @@
     }
 
     @media (max-width: 968px) {
-        .upload-grid {
-            grid-template-columns: 1fr;
-        }
-
         .hero h1 {
             font-size: 2rem;
         }
@@ -219,46 +163,31 @@
 <div class="container">
     <div class="hero">
         <h1>🚀 Extraction Intelligente</h1>
-        <p>Uploadez vos bons de commande PDF et laissez l'IA extraire automatiquement les données structurées</p>
+        <p>Uploadez vos bons de commande (PDF, HTML, TXT) et laissez l'IA extraire automatiquement les données structurées</p>
     </div>
 
     <div class="upload-section">
         <form id="uploadForm" method="POST" action="{{ url_for('upload_file') }}" enctype="multipart/form-data">
-            <div class="upload-grid">
-                <div class="drop-zone" id="dropZone">
-                    <div class="drop-zone-icon">📁</div>
-                    <h3>Glisser-déposer vos fichiers</h3>
-                    <p>ou cliquez pour sélectionner</p>
-                    <input type="file" id="fileInput" name="files" multiple accept=".pdf" required>
-                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('fileInput').click()">
-                        Parcourir les fichiers
-                    </button>
-                </div>
-
-                <div class="card client-select-card">
-                    <h3>👤 Sélectionner le client</h3>
-                    <div class="select-wrapper">
-                        <select id="clientSelect" name="client_id" required>
-                            <option value="">-- Choisir un client --</option>
-                            {% for client in clients %}
-                            <option value="{{ client }}">{{ client }}</option>
-                            {% endfor %}
-                        </select>
+            <div class="drop-zone" id="dropZone" style="max-width: 600px; margin: 0 auto;">
+                <div class="drop-zone-icon">📁</div>
+                <h3>Glisser-déposer vos fichiers</h3>
+                <p>ou cliquez pour sélectionner</p>
+                <input type="file" id="fileInput" name="files" multiple accept=".pdf,.html,.htm,.txt" required>
+                <button type="button" class="btn btn-secondary" onclick="document.getElementById('fileInput').click()">
+                    Parcourir les fichiers
+                </button>
+                <div class="client-info" id="clientInfo" style="margin-top: 1.5rem;">
+                    <div class="info-row">
+                        <span class="info-label">Type d'extraction</span>
+                        <span class="info-value">Intelligente (auto-détection client)</span>
                     </div>
-                    
-                    <div class="client-info" id="clientInfo">
-                        <div class="info-row">
-                            <span class="info-label">Type d'extraction</span>
-                            <span class="info-value">Intelligente</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Moteur</span>
-                            <span class="info-value">Multi-exemples</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Modèle LLM</span>
-                            <span class="info-value">Qwen 2.5 (7B)</span>
-                        </div>
+                    <div class="info-row">
+                        <span class="info-label">Moteur</span>
+                        <span class="info-value">Multi-exemples</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Modèle LLM</span>
+                        <span class="info-value">Qwen 2.5 (7B)</span>
                     </div>
                 </div>
             </div>
@@ -369,40 +298,74 @@
         return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
     }
 
-    clientSelect.addEventListener('change', () => {
-        if (clientSelect.value) {
-            clientInfo.classList.add('active');
-        } else {
-            clientInfo.classList.remove('active');
-        }
-        checkFormValidity();
-    });
-
     function checkFormValidity() {
-        submitBtn.disabled = !(selectedFiles.length > 0 && clientSelect.value);
+        submitBtn.disabled = !(selectedFiles.length > 0);
     }
 
-    uploadForm.addEventListener('submit', (e) => {
+    uploadForm.addEventListener('submit', async (e) => {
+        e.preventDefault(); // Empêcher la soumission normale
+        
         // Afficher la progression
         progressContainer.classList.add('active');
         submitBtn.disabled = true;
         submitBtn.textContent = '⏳ Traitement en cours...';
         
-        // Simuler la progression
+        // Progression réaliste : monte progressivement jusqu'à 95%
         let progress = 0;
+        let speed = 1;
+        
         const progressInterval = setInterval(() => {
-            progress += Math.random() * 15;
-            if (progress > 90) progress = 90;
+            // Ralentir progressivement
+            if (progress < 30) {
+                speed = 2;
+            } else if (progress < 60) {
+                speed = 1;
+            } else if (progress < 85) {
+                speed = 0.5;
+            } else {
+                speed = 0.1;
+            }
+            
+            progress += speed;
+            if (progress > 95) progress = 95; // Bloquer à 95% en attendant la réponse
+            
             progressFill.style.width = progress + '%';
             progressText.textContent = `Extraction en cours... ${Math.round(progress)}%`;
-        }, 500);
+        }, 300);
         
-        // Nettoyer après 30 secondes max (au cas où)
-        setTimeout(() => {
+        try {
+            // Envoyer le formulaire via AJAX
+            const formData = new FormData(uploadForm);
+            const response = await fetch(uploadForm.action, {
+                method: 'POST',
+                body: formData
+            });
+            
+            // Arrêter l'animation
             clearInterval(progressInterval);
-        }, 30000);
-        
-        // Laisser le formulaire se soumettre normalement
+            
+            if (response.ok) {
+                // Passer à 100%
+                progress = 100;
+                progressFill.style.width = '100%';
+                progressText.textContent = 'Extraction terminée ! 100%';
+                
+                // Attendre 500ms pour montrer le 100% puis rediriger
+                setTimeout(() => {
+                    // Recharger la page - Flask aura mis les résultats en session
+                    window.location.href = '/results';
+                }, 500);
+            } else {
+                throw new Error('Erreur serveur');
+            }
+            
+        } catch (error) {
+            clearInterval(progressInterval);
+            progressText.textContent = 'Erreur lors du traitement';
+            submitBtn.disabled = false;
+            submitBtn.textContent = '⚡ Lancer l\'extraction';
+            console.error('Erreur:', error);
+        }
     });
 </script>
 {% endblock %}

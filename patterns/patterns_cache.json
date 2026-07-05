@@ -1,5 +1,5 @@
 {
-  "CLIENT_API": {
+  "CLIENT_CLIENT_B": {
     "structure": {},
     "field_types": {
       "origine": "str",
@@ -9,7 +9,7 @@
       "numCommande": "str",
       "idCommande": "str",
       "dateCommande": "int",
-      "heureCommande": "int",
+      "heureCommande": "str",
       "dateLivraison": "int",
       "commentaireEntete": "str",
       "modeTransport": "str",
@@ -20,30 +20,33 @@
       "produit.codeArticle": "str",
       "produit.libelle": "str",
       "produit.quantite": "float",
-      "produit.commentaire": "str"
+      "produit.commentaire": "str",
+      "produit.codeArticlePerso": "str"
     },
     "common_fields": [
-      "entete.heureCommande",
+      "entete.version",
+      "entete.codeEtablissement",
       "entete.commentaireEntete",
-      "entete.codePostal",
       "entete.codeFournisseur",
-      "entete.modeTransport",
-      "entete.origineCommande",
       "entete.idCommande",
+      "entete.codePostal",
+      "entete.modeTransport",
+      "entete.dateLivraison",
+      "entete.dateCommande",
+      "entete.origineCommande",
+      "entete.numCommande",
       "entete.typeCommande",
       "entete.origine",
-      "entete.codeEtablissement",
-      "entete.dateLivraison",
-      "entete.numCommande",
-      "entete.version",
-      "entete.dateCommande",
       "produit.numLigne",
       "produit.codeArticle",
       "produit.libelle",
       "produit.quantite",
       "produit.commentaire"
     ],
-    "optional_fields": [],
+    "optional_fields": [
+      "entete.heureCommande",
+      "produit.codeArticlePerso"
+    ],
     "field_constraints": {}
   }
 }

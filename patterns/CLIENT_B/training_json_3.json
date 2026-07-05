@@ -1,0 +1,48 @@
+{
+  "commandes": [
+    {
+      "entete": {
+        "origine": "CLIENT_B",
+        "codeEtablissement": "02313",
+        "codeFournisseur": "CHAPONNAY",
+        "codePostal": "69970",
+        "numCommande": "02313-7992-3",
+        "idCommande": "02313-7992-3",
+        "dateCommande": 20240108,
+        "heureCommande": 64000,
+        "dateLivraison": 20240115,
+        "commentaireEntete": "",
+        "modeTransport": "L",
+        "typeCommande": "220",
+        "origineCommande": "D",
+        "version": "ACE"
+      },
+      "detailCommande": {
+        "produits": [
+          {
+            "numLigne": 1,
+            "codeArticle": "32732",
+            "libelle": "[A] Cornichons fins (80/119) (Import) (LES JARDINS D'A)",
+            "quantite": 3.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 2,
+            "codeArticle": "153470",
+            "libelle": "[A] Duo cour.jaun/vert.Minute®2,5K (UE) (BONDUELLE)",
+            "quantite": 40.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 3,
+            "codeArticle": "114820",
+            "libelle": "[A] Farandole de champignons 1K (Import) (METRO CHEF)",
+            "quantite": 20.0,
+            "commentaire": ""
+          }
+        ],
+        "nbLignes": 3
+      }
+    }
+  ]
+}

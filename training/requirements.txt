@@ -1,0 +1,21 @@
+# Dépendances pour Fine-tuning, RAG et Pipeline OCR
+# INSTALLATION PAR ÉTAPES (pour éviter les conflits)
+
+# === ÉTAPE 1: Base (obligatoire) ===
+# pip install pymupdf requests
+pymupdf
+requests
+
+# === ÉTAPE 2: RAG avec FAISS (plus léger que chromadb) ===
+# pip install sentence-transformers faiss-cpu
+sentence-transformers
+faiss-cpu
+
+# === ÉTAPE 3: Fine-tuning (optionnel, GPU requis) ===
+# pip install transformers datasets peft accelerate torch
+# transformers
+# datasets
+# peft
+# accelerate
+# torch
+tqdm

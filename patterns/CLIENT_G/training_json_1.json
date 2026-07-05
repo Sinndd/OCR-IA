@@ -1,0 +1,67 @@
+{
+  "commandes": [
+    {
+      "entete": {
+        "origine": "CLIENT_G",
+        "codeEtablissement": "8563",
+        "codeFournisseur": "PERPIGNAN",
+        "codePostal": "75001",
+        "numCommande": "8347075",
+        "idCommande": "8563-8347075-1",
+        "dateCommande": 20260206,
+        "heureCommande": "",
+        "dateLivraison": 20260213,
+        "commentaireEntete": "URGENT - Priorité production\nLivraison directe atelier",
+        "modeTransport": "L",
+        "typeCommande": "220",
+        "origineCommande": "D",
+        "version": "ACE"
+      },
+      "detailCommande": {
+        "produits": [
+          {
+            "numLigne": 1,
+            "codeArticle": "8644",
+            "codeArticlePerso": "8644",
+            "libelle": "PCB 4-LAYERS FR-4 1.6mm (Ref: AZ-9012)",
+            "quantite": 260.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 2,
+            "codeArticle": "79898",
+            "codeArticlePerso": "79898",
+            "libelle": "PCB 4-LAYERS FR-4 1.6mm (Ref: AZ-9012)",
+            "quantite": 298.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 3,
+            "codeArticle": "697280",
+            "codeArticlePerso": "697280",
+            "libelle": "CONNECTEUR USB-C Femelle 24P SMD",
+            "quantite": 266.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 4,
+            "codeArticle": "49646",
+            "codeArticlePerso": "49646",
+            "libelle": "CONNECTEUR USB-C Femelle 24P SMD",
+            "quantite": 128.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 5,
+            "codeArticle": "74410",
+            "codeArticlePerso": "74410",
+            "libelle": "CONNECTEUR USB-C Femelle 24P SMD",
+            "quantite": 157.0,
+            "commentaire": ""
+          }
+        ],
+        "nbLignes": 5
+      }
+    }
+  ]
+}

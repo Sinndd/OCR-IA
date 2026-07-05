@@ -1,0 +1,45 @@
+BON DE COMMANDE
+N° Cde:
+1480012
+Date:
+06/01/2026
+Fournisseur:
+856414
+Type:
+220 / L
+Etablissement: ETAB-61
+CP: 94150
+Note:
+Livraison fractionnée
+Fragile !
+Lig.
+Code
+Libellé (Nourriture)
+Qté
+Date Liv.
+1
+613980
+Sauce Tomate Basilic
+27
+13/01/2026
+2
+305096
+Pâtes Spaghetti 500g
+63
+13/01/2026
+3
+289006
+Sauce Tomate Basilic
+97
+21/01/2026
+4
+604613
+Moutarde de Dijon
+28
+21/01/2026
+5
+262555
+Sauce Tomate Basilic
+1
+21/01/2026
+Page 1 - Style A

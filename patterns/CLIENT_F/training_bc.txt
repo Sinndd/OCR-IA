@@ -1,0 +1,32 @@
++- COMMANDE ----------------------------------------+
+| REF-CMD    : 8662571
+| DATE       : 13/02/2026
+| DELIVERY   : 20/02/2026
+| TYPE       : STANDARD | PRIO: NORMALE
+| -------------------------------------------------
+| SUPPLIER   : MONTPELLIER
+|   -> SITE  : 90786
+|   -> ZIP   : 75001
+| -------------------------------------------------
+| TRANSPORT  : ROUTE
+| INCOTERM   : CIP
+| CURRENCY   : GBP
+| -------------------------------------------------
+| NOTES      : Commande groupée - Multi-sites
+Facturation centralisée
++---------------------------------------------------+
++- ITEMS ------------------------------------------+
+| [01] 640353
+|     -> JOINT HYDRAULIQUE NBR-70 Shore
+|        QTY: 201 PKG  |  DLV: 16/02/2026
+|
+| [02] 698673
+|     -> BOBINE CUIVRE D2.5mm 500m
+|        QTY: 354 UNIT  |  DLV: 20/02/2026
+|
+| [03] 8050
+|     -> COURROIE TRAPÉZOÏDALE SPC-3550
+|        QTY: 326 L  |  DLV: 28/02/2026
+|
++---------------------------------------------------+
+Page 1 - Style F

@@ -1,0 +1,37 @@
+{
+  "client_id": "CLIENT_E",
+  "description": "Liste hiérarchique avec puces et sous-niveaux",
+  "format_type": "liste_hierarchique",
+  "structure": {
+    "header": "> ORDRE DE COMMANDE",
+    "sections": [
+      "> RÉFÉRENCE COMMANDE (avec sous-items -)",
+      "> DONNÉES FOURNISSEUR (avec sous-items -> pour l'établissement et code postal)",
+      "> MODALITÉS D'EXPÉDITION",
+      "> ARTICLES COMMANDES (liste avec crochets [N] et détails sur ligne suivante avec ->)"
+    ],
+    "item_format": "liste_avec_indentation_et_fleches"
+  },
+  "patterns": {
+    "numero_commande": "- Numéro:\\s*(\\d+)",
+    "date": "- Date:\\s*([\\d/]+)",
+    "type": "- Type:\\s*([A-Z]+)",
+    "fournisseur": "- Code:\\s*([A-Z]+(?:[\\s-][A-Z]+)*)",
+    "etablissement": "-> Etablissement:\\s*(\\d+)",
+    "code_postal": "-> Code postal:\\s*(\\d{5})",
+    "transport": "- Transport:\\s*([A-Z]+)",
+    "article_ligne": "\\[(\\d+)\\]\\s+(.+)",
+    "article_details": "-> Code:\\s*(\\w+)\\s+\\|\\s+Quantite:\\s*(\\d+)\\s+(\\w+)\\s+\\|\\s+Livraison:\\s*([\\d/]+)"
+  },
+  "detection_keywords": [
+    "> ORDRE DE COMMANDE",
+    "> RÉFÉRENCE COMMANDE",
+    "> DONNÉES FOURNISSEUR",
+    "-> Etablissement:",
+    "> ARTICLES COMMANDES",
+    "-> Code:"
+  ],
+  "examples_count": 3,
+  "last_updated": "2026-03-02",
+  "bc_reference": "BC_4394297_StyleE"
+}

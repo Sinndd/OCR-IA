@@ -1,0 +1,62 @@
+{
+  "commandes": [
+    {
+      "entete": {
+        "origine": "UNKNOWN",
+        "codeEtablissement": "21174",
+        "codeFournisseur": "ANNECY",
+        "codePostal": "38000",
+        "numCommande": "21174-3556556-1",
+        "idCommande": "21174-3556556-1",
+        "dateCommande": 20260228,
+        "heureCommande": "102714",
+        "dateLivraison": 20260307,
+        "commentaireEntete": "CRITIQUE\nContrôle qualité renforcé",
+        "modeTransport": "L",
+        "typeCommande": "220",
+        "origineCommande": "D",
+        "version": "ACE"
+      },
+      "detailCommande": {
+        "produits": [
+          {
+            "numLigne": 1,
+            "codeArticle": "12863",
+            "libelle": "AMOXICILLINE 1g - Flacon 12 gél",
+            "quantite": 79.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 2,
+            "codeArticle": "35318",
+            "libelle": "PANSEMENT ADHÉSIF 6cmx5m x10",
+            "quantite": 260.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 3,
+            "codeArticle": "7251",
+            "libelle": "PANSEMENT ADHÉSIF 6cmx5m x10",
+            "quantite": 125.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 4,
+            "codeArticle": "65869",
+            "libelle": "SERINGUE STÉRILE 5ml Luer-Lock",
+            "quantite": 203.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 5,
+            "codeArticle": "75219",
+            "libelle": "PARACÉTAMOL 500mg - Boîte 16 cp",
+            "quantite": 54.0,
+            "commentaire": ""
+          }
+        ],
+        "nbLignes": 5
+      }
+    }
+  ]
+}

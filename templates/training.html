@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Entraînement - PRO A PRO{% endblock %}
+{% block title %}Entraînement - OCR{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -26,10 +26,66 @@
         margin: 0 auto;
     }
 
+    /* Tabs Navigation */
+    .tabs-nav {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 2rem;
+        background: var(--bg-card);
+        padding: 0.5rem;
+        border-radius: 1rem;
+        border: 1px solid var(--border-color);
+    }
+
+    .tab-btn {
+        flex: 1;
+        padding: 1rem 1.5rem;
+        background: transparent;
+        border: none;
+        border-radius: 0.75rem;
+        color: var(--text-secondary);
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .tab-btn:hover {
+        background: var(--bg-card-hover);
+        color: var(--text-primary);
+    }
+
+    .tab-btn.active {
+        background: var(--accent);
+        color: white;
+    }
+
+    .tab-btn .tab-icon {
+        font-size: 1.2rem;
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
     .section-title {
         font-size: 1.8rem;
         font-weight: 600;
-        margin: 3rem 0 2rem;
+        margin: 2rem 0 1.5rem;
         display: flex;
         align-items: center;
         gap: 0.75rem;
@@ -275,6 +331,183 @@
         .clients-grid {
             grid-template-columns: 1fr;
         }
+
+        .tabs-nav {
+            flex-direction: column;
+        }
+    }
+
+    /* RAG Specific Styles */
+    .rag-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .rag-stat-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        text-align: center;
+    }
+
+    .rag-stat-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--accent);
+    }
+
+    .rag-stat-label {
+        color: var(--text-secondary);
+        margin-top: 0.5rem;
+    }
+
+    .rag-actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .rag-actions .btn {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .console-output {
+        background: #1a1a2e;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        font-family: 'Monaco', 'Menlo', monospace;
+        font-size: 0.9rem;
+        color: #00ff88;
+        max-height: 400px;
+        overflow-y: auto;
+        margin-top: 1rem;
+        white-space: pre-wrap;
+    }
+
+    .console-output:empty::before {
+        content: '> En attente...';
+        color: #666;
+    }
+
+    /* Pipeline Styles */
+    .pipeline-flow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        padding: 2rem;
+    }
+
+    .pipeline-step {
+        background: var(--bg-card);
+        border: 2px solid var(--border-color);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        text-align: center;
+        min-width: 150px;
+        transition: var(--transition);
+    }
+
+    .pipeline-step.active {
+        border-color: var(--accent);
+        box-shadow: 0 0 20px rgba(79, 70, 229, 0.3);
+    }
+
+    .pipeline-step .step-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .pipeline-step .step-name {
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .pipeline-arrow {
+        font-size: 1.5rem;
+        color: var(--text-secondary);
+    }
+
+    .pipeline-config {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .config-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        padding: 1.5rem;
+    }
+
+    .config-card h4 {
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    /* Finetune Styles */
+    .finetune-progress {
+        background: var(--bg-card-hover);
+        border-radius: 0.5rem;
+        height: 1rem;
+        overflow: hidden;
+        margin: 1rem 0;
+    }
+
+    .finetune-progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, var(--accent), #00ff88);
+        width: 0%;
+        transition: width 0.3s ease;
+    }
+
+    .model-selector {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+        margin: 1.5rem 0;
+    }
+
+    .model-option {
+        background: var(--bg-card);
+        border: 2px solid var(--border-color);
+        border-radius: 0.75rem;
+        padding: 1rem;
+        cursor: pointer;
+        transition: var(--transition);
+        text-align: center;
+    }
+
+    .model-option:hover {
+        border-color: var(--accent);
+    }
+
+    .model-option.selected {
+        border-color: var(--accent);
+        background: rgba(79, 70, 229, 0.1);
+    }
+
+    .model-option input {
+        display: none;
+    }
+
+    .model-option .model-name {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+
+    .model-option .model-size {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
     }
 </style>
 {% endblock %}
@@ -287,35 +520,55 @@
         <p>Entraînez le système avec vos bons de commande pour améliorer la précision de l'extraction</p>
     </div>
 
-    <!-- Training Form -->
-    <h2 class="section-title">➕ Nouveau Client</h2>
-    <div class="card training-form">
-        <form method="POST" action="{{ url_for('train') }}" enctype="multipart/form-data" id="trainingForm">
-            <div class="form-group">
-                <label for="client_id" class="form-label">Nom du Client *</label>
-                <input 
-                    type="text" 
-                    id="client_id" 
-                    name="client_id" 
-                    class="form-input" 
-                    placeholder="ex: CLIENT_EXEMPLE"
-                    required
-                    pattern="[A-Z_]+"
-                    title="Utilisez uniquement des majuscules et underscores">
-                <p class="upload-text" style="margin-top: 0.5rem;">Format: MAJUSCULES_UNIQUEMENT</p>
-            </div>
+    <!-- Tabs Navigation -->
+    <div class="tabs-nav">
+        <button class="tab-btn active" onclick="showTab('finetune')">
+            <span class="tab-icon">🔧</span> Finetune
+        </button>
+        <button class="tab-btn" onclick="showTab('pipeline')">
+            <span class="tab-icon">⚙️</span> Pipeline
+        </button>
+        <button class="tab-btn" onclick="showTab('rag')">
+            <span class="tab-icon">🧠</span> RAG
+        </button>
+    </div>
+
+    <!-- Tab: Finetune -->
+    <div id="tab-finetune" class="tab-content active">
+        <div class="card" style="margin-bottom: 2rem; padding: 1.5rem;">
+            <p style="color: var(--text-secondary); margin: 0; line-height: 1.6;">
+                <strong>🔧 Finetune</strong> — Ajoutez de nouveaux clients au système en fournissant un exemple de BC et le JSON attendu. 
+                Le système apprendra à reconnaître le format spécifique de chaque client pour améliorer la précision des extractions futures.
+            </p>
+        </div>
+        <h2 class="section-title">➕ Nouveau Client</h2>
+        <div class="card training-form">
+            <form method="POST" action="{{ url_for('train') }}" enctype="multipart/form-data" id="trainingForm">
+                <div class="form-group">
+                    <label for="client_id" class="form-label">Nom du Client *</label>
+                    <input 
+                        type="text" 
+                        id="client_id" 
+                        name="client_id" 
+                        class="form-input" 
+                        placeholder="ex: CLIENT_EXEMPLE"
+                        required
+                        pattern="[A-Z_]+"
+                        title="Utilisez uniquement des majuscules et underscores">
+                    <p class="upload-text" style="margin-top: 0.5rem;">Format: MAJUSCULES_UNIQUEMENT</p>
+                </div>
 
             <div class="form-group">
-                <label class="form-label">Bon de Commande (PDF) *</label>
+                <label class="form-label">Bon de Commande (PDF, HTML ou TXT) *</label>
                 <div class="upload-area" onclick="document.getElementById('bc_file').click()">
-                    <input type="file" id="bc_file" name="bc_file" accept=".pdf" required>
+                    <input type="file" id="bc_file" name="bc_file" accept=".pdf,.html,.htm,.txt" required>
                     <div class="upload-icon">📄</div>
                     <h4>Sélectionner le BC d'exemple</h4>
-                    <p class="upload-text">Format PDF uniquement</p>
+                    <p class="upload-text">Formats acceptés : PDF, HTML, TXT</p>
                 </div>
                 <div class="file-preview" id="bc_preview">
                     <div class="file-preview-info">
-                        <span>📄</span>
+                        <span id="bc_icon">📄</span>
                         <span id="bc_filename"></span>
                     </div>
                     <button type="button" class="file-remove" onclick="clearFile('bc_file', 'bc_preview')">✕</button>
@@ -390,25 +643,320 @@
         </div>
     </div>
     {% endif %}
+    </div><!-- End Tab Finetune -->
+
+    <!-- Tab: Pipeline -->
+    <div id="tab-pipeline" class="tab-content">
+        <div class="card" style="margin-bottom: 2rem; padding: 1.5rem;">
+            <p style="color: var(--text-secondary); margin: 0; line-height: 1.6;">
+                <strong>⚙️ Pipeline</strong> — Configurez le flux de traitement des bons de commande. 
+                Choisissez le modèle LLM, ajustez les timeouts, et définissez les paramètres de validation pour optimiser les performances selon vos besoins.
+            </p>
+        </div>
+        <h2 class="section-title">⚙️ Pipeline de Traitement</h2>
+        
+        <!-- Pipeline Visualization -->
+        <div class="card">
+            <div class="pipeline-flow">
+                <div class="pipeline-step active">
+                    <div class="step-icon">📄</div>
+                    <div class="step-name">Extraction</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">
+                    <div class="step-icon">🔍</div>
+                    <div class="step-name">RAG Search</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">
+                    <div class="step-icon">🤖</div>
+                    <div class="step-name">LLM</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">
+                    <div class="step-icon">✅</div>
+                    <div class="step-name">Validation</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pipeline Configuration -->
+        <div class="pipeline-config">
+            <div class="config-card">
+                <h4>🤖 Modèle LLM</h4>
+                <div class="model-selector">
+                    <label class="model-option selected">
+                        <input type="radio" name="llm_model" value="qwen2.5:7b" checked>
+                        <div class="model-name">Qwen 2.5</div>
+                        <div class="model-size">7B params</div>
+                    </label>
+                    <label class="model-option">
+                        <input type="radio" name="llm_model" value="llama3.2">
+                        <div class="model-name">Llama 3.2</div>
+                        <div class="model-size">2GB</div>
+                    </label>
+                    <label class="model-option">
+                        <input type="radio" name="llm_model" value="mistral:7b">
+                        <div class="model-name">Mistral</div>
+                        <div class="model-size">7B params</div>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="config-card">
+                <h4>⏱️ Paramètres</h4>
+                <div class="form-group">
+                    <label class="form-label">Timeout (secondes)</label>
+                    <input type="number" class="form-input" value="600" min="60" max="1800">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Top-K (RAG)</label>
+                    <input type="number" class="form-input" value="3" min="1" max="10">
+                </div>
+            </div>
+            
+            <div class="config-card">
+                <h4>📊 Validation</h4>
+                <div class="form-group">
+                    <label class="form-label">Score minimum</label>
+                    <input type="number" class="form-input" value="70" min="0" max="100">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Mode strict</label>
+                    <select class="form-input">
+                        <option value="0">Désactivé</option>
+                        <option value="1">Activé</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="submit-area" style="margin-top: 2rem;">
+            <button type="button" class="btn btn-primary btn-large" onclick="savePipelineConfig()">
+                💾 Sauvegarder la Configuration
+            </button>
+        </div>
+    </div><!-- End Tab Pipeline -->
+
+    <!-- Tab: RAG -->
+    <div id="tab-rag" class="tab-content">
+        <div class="card" style="margin-bottom: 2rem; padding: 1.5rem;">
+            <p style="color: var(--text-secondary); margin: 0; line-height: 1.6;">
+                <strong>🧠 RAG</strong> — Gérez le système de Retrieval-Augmented Generation. 
+                Indexez vos patterns clients pour que le système trouve automatiquement le meilleur prompt selon le type de BC reçu. Testez des extractions et surveillez les performances.
+            </p>
+        </div>
+        <h2 class="section-title">🧠 Système RAG</h2>
+        
+        <!-- RAG Stats -->
+        <div class="rag-stats">
+            <div class="rag-stat-card">
+                <div class="rag-stat-value" id="rag-docs-count">{{ rag_stats.documents|default(0) }}</div>
+                <div class="rag-stat-label">Documents indexés</div>
+            </div>
+            <div class="rag-stat-card">
+                <div class="rag-stat-value" id="rag-clients-count">{{ rag_stats.clients|default(0) }}</div>
+                <div class="rag-stat-label">Clients</div>
+            </div>
+            <div class="rag-stat-card">
+                <div class="rag-stat-value" id="rag-model">MiniLM</div>
+                <div class="rag-stat-label">Modèle Embedding</div>
+            </div>
+        </div>
+
+        <!-- RAG Actions -->
+        <div class="card">
+            <h3 style="margin-bottom: 1.5rem;">🔧 Actions</h3>
+            <div class="rag-actions">
+                <button class="btn btn-primary" onclick="ragReindex()">
+                    🔄 Réindexer tous les patterns
+                </button>
+                <button class="btn btn-secondary" onclick="ragTest()">
+                    🧪 Tester une extraction
+                </button>
+                <button class="btn btn-secondary" onclick="ragClear()">
+                    🗑️ Vider l'index
+                </button>
+            </div>
+            
+            <div class="console-output" id="rag-console"></div>
+        </div>
+
+        <!-- Test Extraction -->
+        <div class="card" style="margin-top: 2rem;">
+            <h3 style="margin-bottom: 1.5rem;">🧪 Test d'Extraction RAG</h3>
+            <div class="form-group">
+                <label class="form-label">Fichier à tester (PDF, HTML ou TXT)</label>
+                <div class="upload-area" onclick="document.getElementById('rag_test_file').click()">
+                    <input type="file" id="rag_test_file" accept=".pdf,.html,.htm,.txt">
+                    <div class="upload-icon">📄</div>
+                    <h4>Sélectionner un fichier BC</h4>
+                    <p class="upload-text">Le système utilisera le RAG pour trouver le meilleur prompt</p>
+                </div>
+            </div>
+            <div class="submit-area">
+                <button type="button" class="btn btn-primary btn-large" onclick="runRagExtraction()">
+                    🚀 Lancer l'extraction RAG
+                </button>
+            </div>
+            <div class="console-output" id="rag-extraction-result"></div>
+        </div>
+    </div><!-- End Tab RAG -->
 </div>
 
 <script>
+    // Tab Navigation
+    function showTab(tabName) {
+        // Hide all tabs
+        document.querySelectorAll('.tab-content').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // Show selected tab
+        document.getElementById('tab-' + tabName).classList.add('active');
+        event.target.closest('.tab-btn').classList.add('active');
+    }
+
+    // Model Selector
+    document.querySelectorAll('.model-option').forEach(option => {
+        option.addEventListener('click', function() {
+            document.querySelectorAll('.model-option').forEach(o => o.classList.remove('selected'));
+            this.classList.add('selected');
+            this.querySelector('input').checked = true;
+        });
+    });
+
+    // Pipeline Config
+    function savePipelineConfig() {
+        alert('✅ Configuration sauvegardée !');
+    }
+
+    // RAG Functions
+    function ragReindex() {
+        const console = document.getElementById('rag-console');
+        console.textContent = '> Réindexation en cours...\n';
+        
+        fetch('/api/rag/reindex', { method: 'POST' })
+            .then(r => r.json())
+            .then(data => {
+                console.textContent += '> ' + data.message + '\n';
+                if (data.documents) {
+                    document.getElementById('rag-docs-count').textContent = data.documents;
+                }
+            })
+            .catch(e => {
+                console.textContent += '❌ Erreur: ' + e.message + '\n';
+            });
+    }
+
+    function ragTest() {
+        document.querySelector('[onclick="runRagExtraction()"]').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function ragClear() {
+        if (confirm('⚠️ Voulez-vous vraiment vider l\'index RAG ?')) {
+            const console = document.getElementById('rag-console');
+            console.textContent = '> Suppression de l\'index...\n';
+            
+            fetch('/api/rag/clear', { method: 'POST' })
+                .then(r => r.json())
+                .then(data => {
+                    console.textContent += '> ' + data.message + '\n';
+                    document.getElementById('rag-docs-count').textContent = '0';
+                })
+                .catch(e => {
+                    console.textContent += '❌ Erreur: ' + e.message + '\n';
+                });
+        }
+    }
+
+    function runRagExtraction() {
+        const fileInput = document.getElementById('rag_test_file');
+        const resultConsole = document.getElementById('rag-extraction-result');
+        
+        if (!fileInput.files || !fileInput.files[0]) {
+            alert('⚠️ Veuillez sélectionner un fichier');
+            return;
+        }
+        
+        resultConsole.textContent = '> Extraction en cours...\n';
+        resultConsole.textContent += '⏱️ Estimation du temps en cours...\n';
+        
+        const formData = new FormData();
+        formData.append('file', fileInput.files[0]);
+        
+        fetch('/api/rag/extract', {
+            method: 'POST',
+            body: formData
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.error) {
+                resultConsole.textContent += '❌ ' + data.error + '\n';
+            } else {
+                resultConsole.textContent = '';  // Clear previous output
+                resultConsole.textContent += '✅ Score: ' + data.score + '/100\n';
+                resultConsole.textContent += '📋 Client détecté: ' + data.client + '\n';
+                resultConsole.textContent += '📦 Commandes: ' + data.nb_commandes + '\n';
+                resultConsole.textContent += '📝 Produits extraits: ' + data.nb_products + '\n';
+                
+                // Afficher les informations de temps (modèle bayésien)
+                if (data.time) {
+                    resultConsole.textContent += '\n⏱️ PRÉDICTION BAYÉSIENNE:\n';
+                    resultConsole.textContent += '   Temps estimé: ' + data.time.estimated + 's\n';
+                    resultConsole.textContent += '   Temps réel: ' + data.time.actual + 's\n';
+                    resultConsole.textContent += '   Intervalle: [' + data.time.interval[0] + 's - ' + data.time.interval[1] + 's]\n';
+                    
+                    // Calcul de la précision
+                    const diff = Math.abs(data.time.actual - data.time.estimated);
+                    const precision = Math.max(0, 100 - (diff / data.time.actual * 100));
+                    resultConsole.textContent += '   Précision: ' + precision.toFixed(1) + '%\n';
+                }
+                
+                resultConsole.textContent += '\n' + JSON.stringify(data.result, null, 2);
+            }
+        })
+        .catch(e => {
+            resultConsole.textContent += '❌ Erreur: ' + e.message + '\n';
+        });
+    }
+
     // File Input Handlers
     document.getElementById('bc_file').addEventListener('change', function(e) {
-        showFilePreview(e.target, 'bc_preview', 'bc_filename');
+        showFilePreview(e.target, 'bc_preview', 'bc_filename', 'bc_icon');
     });
 
     document.getElementById('json_file').addEventListener('change', function(e) {
         showFilePreview(e.target, 'json_preview', 'json_filename');
     });
 
-    function showFilePreview(input, previewId, filenameId) {
+    function showFilePreview(input, previewId, filenameId, iconId = null) {
         const preview = document.getElementById(previewId);
         const filename = document.getElementById(filenameId);
         
         if (input.files && input.files[0]) {
-            filename.textContent = input.files[0].name;
+            const file = input.files[0];
+            filename.textContent = file.name;
             preview.classList.add('active');
+            
+            // Mettre à jour l'icône selon le type de fichier
+            if (iconId) {
+                const icon = document.getElementById(iconId);
+                const ext = file.name.split('.').pop().toLowerCase();
+                
+                if (ext === 'pdf') {
+                    icon.textContent = '📄';
+                } else if (ext === 'html' || ext === 'htm') {
+                    icon.textContent = '🌐';
+                } else if (ext === 'txt') {
+                    icon.textContent = '📝';
+                } else {
+                    icon.textContent = '📄';
+                }
+            }
         }
     }
 

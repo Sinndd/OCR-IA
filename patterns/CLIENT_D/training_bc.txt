@@ -1,0 +1,75 @@
+=== DEMANDE D'APPROVISIONNEMENT ===
+Document confidentiel - Diffusion restreinte
+SECTION 1 - IDENTIFICATION
+N° de demande:
+2986847
+Date d'émission:
+07/02/2026
+Date de livraison:
+14/02/2026
+Service demandeur:
+1449
+Type de commande:
+STANDARD
+Priorité:
+NORMALE
+SECTION 2 - FOURNISSEUR & LOGISTIQUE
+Code fournisseur:
+BORDEAUX
+Code postal:
+75001
+Mode de transport:
+AERIEN
+Incoterm:
+DPU
+Devise:
+EUR
+SECTION 3 - OBSERVATIONS
+Commande groupée - Multi-sites
+Facturation centralisée
+SECTION 4 - ARTICLES DEMANDES
+#
+Code Article
+Désignation
+Qté
+Unité
+P.U. est.
+Livraison
+1
+234366
+CONNECTEUR ÉTANCHE IP67 M12-5P
+58
+PKG
+26.14
+10/02/2026
+2
+559104
+ROULEMENT A BILLES D45mm INOX
+99
+LOT
+470.50
+14/02/2026
+3
+9385
+ROULEMENT A BILLES D45mm INOX
+500
+M²
+231.43
+14/02/2026
+4
+104135
+VERIN PNEUMATIQUE ISO-6431 D63
+298
+LOT
+203.36
+22/02/2026
+5
+306614
+CAPTEUR PROXIMITE M18 PNP-NO
+187
+KG
+342.90
+22/02/2026
+TOTAL ESTIMÉ (EUR):
+288534.20
+Page 1 - Style D

@@ -176,7 +176,7 @@ class SmartExtractor:
         self,
         bc_text: str,
         examples: List[Dict],
-        max_examples: int = 5
+        max_examples: int = 7
     ) -> List[Dict]:
         """
         AMÉLIORATION 1 & 2: Tri intelligent + Détection de similarité
@@ -344,6 +344,30 @@ class SmartExtractor:
         
         return pattern
     
+    def extract_text(self, file_path: Path) -> str:
+        """
+        Extrait le texte d'un fichier (PDF, HTML ou TXT)
+        Détecte automatiquement le format
+        """
+        suffix = file_path.suffix.lower()
+        
+        try:
+            if suffix == '.pdf':
+                return self.extract_text_from_pdf(file_path)
+            
+            elif suffix in ['.html', '.htm']:
+                return self.extract_text_from_html(file_path)
+            
+            elif suffix == '.txt':
+                return file_path.read_text(encoding='utf-8')
+            
+            else:
+                raise ValueError(f"Format non supporté: {suffix} (PDF, HTML, TXT uniquement)")
+        
+        except Exception as e:
+            print(f"❌ Erreur extraction {suffix}: {e}")
+            return ""
+    
     def extract_text_from_pdf(self, pdf_path: Path) -> str:
         """Extrait le texte du PDF"""
         try:
@@ -352,7 +376,34 @@ class SmartExtractor:
             doc.close()
             return text
         except Exception as e:
-            print(f"❌ Erreur extraction: {e}")
+            print(f"❌ Erreur extraction PDF: {e}")
+            return ""
+    
+    def extract_text_from_html(self, html_path: Path) -> str:
+        """Extrait le texte d'un fichier HTML"""
+        try:
+            import re
+            import html as html_module
+            
+            content = html_path.read_text(encoding='utf-8')
+            
+            # Supprimer scripts et styles
+            content = re.sub(r'<script[^>]*>.*?</script>', '', content, flags=re.DOTALL | re.IGNORECASE)
+            content = re.sub(r'<style[^>]*>.*?</style>', '', content, flags=re.DOTALL | re.IGNORECASE)
+            
+            # Supprimer balises HTML
+            content = re.sub(r'<[^>]+>', '\n', content)
+            
+            # Décoder entités HTML
+            content = html_module.unescape(content)
+            
+            # Nettoyer espaces
+            lines = [line.strip() for line in content.split('\n') if line.strip()]
+            text = '\n'.join(lines)
+            
+            return text
+        except Exception as e:
+            print(f"❌ Erreur extraction HTML: {e}")
             return ""
     
     def detect_client(
@@ -504,6 +555,26 @@ class SmartExtractor:
         
         return examples
     
+    def load_all_patterns(self) -> List[Dict]:
+        """Charge tous les patterns de tous les clients entraînés"""
+        all_examples = []
+        
+        # Parcourir tous les dossiers CLIENT_*
+        for client_dir in self.patterns_dir.glob("CLIENT_*"):
+            if not client_dir.is_dir():
+                continue
+            
+            client_id = client_dir.name.replace("CLIENT_", "")
+            
+            # Charger les patterns de ce client
+            examples = self.load_client_patterns(client_id)
+            if examples:
+                all_examples.extend(examples)
+                if self.debug:
+                    print(f"  📚 {len(examples)} exemple(s) du client {client_id}")
+        
+        return all_examples
+    
     def extract_with_llm(
         self,
         bc_text: str,
@@ -521,7 +592,17 @@ class SmartExtractor:
             raise RuntimeError("Aucun exemple disponible pour l'extraction")
         
         # AMÉLIORATION 1 & 2: Sélectionner exemples les plus similaires
-        selected_examples = self._rank_examples_by_similarity(bc_text, examples, max_examples=5)
+        selected_examples = self._rank_examples_by_similarity(bc_text, examples, max_examples=8)
+
+        # LOG/DEBUG: Afficher les fichiers utilisés
+        if self.debug:
+            print("\n📋 Exemples utilisés pour le prompt:")
+            for i, ex in enumerate(selected_examples, 1):
+                ex_id = "?"
+                if "commandes" in ex and ex["commandes"]:
+                    ent = ex["commandes"][0].get("entete", {})
+                    ex_id = f"{ent.get('origine', '?')}-{ent.get('numCommande', '?')}"
+                print(f"  {i}. {ex_id}")
         
         # AMÉLIORATION 3: Récupérer pattern généralisé
         generalized_pattern = None
@@ -558,12 +639,22 @@ PRINCIPES FONDAMENTAUX:
 2. **Flexibilité** : Adapte-toi aux variations de format du BC
 3. **Cohérence** : Maintiens la même structure de sortie que les exemples
 4. **Complétude** : Extrais TOUS les produits, du premier au dernier
+5. **SÉPARATION PAR DATE** : Si le BC contient plusieurs dates de livraison ("Livraison au : DATE"), crée UNE COMMANDE SÉPARÉE par date, en groupant les produits qui suivent chaque date
 
-RÈGLES DE STRUCTURE:
-- Utilise une structure {"commandes": [...]} avec un tableau d'objets commande
-- Chaque commande contient: "entete" et "detailCommande"
+⚠️ RÈGLES DE STRUCTURE STRICTES (IMPÉRATIF) ⚠️:
+- LA STRUCTURE DOIT ÊTRE EXACTEMENT: {"commandes": [{"entete": {...}, "detailCommande": {...}}]}
+- NE JAMAIS mettre "entete" et "detailCommande" à la racine
+- NE JAMAIS inverser l'ordre des niveaux
+- TOUJOURS encapsuler dans un tableau "commandes"
+- Chaque commande contient EXACTEMENT deux clés: "entete" et "detailCommande"
 - L'entête contient les infos générales (dates, codes, origine...)
-- Le détail contient un tableau "produits" et un "nbLignes"
+- Le détail contient un tableau "produits" ET un "nbLignes"
+
+⚠️ GESTION DES COMMANDES MULTIPLES ⚠️:
+- Si le document contient plusieurs bons de commande (plusieurs numéros de commande, plusieurs blocs distincts), tu DOIS créer une entrée distincte pour CHAQUE commande dans le tableau "commandes".
+- Ne fusionne JAMAIS deux commandes différentes en une seule.
+- Cherche bien tous les numéros de commande présents dans le document.
+- Si tu vois plusieurs tableaux de produits ou plusieurs entêtes, c'est qu'il y a plusieurs commandes.
 
 RÈGLES DE TYPES:
 - Dates: format YYYYMMDD (int) - ex: 20250214 = 14 février 2025
@@ -576,34 +667,61 @@ RÈGLES MÉTIER IMPORTANTES:
 - **codeEtablissement**: Code numérique du site (ex: "02323", "910956")
 - **codeFournisseur**: Nom de la VILLE du fournisseur/expéditeur
 - **origine**: Nom du CLIENT qui passe commande
-- **Codes articles**: 
-  * Cherche d'abord dans colonne "CodeRef" si elle existe
-  * Sinon: nombre entre PARENTHÈSES dans le libellé (ex: "PRODUIT#488(150508)" → "150508")
-- **Codes articles perso**: nombre après le DIÈSE # (ex: "PRODUIT#488(150508)" → "488")
 
-RÈGLES DE SÉPARATION PAR DATE DE LIVRAISON:
-- **CRITÈRE PRINCIPAL** : Cherche les titres de section "Livraison au : DATE" dans le BC
-- Si le BC contient plusieurs sections avec ces titres, crée une commande SÉPARÉE pour chaque date
-- Chaque commande contient UNIQUEMENT les produits listés ENTRE son titre de section et le titre suivant (ou "Sous Total HT")
-- **IMPORTANT** : Un même produit peut apparaître dans plusieurs sections = c'est normal, garde-les tous séparément
-- **IGNORER** : La colonne "Conso" (date de consommation) n'est PAS la date de livraison
-- **EXEMPLE RÉEL** :
-  ```
-  Livraison au : lundi 08 jan. 2024
-  32732  [A] Cornichons fins...
-  01454  [A] Câpres fines...
-  115195 [A] Frites...
-  Sous Total HT : 261,092 €
-  
-  Livraison au : mercredi 10 jan. 2024  
-  155472 [A] Cheddar fondu...
-  11845  [A] Mélange 3 riz...
-  Sous Total HT : 152,664 €
-  
-  → Génère 2 commandes:
-    - Commande 1 (08 jan) : 3 produits (32732, 01454, 115195)
-    - Commande 2 (10 jan) : 2 produits (155472, 11845)
-  ```
+⚠️ CODES ARTICLES - RÈGLES STRICTES (À APPLIQUER SYSTÉMATIQUEMENT) ⚠️:
+Pour chaque produit, tu dois extraire DEUX codes distincts en analysant le libellé:
+
+**RÈGLE ABSOLUE** : Dans le format "TEXTE#XXXX(YYYY)", tu dois TOUJOURS:
+- **codeArticle** = YYYY (le nombre entre parenthèses)
+- **codeArticlePerso** = XXXX (le nombre après le #)
+
+**SCHÉMA GÉNÉRAL** :
+```
+"DESCRIPTION PRODUIT#CodePerso(CodeArticle)"
+                     ↑         ↑
+                     |         └─ codeArticle (entre parenthèses)
+                     └─ codeArticlePerso (après #)
+```
+
+**EXEMPLES D'APPLICATION** :
+
+Exemple 1: "PRODUIT ALIMENTAIRE#488(150508)"
+→ codeArticle = "150508" ← entre parenthèses (xxx)
+→ codeArticlePerso = "488" ← après # et avant (
+
+Exemple 2: "ARTICLE STANDARD#2967(67156)"
+→ codeArticle = "67156" ← entre parenthèses (xxx)
+→ codeArticlePerso = "2967" ← après # et avant (
+
+Exemple 3: "PRODUIT GÉNÉRIQUE#3731(27402)"
+→ codeArticle = "27402" ← entre parenthèses (xxx)
+→ codeArticlePerso = "3731" ← après # et avant (
+
+Exemple 4: "ITEM QUELCONQUE#30650(36908)"
+→ codeArticle = "36908" ← entre parenthèses (xxx)
+→ codeArticlePerso = "30650" ← après # et avant (
+
+**MÉTHODOLOGIE D'EXTRACTION** :
+1. Localise le symbole # dans le libellé
+2. Extrais les chiffres ENTRE # et la parenthèse ouvrante ( → codeArticlePerso
+3. Extrais les chiffres ENTRE ( et ) → codeArticle
+4. Vérifie que les deux codes sont différents
+
+⚠️ **ERREUR FRÉQUENTE À ÉVITER** ⚠️:
+❌ NE PAS mettre le nombre après # dans le champ codeArticle
+❌ NE PAS inverser les deux codes
+✅ TOUJOURS: codeArticle = nombre entre (xxx)
+✅ TOUJOURS: codeArticlePerso = nombre après #
+
+⚠️ SI TU INVERSES CES CODES, L'EXTRACTION EST INCORRECTE ⚠️
+⚠️ APPLIQUE CETTE RÈGLE À CHAQUE PRODUIT SYSTÉMATIQUEMENT ⚠️
+
+⚠️ EXTRACTION COMPLÈTE DES PRODUITS ⚠️:
+- Tu dois extraire TOUS les produits présents dans le BC
+- Parcours LIGNE PAR LIGNE le tableau de produits
+- Ne saute AUCUNE ligne même si elle semble similaire à la précédente
+- Vérifie que le nombre total de produits extraits correspond au nombre de lignes du tableau
+- Si le BC indique "19 produits", tu dois extraire exactement 19 produits
 
 CHAMPS OBLIGATOIRES (toujours présents):
 - modeTransport: "L"
@@ -635,39 +753,36 @@ Agences autorisées (format: VILLE, CODE_POSTAL):
 INSTRUCTIONS SPÉCIFIQUES:
 
 1. **Identification des codes**:
-   - codeEtablissement: Cherche mentions "Code site", "Code client", codes numériques proches du destinataire
-   - codeFournisseur: Cherche la VILLE d'où vient la commande (expéditeur), compare avec liste agences
-   - codePostal: Une fois la ville trouvée, utilise le code postal associé dans la liste
+   - codeEtablissement: Cherche codes numériques du site/établissement destinataire
+   - codeFournisseur: Cherche la VILLE du fournisseur/expéditeur, compare avec liste agences
+   - codePostal: Associe le code postal à la ville trouvée
 
-2. **Extraction des produits PAR SECTION - MÉTHODE RIGOUREUSE**:
-   - **ÉTAPE 1** : Localise TOUS les titres "Livraison au : DATE" dans le texte du BC
-   - **ÉTAPE 2** : Pour chaque section :
-     a) Identifie le DÉBUT = le titre "Livraison au : DATE"
-     b) Identifie la FIN = le prochain titre "Livraison au :" OU "Sous Total HT"
-     c) Dans cette zone, extrais UNIQUEMENT les lignes de produits (commençant par un CodeRef à 5-6 chiffres)
-   - **ÉTAPE 3** : Crée un objet commande distinct pour chaque section
-   - **RÈGLE D'OR** : Si un produit (même CodeRef) apparaît dans 2 sections différentes → crée 2 lignes distinctes dans 2 commandes différentes
-   - Pour chaque produit: CodeRef, Designation, Qte (IGNORER la colonne "Conso")
-   - **NETTOYAGE DES LIBELLÉS** :
-     * Supprime les préfixes de catégories comme "F-PRODUIT LAITIER - FROMAGE ENTIER / PREDECOUPE"
-     * Supprime "F-CHARCUTERIE -", "F-OVO PRODUIT -", etc.
-     * Garde uniquement la partie descriptive du produit (ex: "BEURRE DOUX 250G#2967(67156)")
-     * Le libellé final doit commencer directement par le nom du produit
+2. **Extraction des produits**:
+   - Localise le tableau de produits dans le BC
+   - Extrais chaque ligne de produit avec ses informations (code, libellé, quantité, etc.)
+   - Respecte l'ordre d'apparition des produits
+   - N'oublie aucune ligne même si elle semble redondante
+   - Si plusieurs sections de livraison existent, crée une commande par section
 
-3. **Dates et heures**:
-   - Convertis toutes les dates en YYYYMMDD (ex: "14 avril 2025" → 20250414)
+3. **Nettoyage des libellés**:
+   - Supprime les préfixes de catégories si présents (ex: "F-CATEGORIE -", "TYPE:")
+   - Garde uniquement la partie descriptive du produit
+   - Conserve les codes dans le format #XXXX(YYYY) s'ils sont présents
+
+4. **Dates et heures**:
+   - Convertis toutes les dates en format YYYYMMDD (ex: "14 avril 2025" → 20250414)
    - Heures au format HHMMSS (ex: "14h30" → "143000")
 
-4. **Séparation des commandes - PROCÉDURE DÉTAILLÉE**:
-   a) Parcours le texte du BC et repère chaque titre "Livraison au : [DATE]"
-   b) Pour chaque titre trouvé, crée un objet commande distinct
-   c) Assigne à cette commande UNIQUEMENT les produits situés entre ce titre et le suivant
-   d) La dateLivraison de la commande = la date indiquée dans le titre de section
-   e) **Vérifie** : Le total de produits dans toutes les commandes doit égaler le nombre total de lignes dans le BC
+5. **Séparation des commandes si nécessaire**:
+   - Si le BC contient plusieurs dates de livraison, crée une commande par date
+   - Chaque commande contient uniquement les produits de sa section
+   - La dateLivraison correspond à la date indiquée pour cette section
 
-5. **Génération du numCommande**:
-   - Format standard: "codeEtablissement-numeroCommande-index"
-   - Exemple: si codeEtablissement="02323" et numéro="7992" → "02323-7992-1"
+6. **Génération du numCommande** (IMPORTANT):
+   - Le numéro de commande EST TOUJOURS présent dans le BC (cherche: "N°", "Num", "Commande", "BC", ou un code numérique proéminent)
+   - Cherche dans l'en-tête, le titre, ou près des informations client/fournisseur
+   - Format final: "codeEtablissement-numeroCommande-index" (ex: "02313-7992-1")
+   - NE JAMAIS mettre "XXXXX" ou "UNKNOWN" - le numéro EST dans le BC, trouve-le !
 
 TEXTE DU BON DE COMMANDE:
 {bc_text[:25000]}
@@ -727,7 +842,15 @@ Assure-toi d'extraire TOUS les produits présents dans le bon de commande."""
                 print(f"\n[DEBUG] Réponse LLM (premiers 500 chars):")
                 print(cleaned[:500])
             
-            return json.loads(cleaned)
+            parsed_json = json.loads(cleaned)
+            
+            # CORRECTION AUTOMATIQUE: Normaliser la structure si nécessaire
+            parsed_json = self._normalize_structure(parsed_json)
+            
+            # CORRECTION AUTOMATIQUE: Corriger les codes articles inversés
+            parsed_json = self._fix_product_codes(parsed_json)
+            
+            return parsed_json
         
         except Exception as e:
             print(f"\n❌ Erreur LLM: {e}")
@@ -754,6 +877,116 @@ Assure-toi d'extraire TOUS les produits présents dans le bon de commande."""
             return match.group(0)
         
         return raw
+    
+    def _normalize_structure(self, data: Dict) -> Dict:
+        """
+        Normalise la structure JSON pour s'assurer qu'elle respecte le format attendu:
+        {"commandes": [{"entete": {...}, "detailCommande": {...}}]}
+        
+        Corrige automatiquement les erreurs courantes du LLM.
+        """
+        # CAS 1: Structure déjà correcte
+        if "commandes" in data and isinstance(data["commandes"], list):
+            # Vérifier que chaque commande a la bonne structure
+            for cmd in data["commandes"]:
+                if not isinstance(cmd, dict):
+                    continue
+                if "detailCommande" in cmd and "produits" in cmd["detailCommande"]:
+                    # Mettre à jour nbLignes si nécessaire
+                    nb_produits = len(cmd["detailCommande"]["produits"])
+                    cmd["detailCommande"]["nbLignes"] = nb_produits
+            
+            if self.debug:
+                print("✅ Structure JSON correcte détectée")
+            return data
+        
+        # CAS 2: Structure inversée - entete et detailCommande à la racine
+        if "entete" in data and "detailCommande" in data:
+            if self.debug:
+                print("⚠️  Structure inversée détectée, correction en cours...")
+            
+            # Reconstruire avec la bonne structure
+            normalized = {
+                "commandes": [
+                    {
+                        "entete": data["entete"],
+                        "detailCommande": data["detailCommande"]
+                    }
+                ]
+            }
+            
+            # Mettre à jour nbLignes
+            if "produits" in normalized["commandes"][0]["detailCommande"]:
+                nb_produits = len(normalized["commandes"][0]["detailCommande"]["produits"])
+                normalized["commandes"][0]["detailCommande"]["nbLignes"] = nb_produits
+            
+            if self.debug:
+                print(f"✅ Structure corrigée: {nb_produits} produits détectés")
+            
+            return normalized
+        
+        # CAS 3: Autres structures non reconnues
+        if self.debug:
+            print(f"⚠️  Structure JSON non reconnue: {list(data.keys())}")
+        
+        # Retourner tel quel et laisser l'erreur se propager
+        return data
+    
+    def _fix_product_codes(self, data: Dict) -> Dict:
+        """
+        Corrige automatiquement les codes articles mal extraits.
+        Analyse les libellés pour extraire les vrais codes selon le format #XXXX(YYYY).
+        """
+        if "commandes" not in data:
+            return data
+        
+        corrections_count = 0
+        
+        for cmd in data["commandes"]:
+            if "detailCommande" not in cmd or "produits" not in cmd["detailCommande"]:
+                continue
+            
+            for produit in cmd["detailCommande"]["produits"]:
+                libelle = produit.get("libelle", "")
+                if not libelle:
+                    continue
+                
+                # Chercher le pattern #XXXX(YYYY) dans le libellé
+                match = re.search(r'#(\d+)\((\d+)\)', libelle)
+                if match:
+                    code_perso_correct = match.group(1)  # Après le #
+                    code_article_correct = match.group(2)  # Entre parenthèses
+                    
+                    # Vérifier si les codes sont inversés
+                    current_code_article = str(produit.get("codeArticle", ""))
+                    current_code_perso = str(produit.get("codeArticlePerso", ""))
+                    
+                    # CAS 1: codes complètement inversés
+                    if current_code_article == code_perso_correct and current_code_perso == code_article_correct:
+                        if self.debug:
+                            print(f"  🔧 Correction codes inversés: {libelle[:50]}...")
+                            print(f"     Avant: codeArticle={current_code_article}, codeArticlePerso={current_code_perso}")
+                            print(f"     Après: codeArticle={code_article_correct}, codeArticlePerso={code_perso_correct}")
+                        
+                        produit["codeArticle"] = code_article_correct
+                        produit["codeArticlePerso"] = code_perso_correct
+                        corrections_count += 1
+                    
+                    # CAS 2: codes incorrects (ne correspondent pas du tout)
+                    elif current_code_article != code_article_correct or current_code_perso != code_perso_correct:
+                        if self.debug:
+                            print(f"  🔧 Correction codes incorrects: {libelle[:50]}...")
+                            print(f"     Avant: codeArticle={current_code_article}, codeArticlePerso={current_code_perso}")
+                            print(f"     Après: codeArticle={code_article_correct}, codeArticlePerso={code_perso_correct}")
+                        
+                        produit["codeArticle"] = code_article_correct
+                        produit["codeArticlePerso"] = code_perso_correct
+                        corrections_count += 1
+        
+        if corrections_count > 0:
+            print(f"✅ {corrections_count} code(s) article corrigé(s) automatiquement")
+        
+        return data
     
     def _extract_common_fields(self, examples: List[Dict]) -> List[str]:
         """
@@ -1022,6 +1255,31 @@ Assure-toi d'extraire TOUS les produits présents dans le bon de commande."""
         
         return llm_json
     
+    def _extract_num_commande_from_filename(self, filename: str) -> Optional[str]:
+        """
+        Extrait le numéro de commande du nom de fichier (FALLBACK uniquement)
+        Format attendu: XXXXX_BC_NUMERO_... ou XXXXX_NUMERO_...
+        
+        Exemples:
+        - "02313_BC_7992_FOURNISSEUR_SUD_CHAPONNAY_2.pdf" → "7992"
+        - "02313_7992_descriptif.pdf" → "7992"
+        """
+        import re
+        
+        # Patterns de recherche (du plus spécifique au plus général)
+        patterns = [
+            r'_BC_(\d{4,})_',  # Format: _BC_XXXX_
+            r'_BC_(\d{4,})',   # Format: _BC_XXXX (fin)
+            r'_(\d{4,})_',     # Format: _XXXX_ (après code établissement)
+        ]
+        
+        for pattern in patterns:
+            match = re.search(pattern, filename)
+            if match:
+                return match.group(1)
+        
+        return None
+    
     def process_bc(
         self,
         bc_path: Path,
@@ -1031,7 +1289,7 @@ Assure-toi d'extraire TOUS les produits présents dans le bon de commande."""
         Traite un BC avec détection automatique du client
         
         Args:
-            bc_path: Chemin vers le BC PDF
+            bc_path: Chemin vers le BC (PDF, HTML ou TXT)
             client_id_hint: ID client forcé (optionnel)
         
         Returns:
@@ -1042,9 +1300,9 @@ Assure-toi d'extraire TOUS les produits présents dans le bon de commande."""
         print(f"🔍 TRAITEMENT: {bc_path.name}")
         print(f"{'='*60}\n")
         
-        # 1. Extraction texte
+        # 1. Extraction texte (auto-détection du format)
         print("[1/4] Extraction du texte...")
-        bc_text = self.extract_text_from_pdf(bc_path)
+        bc_text = self.extract_text(bc_path)
         
         if not bc_text:
             raise RuntimeError("Impossible d'extraire le texte du BC")
@@ -1065,20 +1323,54 @@ Assure-toi d'extraire TOUS les produits présents dans le bon de commande."""
             if examples:
                 print(f"  📚 {len(examples)} pattern(s) spécifique(s) chargé(s)")
             else:
-                print(f"  ⚠️  Aucun pattern, fallback exemples génériques")
-                examples = self.load_generic_examples()
+                print(f"  ⚠️  Aucun pattern, fallback tous les clients")
+                examples = self.load_all_patterns()
         else:
-            print(f"  ⚠️  Client inconnu, utilisation exemples génériques")
-            examples = self.load_generic_examples()
+            print(f"  ⚠️  Client inconnu, chargement de tous les patterns disponibles")
+            examples = self.load_all_patterns()
         
         if not examples:
-            raise RuntimeError("Aucun exemple disponible (ni spécifique ni générique)")
+            raise RuntimeError("Aucun exemple disponible (aucun client entraîné)")
+        
+        print(f"  📊 {len(examples)} exemple(s) total chargé(s)")
         
         # 3. Extraction LLM
         print("[3/4] Extraction avec LLM...")
         print(f"  🤖 Modèle: {self.model}")
         
         result = self.extract_with_llm(bc_text, examples, filename_convention, client_id)
+        
+        # FALLBACK: Si le LLM n'a pas trouvé le numéro de commande, essayer de l'extraire du nom de fichier
+        if result and "commandes" in result:
+            num_commande_from_file = self._extract_num_commande_from_filename(bc_path.name)
+            
+            for cmd in result["commandes"]:
+                if "entete" in cmd:
+                    entete = cmd["entete"]
+                    num_cmd_current = entete.get("numCommande", "")
+                    
+                    # Si le numéro n'a pas été trouvé (XXXXX ou vide), utiliser le fallback
+                    if num_commande_from_file and (not num_cmd_current or "XXXXX" in num_cmd_current or "UNKNOWN" in num_cmd_current):
+                        code_etab = entete.get("codeEtablissement", "")
+                        
+                        # Extraire l'index si présent
+                        index = "1"
+                        if "-" in num_cmd_current:
+                            parts = num_cmd_current.split("-")
+                            if len(parts) >= 3 and parts[-1].isdigit():
+                                index = parts[-1]
+                        
+                        # Construire le nouveau numCommande
+                        if code_etab and filename_convention and "{codeEtablissement}" in filename_convention:
+                            new_num_cmd = f"{code_etab}-{num_commande_from_file}-{index}"
+                        else:
+                            new_num_cmd = num_commande_from_file
+                        
+                        entete["numCommande"] = new_num_cmd
+                        entete["idCommande"] = new_num_cmd
+                        
+                        if self.debug:
+                            print(f"  ⚠️  numCommande non trouvé dans le BC, utilisé depuis le nom de fichier: {new_num_cmd}")
         
         print(f"  ✓ Extraction terminée")
         

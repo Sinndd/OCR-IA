@@ -1,0 +1,35 @@
+{
+  "commandes": [
+    {
+      "entete": {
+        "origine": "CLIENT_E",
+        "codeEtablissement": "76709",
+        "codeFournisseur": "CAEN",
+        "codePostal": "75001",
+        "numCommande": "4394297",
+        "idCommande": "76709-4394297-2",
+        "dateCommande": 20260131,
+        "heureCommande": "",
+        "dateLivraison": 20260207,
+        "commentaireEntete": "URGENT - Priorité production\nLivraison directe atelier",
+        "modeTransport": "L",
+        "typeCommande": "220",
+        "origineCommande": "D",
+        "version": "ACE"
+      },
+      "detailCommande": {
+        "produits": [
+          {
+            "numLigne": 2,
+            "codeArticle": "4773",
+            "codeArticlePerso": "4773",
+            "libelle": "PANSEMENT ADHÉSIF 6cmx5m x10",
+            "quantite": 473.0,
+            "commentaire": ""
+          }
+        ],
+        "nbLignes": 1
+      }
+    }
+  ]
+}

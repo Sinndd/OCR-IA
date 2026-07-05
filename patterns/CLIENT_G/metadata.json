@@ -1,0 +1,44 @@
+{
+  "client_id": "CLIENT_G",
+  "description": "Bon de commande commercial avec calculs TVA et totaux",
+  "format_type": "facture_commerciale",
+  "structure": {
+    "header": "BON DE COMMANDE COMMERCIAL avec fond vert et sous-titre",
+    "blocs_info": [
+      "Bloc VENDEUR (fournisseur, CP, transport)",
+      "Bloc ACHETEUR (établissement, type, devise)"
+    ],
+    "reference": "Commande N° X du DATE",
+    "table": "Tableau avec colonnes: Pos, Code, Description, Qté, Unité, P.U. (EUR), Total (EUR)",
+    "totaux": [
+      "Sous-total HT:",
+      "TVA (20%):",
+      "TOTAL TTC: (avec fond vert)"
+    ]
+  },
+  "patterns": {
+    "numero_commande": "Commande N°\\s+(\\d+)",
+    "date": "du\\s+([\\d/]+)",
+    "fournisseur": "Fournisseur:\\s+([A-Z]+(?:[\\s-][A-Z]+)*)",
+    "etablissement": "Etablissement:\\s+(\\d+)",
+    "devise": "Devise:\\s+([A-Z]{3})",
+    "article_ligne": "^(\\d+)\\s+(\\w+)\\s+(.+?)\\s+(\\d+)\\s+(\\w+)\\s+([\\d.]+)\\s+([\\d.]+)$",
+    "sous_total": "Sous-total HT:\\s+([\\d.]+)\\s+EUR",
+    "tva": "TVA \\(20%\\):\\s+([\\d.]+)\\s+EUR",
+    "total_ttc": "TOTAL TTC:\\s+([\\d.]+)\\s+EUR"
+  },
+  "detection_keywords": [
+    "BON DE COMMANDE COMMERCIAL",
+    "Avec calcul automatique des montants",
+    "VENDEUR",
+    "ACHETEUR",
+    "P.U. (EUR)",
+    "Total (EUR)",
+    "Sous-total HT:",
+    "TVA (20%):",
+    "TOTAL TTC:"
+  ],
+  "examples_count": 1,
+  "last_updated": "2026-03-03",
+  "bc_reference": "BC_8347075_StyleG"
+}

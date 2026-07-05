@@ -1,0 +1,69 @@
+{
+  "commandes": [
+    {
+      "entete": {
+        "origine": "CLIENT_B",
+        "codeEtablissement": "01142",
+        "codeFournisseur": "CHAPONNAY",
+        "codePostal": "69970",
+        "numCommande": "02313-7992-1",
+        "idCommande": "02313-7992-1",
+        "dateCommande": 20240108,
+        "heureCommande": 64000,
+        "dateLivraison": 20240108,
+        "commentaireEntete": "",
+        "modeTransport": "L",
+        "typeCommande": "220",
+        "origineCommande": "D",
+        "version": "ACE"
+      },
+      "detailCommande": {
+        "produits": [
+          {
+            "numLigne": 1,
+            "codeArticle": "32732",
+            "libelle": "[A] Cornichons fins (80/119) (Import) (LES JARDINS D'A)",
+            "quantite": 3.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 2,
+            "codeArticle": "01454",
+            "libelle": "[A] Câpres fines (Import) (PAS DE MARQUE)",
+            "quantite": 4.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 3,
+            "codeArticle": "115195",
+            "libelle": "[A] Frites 9/9mm bi-températ.2,5K (METRO CHEF)",
+            "quantite": 100.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 4,
+            "codeArticle": "118035",
+            "libelle": "[A] Mozzarella cossettes 22% 2,5K (France) (TIPPAGRAL)",
+            "quantite": 1.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 5,
+            "codeArticle": "100749",
+            "libelle": "[A] Poivre blanc moulu 1K (Import) (LA RONDE DES EP)",
+            "quantite": 2.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 6,
+            "codeArticle": "32085",
+            "libelle": "[A] Poivre vert (Import) (PAS DE MARQUE)",
+            "quantite": 4.0,
+            "commentaire": ""
+          }
+        ],
+        "nbLignes": 6
+      }
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+> ORDRE DE COMMANDE
+> RÉFÉRENCE COMMANDE
+- Numéro: 4394297
+- Date: 31/01/2026
+- Livraison: 07/02/2026
+- Type: SPOT
+- Priorité: NORMALE
+> DONNÉES FOURNISSEUR
+- Code: CAEN
+-> Etablissement: 76709
+-> Code postal: 75001
+> MODALITÉS D'EXPÉDITION
+- Transport: EXPRESS
+- Incoterm: DDP
+- Devise: GBP
+- Instructions: URGENT - Priorité production
+Livraison directe atelier
+> ARTICLES COMMANDES
+  [1] COMPRESSES STÉRILES 10x10cm x100
+-> Code: 314060  |  Quantite: 92 SET  |  Livraison: 03/02/2026
+  Note: Emballage renforcé
+  [2] PANSEMENT ADHÉSIF 6cmx5m x10
+-> Code: 4773  |  Quantite: 473 UNIT  |  Livraison: 07/02/2026
+  [3] SERINGUE STÉRILE 5ml Luer-Lock
+-> Code: 9022  |  Quantite: 368 SET  |  Livraison: 15/02/2026
+  Note: Certification requise
+Page 1 - Style E

@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+
+{% block title %}Monitoring - OCR PRO A PRO{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">📊 Monitoring en Temps Réel</h2>
+    
+    <!-- Stats globales -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Total Jobs</h5>
+                    <h2 id="stat-total" class="text-primary">0</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">En cours</h5>
+                    <h2 id="stat-processing" class="text-info">0</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Terminés</h5>
+                    <h2 id="stat-completed" class="text-success">0</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Échecs</h5>
+                    <h2 id="stat-failed" class="text-danger">0</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Liste des jobs -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Jobs Actifs</h5>
+        </div>
+        <div class="card-body" id="jobs-container">
+            <p class="text-muted">Chargement...</p>
+        </div>
+    </div>
+</div>
+
+<style>
+.job-card {
+    border-left: 4px solid #6c757d;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.job-card.status-pending {
+    border-left-color: #ffc107;
+}
+
+.job-card.status-processing {
+    border-left-color: #17a2b8;
+}
+
+.job-card.status-completed {
+    border-left-color: #28a745;
+}
+
+.job-card.status-failed {
+    border-left-color: #dc3545;
+}
+
+.progress {
+    height: 25px;
+}
+
+.job-step {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.job-logs {
+    max-height: 150px;
+    overflow-y: auto;
+    font-size: 0.8rem;
+    background: #f8f9fa;
+    padding: 0.5rem;
+    border-radius: 4px;
+}
+
+.badge-status {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+}
+</style>
+
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script>
+// Connexion WebSocket
+const socket = io();
+
+socket.on('connect', () => {
+    console.log('✅ Connecté au serveur WebSocket');
+    refreshJobs();
+});
+
+socket.on('job_update', (job) => {
+    console.log('📡 Job mis à jour:', job.id);
+    updateJobCard(job);
+    updateStats();
+});
+
+socket.on('jobs_list', (data) => {
+    console.log('📋 Liste des jobs reçue:', data.jobs.length);
+    renderJobs(data.jobs);
+});
+
+// Demander la liste des jobs
+function refreshJobs() {
+    socket.emit('request_jobs', {});
+}
+
+// Mettre à jour les stats
+function updateStats() {
+    fetch('/api/jobs')
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                const jobs = data.jobs;
+                document.getElementById('stat-total').textContent = jobs.length;
+                document.getElementById('stat-processing').textContent = 
+                    jobs.filter(j => j.status === 'processing').length;
+                document.getElementById('stat-completed').textContent = 
+                    jobs.filter(j => j.status === 'completed').length;
+                document.getElementById('stat-failed').textContent = 
+                    jobs.filter(j => j.status === 'failed').length;
+            }
+        });
+}
+
+// Rendre la liste des jobs
+function renderJobs(jobs) {
+    const container = document.getElementById('jobs-container');
+    
+    if (jobs.length === 0) {
+        container.innerHTML = '<p class="text-muted">Aucun job en cours</p>';
+        return;
+    }
+    
+    container.innerHTML = jobs.map(job => createJobCard(job)).join('');
+    updateStats();
+}
+
+// Créer une carte de job
+function createJobCard(job) {
+    const statusBadge = getStatusBadge(job.status);
+    const progress = getProgressPercent(job.current_step);
+    const logs = job.logs ? job.logs.slice(-5) : [];
+    
+    return `
+        <div class="card job-card status-${job.status}" id="job-${job.id}">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        <h6 class="mb-1">${job.filename}</h6>
+                        <small class="text-muted">ID: ${job.id.substring(0, 8)}...</small>
+                    </div>
+                    ${statusBadge}
+                </div>
+                
+                <div class="mb-2">
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped ${job.status === 'processing' ? 'progress-bar-animated' : ''}" 
+                             role="progressbar" 
+                             style="width: ${progress}%"
+                             aria-valuenow="${progress}" 
+                             aria-valuemin="0" 
+                             aria-valuemax="100">
+                            ${progress}%
+                        </div>
+                    </div>
+                    <small class="job-step mt-1">Étape: ${job.current_step || 'Initialisation'}</small>
+                </div>
+                
+                ${job.client_id ? `<p class="mb-2"><strong>Client:</strong> ${job.client_id}</p>` : ''}
+                ${job.error_message ? `<div class="alert alert-danger py-2 mb-2"><small>${job.error_message}</small></div>` : ''}
+                
+                ${logs.length > 0 ? `
+                    <details>
+                        <summary style="cursor: pointer;">Voir les logs (${logs.length})</summary>
+                        <div class="job-logs mt-2">
+                            ${logs.map(log => `<div><strong>${log.step}:</strong> ${log.message}</div>`).join('')}
+                        </div>
+                    </details>
+                ` : ''}
+            </div>
+        </div>
+    `;
+}
+
+// Mettre à jour une carte de job existante
+function updateJobCard(job) {
+    const existingCard = document.getElementById(`job-${job.id}`);
+    if (existingCard) {
+        existingCard.outerHTML = createJobCard(job);
+    } else {
+        // Nouveau job, rafraîchir la liste
+        refreshJobs();
+    }
+}
+
+// Badge de statut
+function getStatusBadge(status) {
+    const badges = {
+        'pending': '<span class="badge bg-warning badge-status">En attente</span>',
+        'processing': '<span class="badge bg-info badge-status">En cours</span>',
+        'completed': '<span class="badge bg-success badge-status">✓ Terminé</span>',
+        'failed': '<span class="badge bg-danger badge-status">✗ Échec</span>'
+    };
+    return badges[status] || '<span class="badge bg-secondary badge-status">Inconnu</span>';
+}
+
+// Progression selon l'étape
+function getProgressPercent(step) {
+    const steps = {
+        'file_received': 10,
+        'text_extraction': 30,
+        'client_detection': 50,
+        'llm_processing': 75,
+        'json_generation': 90,
+        'completed': 100
+    };
+    return steps[step] || 0;
+}
+
+// Rafraîchir toutes les 30 secondes
+setInterval(refreshJobs, 30000);
+
+// Initial load
+updateStats();
+</script>
+{% endblock %}

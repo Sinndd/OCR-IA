@@ -1,0 +1,36 @@
+{
+  "client_id": "CLIENT_C",
+  "origine": "CLIENT_C",
+  "date_creation": "2026-02-10T00:00:00",
+  "date_derniere_modification": "2026-02-10T00:00:00",
+  "nb_exemples": 2,
+  "patterns_detectes": {
+    "mots_cles_detection": [
+      "BON DE COMMANDE",
+      "N° Cde:",
+      "Fournisseur:",
+      "Type:",
+      "Etablissement:",
+      "CP:",
+      "Lig.",
+      "Libellé (Nourriture)",
+      "Date Liv.",
+      "Page 1 - Style A"
+    ],
+    "format_dates": [
+      "\\d{2}/\\d{2}/\\d{4}"
+    ],
+    "codes_articles_typiques": [
+      "\\d{6}"
+    ],
+    "origines": [
+      "CLIENT_C"
+    ],
+    "filename_convention": "BC_*_StyleA.pdf"
+  },
+  "statistiques": {
+    "nb_bc_traites": 0,
+    "taux_reussite": 0.0,
+    "derniere_utilisation": null
+  }
+}

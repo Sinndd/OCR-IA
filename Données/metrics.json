@@ -1,0 +1,71 @@
+{
+  "extractions": [
+    {
+      "filename": "02323-1631-1.json",
+      "client": "API",
+      "products": 5,
+      "timestamp": 1768302516.1301298,
+      "status": "corrected"
+    },
+    {
+      "filename": "1435312.json",
+      "client": "NEWREST",
+      "products": 19,
+      "timestamp": 1768302855.669426,
+      "status": "pending"
+    },
+    {
+      "filename": "6458647.json",
+      "client": "API",
+      "products": 6,
+      "timestamp": 1768570128.1533928,
+      "status": "corrected"
+    },
+    {
+      "filename": "02313-7992-1.json",
+      "client": "PRO A PRO SUD CHAPONNAY",
+      "products": 21,
+      "timestamp": 1768986751.443608,
+      "status": "pending"
+    },
+    {
+      "filename": "21174-3556556-1.json",
+      "client": "UNKNOWN",
+      "products": 5,
+      "timestamp": 1772530035.437919,
+      "status": "pending"
+    }
+  ],
+  "clients": {
+    "API": {
+      "extractions": 2,
+      "products": 11,
+      "validated": 0,
+      "corrected": 2
+    },
+    "NEWREST": {
+      "extractions": 1,
+      "products": 19,
+      "validated": 0,
+      "corrected": 0
+    },
+    "PRO A PRO SUD CHAPONNAY": {
+      "extractions": 1,
+      "products": 21,
+      "validated": 0,
+      "corrected": 0
+    },
+    "UNKNOWN": {
+      "extractions": 1,
+      "products": 5,
+      "validated": 0,
+      "corrected": 0
+    }
+  },
+  "global_stats": {
+    "total_extractions": 5,
+    "total_products": 56,
+    "total_validated": 0,
+    "total_corrected": 2
+  }
+}

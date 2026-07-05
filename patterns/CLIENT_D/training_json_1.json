@@ -1,0 +1,35 @@
+{
+  "commandes": [
+    {
+      "entete": {
+        "origine": "CLIENT_D",
+        "codeEtablissement": "1449",
+        "codeFournisseur": "BORDEAUX",
+        "codePostal": "75001",
+        "numCommande": "2986847",
+        "idCommande": "1449-2986847-1",
+        "dateCommande": 20260207,
+        "heureCommande": "",
+        "dateLivraison": 20260210,
+        "commentaireEntete": "Commande groupée - Multi-sites\nFacturation centralisée",
+        "modeTransport": "L",
+        "typeCommande": "220",
+        "origineCommande": "D",
+        "version": "ACE"
+      },
+      "detailCommande": {
+        "produits": [
+          {
+            "numLigne": 1,
+            "codeArticle": "234366",
+            "codeArticlePerso": "234366",
+            "libelle": "CONNECTEUR ÉTANCHE IP67 M12-5P",
+            "quantite": 58.0,
+            "commentaire": ""
+          }
+        ],
+        "nbLignes": 1
+      }
+    }
+  ]
+}
