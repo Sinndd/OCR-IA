@@ -2,76 +2,116 @@
 
 ## Objectif
 
-Ce projet a pour but d'extraire automatiquement des données structurées (au format JSON métier) à partir de bons de commande PDF, en appliquant des règles métier strictes et en utilisant l'OCR, LLaVA (via Ollama) et des scripts Python robustes. L'objectif est d'obtenir des fichiers JSON exploitables pour l'intégration EDI, avec une validation forte et une visualisation claire des résultats.
+Ce projet extrait automatiquement des données structurées (JSON métier) à partir de bons de commande (PDF, HTML, TXT), en combinant extraction de texte, détection du client, un LLM local (via Ollama) piloté par des exemples spécifiques à chaque client, et des règles métier de validation/correction. L'objectif est de produire des JSON exploitables pour l'intégration EDI.
 
-## Fonctionnement général
+Le système s'utilise soit via une application web (upload, suivi des jobs, entraînement, statistiques), soit via des scripts CLI, soit via une API REST (intégration n8n / email entrant).
 
-- **ocr.py** :
-  - Pipeline principal.
-  - Prend en entrée un ou plusieurs PDF de bons de commande.
-  - Applique l'OCR si besoin, extrait le texte, interroge LLaVA pour générer un JSON structuré.
-  - Valide et corrige les données extraites selon les règles métier (dates, clients, agences, produits, etc.).
-  - Génère un ou plusieurs fichiers JSON (un par commande détectée dans le PDF).
-  - Affiche un résumé et les éventuelles erreurs de validation.
+## Architecture actuelle
 
-- **visualize.py** :
-  - Permet d'afficher de façon lisible le contenu d'un ou plusieurs fichiers JSON générés.
-  - Affiche les entêtes, les produits, et fait des vérifications/fuzzy-matching sur les agences/clients.
+### Application web (`app.py`)
 
-## Utilisation
+Application Flask + Flask-SocketIO (port 5001, `python app.py`). Pages principales :
+- `/` : upload de bons de commande
+- `/results` : résultats de la dernière extraction
+- `/training` : entraînement (finetune / pipeline / RAG)
+- `/stats` : statistiques d'extraction (`Données/metrics.json`)
+- `/monitoring` : suivi temps réel des jobs (WebSocket)
+- `/failed-jobs` : gestion des jobs en échec
 
-### Extraction
+API REST (utilisée notamment par le workflow n8n, voir `Documentation/GUIDE_N8N_EMAIL.md`) :
+- `POST /api/extract` : soumet un fichier, traitement asynchrone via file de jobs
+- `GET /api/status/<job_id>` (alias `/api/result/<job_id>`) : statut / résultat d'un job
+- `GET /api/jobs`, `POST /api/retry/<job_id>`
 
+La route `/validate` permet de valider ou corriger une extraction depuis l'UI ; une correction est réinjectée comme nouvel exemple d'apprentissage dans `patterns/CLIENT_<id>/`, ce qui améliore les extractions suivantes pour ce client.
+
+
+### File de traitement (`job_manager.py`, `job_processor.py`)
+
+- `job_manager.py` : persistance SQLite (`jobs.db`) des jobs et de leurs logs (statuts `PENDING`/`PROCESSING`/`COMPLETED`/`FAILED`, étapes détaillées).
+- `job_processor.py` : worker en mémoire (thread + `queue.Queue`, pas de dépendance externe type Celery/Redis) qui exécute le pipeline d'extraction pour chaque job soumis et notifie l'UI via WebSocket.
+
+L'upload synchrone depuis `/` (subprocess CLI) et l'API asynchrone `/api/extract` (import direct) sont deux chemins distincts qui appellent tous les deux le même moteur d'extraction.
+
+### Moteur d'extraction (`Production/ocr_smart.py`)
+
+`SmartExtractor` est le moteur réellement utilisé en production. Pipeline (`process_bc()`) :
+1. Extraction du texte (PDF via PyMuPDF, HTML, TXT)
+2. Détection du client par score de mots-clés/origine sur `patterns/CLIENT_*/metadata.json`
+3. Appel au LLM (Ollama, modèle par défaut `qwen2.5:7b`) avec un prompt système contenant les règles métier fixes et jusqu'à 8 exemples du client les plus similaires au document courant
+4. Nettoyage, normalisation et validation/réparation du JSON produit (structure, codes articles, dates)
+
+CLI :
 ```sh
-python ocr.py \
-  --input ./BC/Bon_de_commande_simple_35303_INFLIGHT.pdf \
-  --out-dir resultats/ \
-  --agences-file refs/agencesPAP.txt \
-  --clients-file refs/clients.txt
+python Production/ocr_smart.py --input Données/BC/mon_bc.pdf --out-dir Données/resultats/
+python Production/ocr_smart.py --input Données/BC/mon_bc.pdf --client-id NEWREST --model qwen2.5:7b --debug
 ```
 
-Les fichiers JSON générés sont placés dans `resultats/` et nommés selon le schéma :
-- `commande_<numCommande>.json` (ex : `commande_01142-32721-1.json`)
+`visualize.py` affiche de façon lisible un JSON généré (`python visualize.py --input Données/resultats/xxx.json`).
 
-### Visualisation
+### Patterns par client (`patterns/`)
+
+Un dossier par client (`CLIENT_A` à `CLIENT_H`) contenant :
+- `metadata.json` : mots-clés de détection, formats de dates, conventions de nommage — généré par `Administration/ocr_train.py`, consommé par `SmartExtractor.detect_client()`
+- `training_bc_N.txt` / `training_json_N.json` : exemples few-shot (BC + JSON attendu) utilisés par le LLM
+- `prompt.md` : prompt spécifique au client, écrit à la main (utilisé par `training/rag_system.py`, pas par `ocr_smart.py`)
+- `patterns_cache.json` : cache de patterns généralisés par client, invalidé à chaque correction validée depuis l'UI
+
+### Administration (`Administration/`)
+
+- `ocr_train.py` : crée/étend les patterns d'un client à partir d'exemples (BC + JSON attendu)
+  ```sh
+  python Administration/ocr_train.py --client-id NEWREST --bc-samples BC/ex1.pdf --expected-json ex1.json
+  python Administration/ocr_train.py --client-id NEWREST --add-sample BC/ex2.pdf --add-json ex2.json
+  ```
+- `ocr_evaluate.py` : compare les JSON générés à des JSON attendus (`examples/<client_id>/exemple_*/`) et calcule une précision par champ
+  ```sh
+  python Administration/ocr_evaluate.py --client-id API --debug
+  ```
+- `ocr_manager.py` : gestion des patterns (`--list`, `--client-id X --info`, `--stats`, `--export`/`--import`)
+
+### RAG et entraînement (`training/`)
+
+- `rag_system.py` (FAISS) : système RAG **actuellement branché** sur l'app web (`/training`, `/api/rag/*`)
+- `rag_qdrant.py` / `migrate_qdrant.py` / `view_qdrant.py` / `visualize_qdrant_3d.py` : piste alternative basée sur Qdrant, explorée en parallèle mais pas intégrée à l'app
+- `finetune_llm.py` : prépare un dataset et fine-tune (QLoRA) `Qwen2.5-7B-Instruct` à partir des exemples clients — outillé mais aucun modèle fine-tuné n'a été produit à ce jour (`training/finetuned_model/` vide)
+- `time_predictor.py` : `BayesianTimePredictor`, estime le temps d'extraction d'un document (modèle persisté dans `time_model.pkl`)
+- `pipeline_ocr.py` : orchestrateur autonome alternatif (OCR → RAG → LLM → JSON → apprentissage), indépendant du couple `job_processor.py`/`ocr_smart.py`
+
+### Données (`Données/`)
+
+- `BC/` : bons de commande d'exemple (PDF/HTML/TXT)
+- `refs/agencesPAP.txt`, `refs/clients.txt` : listes de référence pour le fuzzy matching (agences, clients)
+- `resultats/` : JSON générés
+- `metrics.json` : historique des extractions (alimente `/stats` et le mécanisme de validation)
+
+### Intégration email (n8n)
+
+`n8n_workflow.json` + `Documentation/GUIDE_N8N_EMAIL.md` décrivent un workflow n8n qui surveille une boîte mail (IMAP), filtre les emails contenant un bon de commande et déclenche `POST /api/extract`.
+
+## Tests
 
 ```sh
-python visualize.py --input resultats/commande_01142-32721-1.json
+pytest tests/ -v
 ```
 
-## État actuel & problèmes rencontrés
+- `tests/test_job_manager.py` : création/transition de statut/retry des jobs (SQLite temporaire)
+- `tests/test_json_comparator.py` : comparaison JSON attendu/obtenu (`JSONComparator`)
 
-- Le pipeline fonctionne et génère des JSON métier à partir des PDF.
-- La validation métier est stricte (dates, clients, agences, produits, etc.).
-- Le visualizer permet d'inspecter les JSON générés.
+CI GitHub Actions (`.github/workflows/ci.yml`) : exécute la suite `pytest` sur push/PR vers `master`/`main`/`feature/**`.
 
-**Problèmes actuels :**
+`test_branche.sh` est un smoke-test manuel (hors CI) qui lance une extraction sur un BC d'exemple et vérifie la génération du cache de patterns — utile avant de merger une branche expérimentale.
 
-1. **Génération incomplète des commandes :**
-   - Pour certains PDF multi-commandes, seul le deuxième JSON est généré, alors que le PDF contient plusieurs commandes (ex : 2 attendues, 1 générée).
-   - Le détail des produits dans la deuxième commande est incomplet (4 produits extraits au lieu de 9 attendus).
+## Installation
 
-2. **Nommage des fichiers JSON :**
-   - Le nommage n'est pas strictement conforme au format attendu (`commande_01142-32721-2.json`), parfois un underscore remplace le tiret.
+```sh
+pip install -r requirements.txt
+pip install -r requirements-dev.txt   # pour les tests
+```
 
-3. **Extraction des produits (visualizer) :**
-   - Pour la première commande, le visualizer affiche un produit générique ("Produit 1") avec un code article et une quantité par défaut, au lieu des vraies valeurs extraites du PDF.
-   - Les champs code article, quantité et libellé ne sont pas correctement extraits ou transmis dans le JSON.
+Nécessite [Ollama](https://ollama.com) avec au moins le modèle `qwen2.5:7b` installé (`ollama pull qwen2.5:7b`).
 
-4. **Validation stricte :**
-   - Si la validation échoue (dates manquantes, structure incorrecte), aucun JSON n'est généré, ce qui complique le debug.
+## État connu / points d'attention
 
-## Prochaines étapes recommandées
-
-- Corriger la logique de regroupement et d'extraction des produits pour chaque commande (s'assurer que tous les produits sont extraits et associés à la bonne date de livraison).
-- Uniformiser le nommage des fichiers JSON générés (`commande_<numCommande>.json` avec des tirets).
-- Améliorer la robustesse de l'extraction des champs produits (codeArticle, libelle, quantite) pour éviter les valeurs par défaut.
-- (Optionnel) Permettre la génération du JSON même en cas d'erreur de validation, pour faciliter le debug.
-
-## Exemples attendus
-
-Voir les fichiers `exemple1.json` et `exemple2.json` pour le format et le contenu attendus (structure, nombre de produits, valeurs extraites).
-
----
-
-Pour toute anomalie, vérifier la sortie console de `ocr.py` (erreurs de validation, debug LLaVA) et comparer les JSON générés avec les exemples fournis.
+- `training/rag_system.py` (FAISS) et `training/rag_qdrant.py` (Qdrant) coexistent ; seul le premier est branché sur l'app web.
+- Le fine-tuning (`training/finetune_llm.py`) est outillé mais non exploité en production.
