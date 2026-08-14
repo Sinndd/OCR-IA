@@ -7,6 +7,10 @@ Gère la queue et exécute les extractions en background
 import threading
 import queue
 import time
+import os
+import smtplib
+from datetime import datetime
+from email.mime.text import MIMEText
 from pathlib import Path
 from typing import Callable, Optional, Dict, Any
 from job_manager import JobManager, JobStatus, JobStep
@@ -23,7 +27,8 @@ class JobProcessor:
         agences_file: Path,
         clients_file: Path,
         out_dir: Path,
-        on_job_update: Optional[Callable[[str], None]] = None
+        on_job_update: Optional[Callable[[str], None]] = None,
+        alerts_log_path: Optional[Path] = None
     ):
         """
         Args:
@@ -33,6 +38,7 @@ class JobProcessor:
             clients_file: Fichier des clients
             out_dir: Dossier de sortie des JSON
             on_job_update: Callback appelé à chaque mise à jour (pour WebSocket)
+            alerts_log_path: Fichier de journal des alertes critiques (échecs de job)
         """
         self.job_manager = job_manager
         self.patterns_dir = patterns_dir
@@ -40,7 +46,8 @@ class JobProcessor:
         self.clients_file = clients_file
         self.out_dir = out_dir
         self.on_job_update = on_job_update
-        
+        self.alerts_log_path = alerts_log_path or Path("Données/alerts_critical.log")
+
         self.job_queue = queue.Queue()
         self.worker_thread = None
         self.running = False
@@ -89,11 +96,58 @@ class JobProcessor:
                 self.on_job_update(job_id)
             except Exception as e:
                 print(f"⚠️ Erreur callback: {e}")
+
+    def _send_alert(self, job_id: str, filename: str, error_msg: str):
+        """
+        Déclenche une alerte critique lors de l'échec d'un job :
+        écriture dans un journal d'alerte dédié + email si SMTP configuré.
+        """
+        timestamp = datetime.now().isoformat(timespec="seconds")
+        alert_line = (
+            f"[{timestamp}] CRITICAL - Job {job_id} FAILED - "
+            f"file={filename} - error={error_msg}\n"
+        )
+
+        try:
+            self.alerts_log_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(self.alerts_log_path, "a", encoding="utf-8") as f:
+                f.write(alert_line)
+        except Exception as e:
+            print(f"⚠️ Impossible d'écrire l'alerte dans le journal: {e}")
+
+        print(f"🚨 ALERTE CRITIQUE - Job {job_id} ({filename}) en échec: {error_msg}")
+
+        smtp_host = os.environ.get("ALERT_SMTP_HOST")
+        alert_to = os.environ.get("ALERT_EMAIL_TO")
+        if not smtp_host or not alert_to:
+            return
+
+        try:
+            smtp_port = int(os.environ.get("ALERT_SMTP_PORT", "587"))
+            smtp_user = os.environ.get("ALERT_SMTP_USER")
+            smtp_password = os.environ.get("ALERT_SMTP_PASSWORD")
+            alert_from = os.environ.get("ALERT_EMAIL_FROM", smtp_user or "ocr-alerting@local")
+
+            message = MIMEText(alert_line)
+            message["Subject"] = f"[OCR ProàPro] Échec extraction - job {job_id}"
+            message["From"] = alert_from
+            message["To"] = alert_to
+
+            with smtplib.SMTP(smtp_host, smtp_port, timeout=10) as server:
+                server.starttls()
+                if smtp_user and smtp_password:
+                    server.login(smtp_user, smtp_password)
+                server.sendmail(alert_from, [alert_to], message.as_string())
+
+            print(f"📧 Alerte email envoyée à {alert_to}")
+        except Exception as e:
+            print(f"⚠️ Échec de l'envoi de l'alerte email: {e}")
     
     def _process_job(self, job_id: str):
         """
         Traite un job complet : extraction texte → détection client → LLM → JSON
         """
+        job = None
         try:
             # Récupérer le job
             job = self.job_manager.get_job(job_id)
@@ -202,5 +256,8 @@ class JobProcessor:
                 JobStatus.FAILED,
                 error_message=error_msg
             )
-            
+
             self._notify_update(job_id)
+
+            filename = job['filename'] if job else 'inconnu'
+            self._send_alert(job_id, filename, error_msg)
