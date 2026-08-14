@@ -6,6 +6,8 @@ import json
 import tempfile
 import subprocess
 import sys
+import hmac
+from functools import wraps
 
 # Import job management
 from job_manager import JobManager, JobStatus, JobStep
@@ -29,6 +31,24 @@ METRICS_FILE = Path("Données/metrics.json")
 
 # Initialiser le système de jobs
 job_manager = JobManager(db_path="jobs.db")
+
+# Clé API pour sécuriser les routes REST (n8n / intégrations externes)
+API_KEY = os.environ.get("OCR_API_KEY")
+if not API_KEY:
+    API_KEY = "dev-only-insecure-key"
+    print("⚠️  OCR_API_KEY non défini : utilisation d'une clé de développement. "
+          "Définissez la variable d'environnement OCR_API_KEY en production.")
+
+
+def require_api_key(f):
+    """Exige un header X-API-KEY valide (401 sinon) sur les routes de l'API REST."""
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        provided_key = request.headers.get("X-API-KEY", "")
+        if not provided_key or not hmac.compare_digest(provided_key, API_KEY):
+            return jsonify({"success": False, "error": "Unauthorized: clé API manquante ou invalide"}), 401
+        return f(*args, **kwargs)
+    return decorated
 
 def notify_job_update(job_id: str):
     """Callback pour notifier les clients WebSocket"""
@@ -729,6 +749,7 @@ def validate_extraction():
 # ============================================================
 
 @app.route('/api/extract', methods=['POST'])
+@require_api_key
 def api_extract():
     """
     API d'extraction pour n8n
@@ -790,6 +811,7 @@ def api_extract():
 
 
 @app.route('/api/result/<job_id>', methods=['GET'])
+@require_api_key
 def api_get_result(job_id):
     """
     API: Renvoie TOUS les JSONs correspondant au job_id.
@@ -861,6 +883,7 @@ def api_get_result(job_id):
 
 @app.route('/api/status/<job_id>', methods=['GET'])
 @app.route('/api/result/<job_id>', methods=['GET'])  # Alias pour n8n
+@require_api_key
 def api_job_status(job_id):
     """Récupère le statut d'un job OU le contenu d'un fichier résultat par son nom"""
     print(f"🔍 Recherche du fichier: {job_id}")
@@ -903,6 +926,7 @@ def api_job_status(job_id):
 
 
 @app.route('/api/jobs', methods=['GET'])
+@require_api_key
 def api_list_jobs():
     """Liste tous les jobs (avec filtres optionnels)"""
     status_filter = request.args.get('status')
@@ -925,6 +949,7 @@ def api_list_jobs():
 
 
 @app.route('/api/retry/<job_id>', methods=['POST'])
+@require_api_key
 def api_retry_job(job_id):
     """Relance un job échoué"""
     job = job_manager.get_job(job_id)
