@@ -3,246 +3,278 @@
 {% block title %}Monitoring - OCR PRO A PRO{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2 class="mb-4">📊 Monitoring en Temps Réel</h2>
-    
-    <!-- Stats globales -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title">Total Jobs</h5>
-                    <h2 id="stat-total" class="text-primary">0</h2>
-                </div>
-            </div>
+<div class="container" style="max-width: 1400px; margin: 0 auto; padding: 2rem;">
+    <div style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h1 style="font-size: 2rem; font-weight: 700; color: #ffffff; margin-bottom: 0.5rem;">
+                📡 Monitoring en temps réel
+            </h1>
+            <p style="color: #888; font-size: 0.95rem;">
+                Suivi live de tous les jobs d'extraction
+            </p>
         </div>
-        <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title">En cours</h5>
-                    <h2 id="stat-processing" class="text-info">0</h2>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title">Terminés</h5>
-                    <h2 id="stat-completed" class="text-success">0</h2>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title">Échecs</h5>
-                    <h2 id="stat-failed" class="text-danger">0</h2>
-                </div>
-            </div>
+        <div id="connection-status" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 999px; background: #1a1a1a; border: 1px solid #2a2a2a; font-size: 0.85rem; color: #888;">
+            <span id="connection-dot" style="width: 8px; height: 8px; border-radius: 50%; background: #666; flex-shrink: 0;"></span>
+            <span id="connection-text">Connexion...</span>
         </div>
     </div>
-    
+
+    <!-- Stats globales (cliquables pour filtrer) -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1.25rem; margin-bottom: 2rem;">
+        <div class="stat-card active" data-filter="all" onclick="setFilter('all')" style="background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);">
+            <div style="font-size: 1.75rem; margin-bottom: 0.25rem;">🗂️</div>
+            <div style="font-size: 1.75rem; font-weight: 700; color: #fff;" id="stat-total">0</div>
+            <div style="color: rgba(255,255,255,0.8); font-size: 0.85rem;">Total</div>
+        </div>
+        <div class="stat-card" data-filter="pending" onclick="setFilter('pending')" style="background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);">
+            <div style="font-size: 1.75rem; margin-bottom: 0.25rem;">⏳</div>
+            <div style="font-size: 1.75rem; font-weight: 700; color: #fff;" id="stat-pending">0</div>
+            <div style="color: rgba(255,255,255,0.8); font-size: 0.85rem;">En attente</div>
+        </div>
+        <div class="stat-card" data-filter="processing" onclick="setFilter('processing')" style="background: linear-gradient(135deg, #4f46e5 0%, #818cf8 100%);">
+            <div style="font-size: 1.75rem; margin-bottom: 0.25rem;">⚙️</div>
+            <div style="font-size: 1.75rem; font-weight: 700; color: #fff;" id="stat-processing">0</div>
+            <div style="color: rgba(255,255,255,0.8); font-size: 0.85rem;">En cours</div>
+        </div>
+        <div class="stat-card" data-filter="completed" onclick="setFilter('completed')" style="background: linear-gradient(135deg, #10b981 0%, #34d399 100%);">
+            <div style="font-size: 1.75rem; margin-bottom: 0.25rem;">✅</div>
+            <div style="font-size: 1.75rem; font-weight: 700; color: #fff;" id="stat-completed">0</div>
+            <div style="color: rgba(255,255,255,0.8); font-size: 0.85rem;">Terminés</div>
+        </div>
+        <div class="stat-card" data-filter="failed" onclick="setFilter('failed')" style="background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);">
+            <div style="font-size: 1.75rem; margin-bottom: 0.25rem;">❌</div>
+            <div style="font-size: 1.75rem; font-weight: 700; color: #fff;" id="stat-failed">0</div>
+            <div style="color: rgba(255,255,255,0.8); font-size: 0.85rem;">Échecs</div>
+        </div>
+    </div>
+
     <!-- Liste des jobs -->
     <div class="card">
-        <div class="card-header">
-            <h5 class="mb-0">Jobs Actifs</h5>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+            <h2 style="font-size: 1.5rem; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 0.5rem; margin: 0;">
+                <span>🗂️</span> Jobs <span id="filter-label" style="color: #888; font-weight: 400; font-size: 1rem;"></span>
+            </h2>
+            <button class="btn btn-secondary" id="reset-filter-btn" onclick="setFilter('all')" style="display: none;">✕ Réinitialiser le filtre</button>
         </div>
-        <div class="card-body" id="jobs-container">
-            <p class="text-muted">Chargement...</p>
+        <div id="jobs-container">
+            <p style="color: #666;">Chargement...</p>
         </div>
     </div>
 </div>
 
 <style>
-.job-card {
-    border-left: 4px solid #6c757d;
-    margin-bottom: 1rem;
-    transition: all 0.3s ease;
-}
+    .stat-card {
+        border: none;
+        border-radius: 1rem;
+        padding: 1.25rem;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        outline: 2px solid transparent;
+        outline-offset: 2px;
+    }
 
-.job-card.status-pending {
-    border-left-color: #ffc107;
-}
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
 
-.job-card.status-processing {
-    border-left-color: #17a2b8;
-}
+    .stat-card.active {
+        outline-color: #ffffff;
+    }
 
-.job-card.status-completed {
-    border-left-color: #28a745;
-}
+    .job-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-left: 4px solid #6c757d;
+        border-radius: 0.75rem;
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 1rem;
+        transition: all 0.25s ease;
+    }
 
-.job-card.status-failed {
-    border-left-color: #dc3545;
-}
+    .job-card:hover {
+        border-color: var(--accent);
+    }
 
-.progress {
-    height: 25px;
-}
+    .job-card.status-pending { border-left-color: var(--warning); }
+    .job-card.status-processing { border-left-color: var(--accent); }
+    .job-card.status-completed { border-left-color: var(--success); }
+    .job-card.status-failed { border-left-color: var(--error); }
 
-.job-step {
-    font-size: 0.85rem;
-    color: #6c757d;
-}
+    .badge-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.3rem 0.8rem;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
 
-.job-logs {
-    max-height: 150px;
-    overflow-y: auto;
-    font-size: 0.8rem;
-    background: #f8f9fa;
-    padding: 0.5rem;
-    border-radius: 4px;
-}
+    .progress-track {
+        width: 100%;
+        height: 8px;
+        background: #0a0a0a;
+        border-radius: 999px;
+        overflow: hidden;
+        margin: 0.75rem 0 0.35rem;
+    }
 
-.badge-status {
-    font-size: 0.9rem;
-    padding: 0.4rem 0.8rem;
-}
+    .progress-fill-bar {
+        height: 100%;
+        border-radius: 999px;
+        transition: width 0.4s ease;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.35; }
+    }
+
+    .dot-live {
+        animation: pulse 1.5s infinite;
+    }
 </style>
 
 <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 <script>
-// Connexion WebSocket
+const STATUS_META = {
+    pending:    { label: 'En attente', color: 'var(--warning)', bg: 'rgba(245, 158, 11, 0.15)' },
+    processing: { label: 'En cours',   color: 'var(--accent)',  bg: 'rgba(99, 102, 241, 0.15)' },
+    completed:  { label: 'Terminé',    color: 'var(--success)', bg: 'rgba(16, 185, 129, 0.15)' },
+    failed:     { label: 'Échec',      color: 'var(--error)',   bg: 'rgba(239, 68, 68, 0.15)' },
+};
+
+const STEP_LABELS = {
+    file_received: 'Fichier reçu',
+    text_extraction: 'Extraction du texte',
+    client_detection: 'Détection du client',
+    llm_processing: 'Traitement LLM',
+    json_generation: 'Génération du JSON',
+    completed: 'Terminé',
+};
+
+const STEP_PROGRESS = {
+    file_received: 10, text_extraction: 30, client_detection: 50,
+    llm_processing: 75, json_generation: 90, completed: 100,
+};
+
+let allJobs = [];
+let currentFilter = 'all';
+
 const socket = io();
 
 socket.on('connect', () => {
-    console.log('✅ Connecté au serveur WebSocket');
-    refreshJobs();
+    setConnectionState(true);
+    socket.emit('request_jobs', {});
 });
 
+socket.on('disconnect', () => setConnectionState(false));
+
 socket.on('job_update', (job) => {
-    console.log('📡 Job mis à jour:', job.id);
-    updateJobCard(job);
-    updateStats();
+    const idx = allJobs.findIndex(j => j.id === job.id);
+    if (idx >= 0) {
+        allJobs[idx] = job;
+    } else {
+        allJobs.unshift(job);
+    }
+    render();
 });
 
 socket.on('jobs_list', (data) => {
-    console.log('📋 Liste des jobs reçue:', data.jobs.length);
-    renderJobs(data.jobs);
+    allJobs = data.jobs || [];
+    render();
 });
 
-// Demander la liste des jobs
-function refreshJobs() {
-    socket.emit('request_jobs', {});
+function setConnectionState(connected) {
+    const dot = document.getElementById('connection-dot');
+    dot.style.background = connected ? 'var(--success)' : 'var(--error)';
+    dot.className = connected ? 'dot-live' : '';
+    document.getElementById('connection-text').textContent = connected ? 'Connecté en direct' : 'Déconnecté';
 }
 
-// Mettre à jour les stats
-function updateStats() {
-    fetch('/api/jobs')
-        .then(r => r.json())
-        .then(data => {
-            if (data.success) {
-                const jobs = data.jobs;
-                document.getElementById('stat-total').textContent = jobs.length;
-                document.getElementById('stat-processing').textContent = 
-                    jobs.filter(j => j.status === 'processing').length;
-                document.getElementById('stat-completed').textContent = 
-                    jobs.filter(j => j.status === 'completed').length;
-                document.getElementById('stat-failed').textContent = 
-                    jobs.filter(j => j.status === 'failed').length;
-            }
-        });
+function setFilter(status) {
+    currentFilter = status;
+    document.querySelectorAll('.stat-card').forEach(card => {
+        card.classList.toggle('active', card.dataset.filter === status);
+    });
+    const label = document.getElementById('filter-label');
+    const resetBtn = document.getElementById('reset-filter-btn');
+    if (status === 'all') {
+        label.textContent = '';
+        resetBtn.style.display = 'none';
+    } else {
+        label.textContent = '— ' + (STATUS_META[status] ? STATUS_META[status].label : status);
+        resetBtn.style.display = 'inline-flex';
+    }
+    render();
 }
 
-// Rendre la liste des jobs
-function renderJobs(jobs) {
+function render() {
+    updateStats();
     const container = document.getElementById('jobs-container');
-    
+    const jobs = currentFilter === 'all' ? allJobs : allJobs.filter(j => j.status === currentFilter);
+
     if (jobs.length === 0) {
-        container.innerHTML = '<p class="text-muted">Aucun job en cours</p>';
+        container.innerHTML = `
+            <div style="text-align: center; padding: 3rem; color: #666;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🗂️</div>
+                <p>${allJobs.length === 0 ? "Aucun job pour l'instant" : "Aucun job pour ce filtre"}</p>
+            </div>
+        `;
         return;
     }
-    
-    container.innerHTML = jobs.map(job => createJobCard(job)).join('');
-    updateStats();
+
+    container.innerHTML = jobs.map(createJobCard).join('');
 }
 
-// Créer une carte de job
+function updateStats() {
+    document.getElementById('stat-total').textContent = allJobs.length;
+    document.getElementById('stat-pending').textContent = allJobs.filter(j => j.status === 'pending').length;
+    document.getElementById('stat-processing').textContent = allJobs.filter(j => j.status === 'processing').length;
+    document.getElementById('stat-completed').textContent = allJobs.filter(j => j.status === 'completed').length;
+    document.getElementById('stat-failed').textContent = allJobs.filter(j => j.status === 'failed').length;
+}
+
 function createJobCard(job) {
-    const statusBadge = getStatusBadge(job.status);
-    const progress = getProgressPercent(job.current_step);
-    const logs = job.logs ? job.logs.slice(-5) : [];
-    
+    const meta = STATUS_META[job.status] || { label: job.status, color: '#888', bg: '#1a1a1a' };
+    const progress = STEP_PROGRESS[job.current_step] ?? (job.status === 'completed' ? 100 : 0);
+
     return `
-        <div class="card job-card status-${job.status}" id="job-${job.id}">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                    <div>
-                        <h6 class="mb-1">${job.filename}</h6>
-                        <small class="text-muted">ID: ${job.id.substring(0, 8)}...</small>
+        <div class="job-card status-${job.status}">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap;">
+                <div style="min-width: 0;">
+                    <div style="color: #fff; font-weight: 600; margin-bottom: 0.15rem; word-break: break-word;">${escapeHtml(job.filename)}</div>
+                    <div style="color: #666; font-size: 0.8rem;">
+                        ID ${job.id.substring(0, 8)}...${job.client_id ? ' · Client ' + escapeHtml(job.client_id) : ''}
                     </div>
-                    ${statusBadge}
                 </div>
-                
-                <div class="mb-2">
-                    <div class="progress">
-                        <div class="progress-bar progress-bar-striped ${job.status === 'processing' ? 'progress-bar-animated' : ''}" 
-                             role="progressbar" 
-                             style="width: ${progress}%"
-                             aria-valuenow="${progress}" 
-                             aria-valuemin="0" 
-                             aria-valuemax="100">
-                            ${progress}%
-                        </div>
-                    </div>
-                    <small class="job-step mt-1">Étape: ${job.current_step || 'Initialisation'}</small>
-                </div>
-                
-                ${job.client_id ? `<p class="mb-2"><strong>Client:</strong> ${job.client_id}</p>` : ''}
-                ${job.error_message ? `<div class="alert alert-danger py-2 mb-2"><small>${job.error_message}</small></div>` : ''}
-                
-                ${logs.length > 0 ? `
-                    <details>
-                        <summary style="cursor: pointer;">Voir les logs (${logs.length})</summary>
-                        <div class="job-logs mt-2">
-                            ${logs.map(log => `<div><strong>${log.step}:</strong> ${log.message}</div>`).join('')}
-                        </div>
-                    </details>
-                ` : ''}
+                <span class="badge-pill" style="color: ${meta.color}; background: ${meta.bg};">${meta.label}</span>
             </div>
+
+            <div class="progress-track">
+                <div class="progress-fill-bar" style="width: ${progress}%; background: ${meta.color};"></div>
+            </div>
+            <div style="color: #888; font-size: 0.8rem;">${STEP_LABELS[job.current_step] || 'Initialisation'}</div>
+
+            ${job.error_message ? `
+                <div style="margin-top: 0.75rem; padding: 0.75rem 1rem; border-radius: 0.5rem; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; font-size: 0.85rem;">
+                    ${escapeHtml(job.error_message)}
+                </div>
+            ` : ''}
         </div>
     `;
 }
 
-// Mettre à jour une carte de job existante
-function updateJobCard(job) {
-    const existingCard = document.getElementById(`job-${job.id}`);
-    if (existingCard) {
-        existingCard.outerHTML = createJobCard(job);
-    } else {
-        // Nouveau job, rafraîchir la liste
-        refreshJobs();
-    }
+function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str ?? '';
+    return div.innerHTML;
 }
 
-// Badge de statut
-function getStatusBadge(status) {
-    const badges = {
-        'pending': '<span class="badge bg-warning badge-status">En attente</span>',
-        'processing': '<span class="badge bg-info badge-status">En cours</span>',
-        'completed': '<span class="badge bg-success badge-status">✓ Terminé</span>',
-        'failed': '<span class="badge bg-danger badge-status">✗ Échec</span>'
-    };
-    return badges[status] || '<span class="badge bg-secondary badge-status">Inconnu</span>';
-}
-
-// Progression selon l'étape
-function getProgressPercent(step) {
-    const steps = {
-        'file_received': 10,
-        'text_extraction': 30,
-        'client_detection': 50,
-        'llm_processing': 75,
-        'json_generation': 90,
-        'completed': 100
-    };
-    return steps[step] || 0;
-}
-
-// Rafraîchir toutes les 30 secondes
-setInterval(refreshJobs, 30000);
-
-// Initial load
-updateStats();
+// Rafraîchissement de secours toutes les 30s (si le WebSocket a un souci)
+setInterval(() => socket.emit('request_jobs', {}), 30000);
 </script>
 {% endblock %}

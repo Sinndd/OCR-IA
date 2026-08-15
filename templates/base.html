@@ -299,6 +299,10 @@
         {% block content %}{% endblock %}
     </main>
 
+    <script>
+        // Clé API interne, utilisée par les appels fetch() de l'app vers /api/* protégées
+        window.OCR_API_KEY = "{{ api_key }}";
+    </script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>

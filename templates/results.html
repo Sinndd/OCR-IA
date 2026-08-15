@@ -1294,7 +1294,9 @@
                     console.log('🔄 Rechargement des données pour:', fileToFetch, 'index:', savedIndex);
                     
                     // Récupérer les données mises à jour depuis le serveur
-                    fetch('/api/result/' + encodeURIComponent(fileToFetch))
+                    fetch('/api/result/' + encodeURIComponent(fileToFetch), {
+                        headers: { 'X-API-KEY': window.OCR_API_KEY }
+                    })
                         .then(r => {
                             console.log('📡 Réponse API reçue:', r.status);
                             return r.json();

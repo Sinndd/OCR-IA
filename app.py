@@ -50,6 +50,12 @@ def require_api_key(f):
         return f(*args, **kwargs)
     return decorated
 
+@app.context_processor
+def inject_api_key():
+    """Expose la clé API aux templates, pour les appels fetch() internes vers /api/*."""
+    return {'api_key': API_KEY}
+
+
 def notify_job_update(job_id: str):
     """Callback pour notifier les clients WebSocket"""
     try:
@@ -925,7 +931,6 @@ def api_job_status(job_id):
 
 
 @app.route('/api/jobs', methods=['GET'])
-@require_api_key
 def api_list_jobs():
     """Liste tous les jobs (avec filtres optionnels)"""
     status_filter = request.args.get('status')
@@ -948,7 +953,6 @@ def api_list_jobs():
 
 
 @app.route('/api/retry/<job_id>', methods=['POST'])
-@require_api_key
 def api_retry_job(job_id):
     """Relance un job échoué"""
     job = job_manager.get_job(job_id)
