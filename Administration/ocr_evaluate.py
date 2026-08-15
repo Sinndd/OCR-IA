@@ -9,9 +9,7 @@ import json
 import sys
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
-from datetime import datetime
 import tempfile
-import shutil
 
 # Import du système de production
 sys.path.insert(0, str(Path(__file__).parent.parent / "Production"))

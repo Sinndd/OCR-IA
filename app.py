@@ -10,7 +10,7 @@ import hmac
 from functools import wraps
 
 # Import job management
-from job_manager import JobManager, JobStatus, JobStep
+from job_manager import JobManager, JobStatus
 from job_processor import JobProcessor
 
 app = Flask(__name__)
@@ -106,7 +106,7 @@ def index():
             if metadata_file.exists():
                 try:
                     with open(metadata_file, 'r', encoding='utf-8') as f:
-                        metadata = json.load(f)
+                        json.load(f)
                         clients.append(client_dir.name)
                 except:
                     pass
@@ -890,8 +890,7 @@ def api_job_status(job_id):
     
     # Essayer d'abord de trouver le fichier directement par son nom
     import glob
-    import os
-    
+
     # Chercher le fichier dans le dossier de sortie
     search_pattern = str(OUT_DIR / f"{job_id}*.json")
     print(f"🔎 Pattern de recherche: {search_pattern}")

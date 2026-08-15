@@ -6,11 +6,10 @@ Utilise les caractéristiques du BC pour estimer le temps de traitement
 avec un intervalle de confiance.
 """
 
-import json
 import numpy as np
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, Tuple, Optional
+from typing import Dict
 import pickle
 
 # Fichier de données historiques

@@ -6,13 +6,12 @@ Gère la queue et exécute les extractions en background
 
 import threading
 import queue
-import time
 import os
 import smtplib
 from datetime import datetime
 from email.mime.text import MIMEText
 from pathlib import Path
-from typing import Callable, Optional, Dict, Any
+from typing import Callable, Optional
 from job_manager import JobManager, JobStatus, JobStep
 from Production.ocr_smart import SmartExtractor
 

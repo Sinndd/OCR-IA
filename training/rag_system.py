@@ -15,9 +15,8 @@ Usage:
 
 import argparse
 import json
-import os
 from pathlib import Path
-from typing import List, Dict, Any, Optional, Tuple
+from typing import List, Dict, Any, Tuple
 from datetime import datetime
 import hashlib
 import re
@@ -56,7 +55,6 @@ class DocumentStore:
         try:
             from sentence_transformers import SentenceTransformer
             import faiss
-            import numpy as np
         except ImportError as e:
             print(f"❌ Dépendances manquantes: {e}")
             print("Installez: pip install sentence-transformers faiss-cpu")
@@ -291,7 +289,7 @@ class RAGExtractor:
         
         # Prédiction du temps d'extraction
         try:
-            from training.time_predictor import predict_extraction_time, record_extraction_time
+            from training.time_predictor import predict_extraction_time
             prediction = predict_extraction_time(text, file_type)
             print(f"\n⏱️ Temps estimé: {prediction['estimated_time']}s "
                   f"(intervalle: {prediction['confidence_interval'][0]}s - {prediction['confidence_interval'][1]}s)")
@@ -351,7 +349,7 @@ class RAGExtractor:
         try:
             from training.time_predictor import record_extraction_time
             record_extraction_time(text, file_type, actual_time)
-        except Exception as e:
+        except Exception:
             pass  # Silencieux si erreur
         
         print(f"{'='*60}\n")

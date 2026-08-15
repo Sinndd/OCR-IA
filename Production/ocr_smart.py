@@ -15,7 +15,6 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 from datetime import datetime
 from collections import Counter
-from difflib import SequenceMatcher
 import requests
 
 import fitz  # PyMuPDF
