@@ -3,18 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}OCR PRO A PRO{% endblock %}</title>
-    
+    <title>{% block title %}OCR AI{% endblock %}</title>
+
+    <script>
+        // Appliqué avant le CSS pour éviter un flash du mauvais thème
+        document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'dark');
+    </script>
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+
+    <!-- Icônes -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+        }
+
+        .icon {
+            width: 1.1em;
+            height: 1.1em;
+            vertical-align: -0.15em;
+            stroke-width: 2;
         }
 
         :root {
@@ -30,6 +45,15 @@
             --warning: #f59e0b;
             --error: #ef4444;
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="light"] {
+            --bg-dark: #f7f7f8;
+            --bg-card: #ffffff;
+            --bg-card-hover: #f0f0f2;
+            --border-color: #e2e2e6;
+            --text-primary: #16171a;
+            --text-secondary: #5b5d66;
         }
 
         body {
@@ -88,6 +112,25 @@
         .nav-links a.active {
             color: var(--text-primary);
             background: var(--bg-card-hover);
+        }
+
+        .nav-item-wip {
+            position: relative;
+        }
+
+        .wip-badge {
+            position: absolute;
+            bottom: -0.35rem;
+            right: -0.35rem;
+            background: var(--error);
+            color: white;
+            font-size: 0.6rem;
+            font-weight: 700;
+            line-height: 1;
+            padding: 0.15rem 0.35rem;
+            border-radius: 999px;
+            pointer-events: none;
+            white-space: nowrap;
         }
 
         /* Container */
@@ -269,14 +312,15 @@
     <!-- Navigation -->
     <nav>
         <div class="nav-container">
-            <div class="logo">⚡ OCR PRO A PRO</div>
+            <div class="logo">OCR AI</div>
             <ul class="nav-links">
-                <li><a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">📄 Extraction</a></li>
-                <li><a href="{{ url_for('stats') }}" class="{% if request.endpoint == 'stats' %}active{% endif %}">📊 Statistiques</a></li>
-                <li><a href="{{ url_for('training') }}" class="{% if request.endpoint == 'training' %}active{% endif %}">🎓 Entraînement</a></li>
-                <li><a href="{{ url_for('monitoring') }}" class="{% if request.endpoint == 'monitoring' %}active{% endif %}">📡 Monitoring</a></li>
-                <li><a href="{{ url_for('failed_jobs') }}" class="{% if request.endpoint == 'failed_jobs' %}active{% endif %}">🔧 Échecs</a></li>
+                <li><a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}"><i data-lucide="file-text" class="icon"></i> Extraction</a></li>
+                <li><a href="{{ url_for('stats') }}" class="{% if request.endpoint == 'stats' %}active{% endif %}"><i data-lucide="bar-chart-3" class="icon"></i> Statistiques</a></li>
+                <li class="nav-item-wip"><a href="{{ url_for('training') }}" class="{% if request.endpoint == 'training' %}active{% endif %}"><i data-lucide="graduation-cap" class="icon"></i> Entraînement</a><span class="wip-badge">bêta</span></li>
+                <li><a href="{{ url_for('monitoring') }}" class="{% if request.endpoint == 'monitoring' %}active{% endif %}"><i data-lucide="radio" class="icon"></i> Monitoring</a></li>
+                <li><a href="{{ url_for('failed_jobs') }}" class="{% if request.endpoint == 'failed_jobs' %}active{% endif %}"><i data-lucide="wrench" class="icon"></i> Échecs</a></li>
             </ul>
+            <button type="button" id="themeToggle" class="btn btn-secondary" aria-label="Changer de thème (clair/sombre)"><i data-lucide="moon" class="icon"></i></button>
         </div>
     </nav>
 
@@ -286,7 +330,7 @@
             <div class="flash-messages">
                 {% for category, message in messages %}
                     <div class="flash {{ category }}">
-                        {% if category == 'success' %}✅{% elif category == 'error' %}❌{% else %}⚠️{% endif %}
+                        {% if category == 'success' %}<i data-lucide="check-circle" class="icon"></i>{% elif category == 'error' %}<i data-lucide="x-circle" class="icon"></i>{% else %}<i data-lucide="alert-triangle" class="icon"></i>{% endif %}
                         {{ message }}
                     </div>
                 {% endfor %}
@@ -302,6 +346,24 @@
     <script>
         // Clé API interne, utilisée par les appels fetch() de l'app vers /api/* protégées
         window.OCR_API_KEY = "{{ api_key }}";
+    </script>
+    <script>
+        lucide.createIcons();
+
+        const themeToggle = document.getElementById('themeToggle');
+        function updateThemeIcon() {
+            const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+            themeToggle.innerHTML = `<i data-lucide="${isLight ? 'sun' : 'moon'}" class="icon"></i>`;
+            lucide.createIcons();
+        }
+        updateThemeIcon();
+        themeToggle.addEventListener('click', () => {
+            const current = document.documentElement.getAttribute('data-theme');
+            const next = current === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+            updateThemeIcon();
+        });
     </script>
     {% block extra_js %}{% endblock %}
 </body>

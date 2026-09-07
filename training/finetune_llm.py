@@ -72,7 +72,7 @@ class DatasetPreparer:
                             "client": client_id,
                             "source": str(bc_file)
                         })
-                        print(f"  ✅ Paire trouvée: {bc_file.name} + {json_file.name}")
+                        print(f"  Paire trouvée: {bc_file.name} + {json_file.name}")
                 except Exception as e:
                     print(f"  ⚠️ Erreur: {e}")
         
@@ -134,7 +134,7 @@ class LLMFineTuner:
             from datasets import load_dataset
             import torch
         except ImportError as e:
-            print(f"❌ Dépendances manquantes: {e}")
+            print(f"Dépendances manquantes: {e}")
             print("Installez: pip install transformers datasets peft accelerate bitsandbytes torch")
             return False
         
@@ -265,7 +265,7 @@ class LLMFineTuner:
         with open(self.output_dir / "metadata.json", 'w') as f:
             json.dump(metadata, f, indent=2)
         
-        print(f"\n✅ Fine-tuning terminé!")
+        print(f"\nFine-tuning terminé!")
         print(f"📂 Modèle sauvegardé dans: {self.output_dir}")
         return True
 
@@ -285,13 +285,13 @@ class FineTunedInference:
             from peft import PeftModel
             import torch
         except ImportError as e:
-            print(f"❌ Dépendances manquantes: {e}")
+            print(f"Dépendances manquantes: {e}")
             return False
         
         # Charger les métadonnées
         metadata_file = self.model_dir / "metadata.json"
         if not metadata_file.exists():
-            print(f"❌ Métadonnées introuvables: {metadata_file}")
+            print(f"Métadonnées introuvables: {metadata_file}")
             return False
         
         with open(metadata_file) as f:
@@ -320,13 +320,13 @@ class FineTunedInference:
         self.model = PeftModel.from_pretrained(base, self.model_dir / "lora_adapter")
         self.model.eval()
         
-        print("✅ Modèle chargé!")
+        print("Modèle chargé!")
         return True
     
     def extract(self, text: str) -> Dict:
         """Extrait les données d'un texte de BC"""
         if not self.model or not self.tokenizer:
-            print("❌ Modèle non chargé")
+            print("Modèle non chargé")
             return {}
         
         import torch
@@ -382,7 +382,7 @@ def main():
         pairs = preparer.collect_training_pairs()
         
         if not pairs:
-            print("❌ Aucune paire d'entraînement trouvée!")
+            print("Aucune paire d'entraînement trouvée!")
             print("💡 Ajoutez des fichiers training_bc_N.txt et training_json_N.json dans les dossiers patterns/CLIENT_*/")
             return
         
@@ -390,14 +390,14 @@ def main():
         output_file = TRAINING_DATA_DIR / "training_data.jsonl"
         preparer.save_training_data(formatted, output_file)
         
-        print(f"\n✅ {len(formatted)} exemples préparés")
+        print(f"\n{len(formatted)} exemples préparés")
         print(f"📂 Fichier: {output_file}")
         print(f"\n💡 Lancez maintenant: python finetune_llm.py --train")
     
     elif args.train:
         training_file = TRAINING_DATA_DIR / "training_data.jsonl"
         if not training_file.exists():
-            print("❌ Données d'entraînement introuvables!")
+            print("Données d'entraînement introuvables!")
             print("💡 Lancez d'abord: python finetune_llm.py --prepare")
             return
         
@@ -406,7 +406,7 @@ def main():
     
     elif args.test:
         if not (OUTPUT_MODEL_DIR / "metadata.json").exists():
-            print("❌ Modèle fine-tuné introuvable!")
+            print("Modèle fine-tuné introuvable!")
             print("💡 Lancez d'abord: python finetune_llm.py --train")
             return
         

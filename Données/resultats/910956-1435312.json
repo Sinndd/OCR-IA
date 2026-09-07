@@ -1,0 +1,160 @@
+{
+  "commandes": [
+    {
+      "entete": {
+        "origine": "NEWREST",
+        "codeEtablissement": "910956",
+        "codeFournisseur": "LONGUEIL",
+        "codePostal": "60126",
+        "numCommande": "910956-1435312",
+        "idCommande": "910956-1435312",
+        "dateCommande": 20250106,
+        "heureCommande": "100600",
+        "dateLivraison": 20250109,
+        "commentaireEntete": "",
+        "modeTransport": "L",
+        "typeCommande": "220",
+        "origineCommande": "D",
+        "version": "ACE"
+      },
+      "detailCommande": {
+        "produits": [
+          {
+            "numLigne": 1,
+            "codeArticle": "150508",
+            "libelle": "PORC JAMBON CUIT CHOIX DD TR 40/50G UE#488(150508)",
+            "quantite": 5.500,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 2,
+            "codeArticle": "27402",
+            "libelle": "OEUF ENTIER LIQUIDE 2L#3731(27402)",
+            "quantite": 2.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 3,
+            "codeArticle": "67156",
+            "libelle": "BEURRE DOUX 250G#2967(67156)",
+            "quantite": 3.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 4,
+            "codeArticle": "36908",
+            "libelle": "CANDIA#30650(36908)",
+            "quantite": 1.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 5,
+            "codeArticle": "59796",
+            "libelle": "EMMENTAL PASTEURISE RAPE 29%MG 1KG UE#30931(59796)",
+            "quantite": 1.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 6,
+            "codeArticle": "26467",
+            "libelle": "BLEU BRESSE GASTRONOMIE PASTEURISE 31%MG 500G#3012(26467)",
+            "quantite": 1.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 7,
+            "codeArticle": "162425",
+            "libelle": "BRIE PASTEURISE 25%MG POINTE 180G#19425(162425)",
+            "quantite": 3.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 8,
+            "codeArticle": "24022",
+            "libelle": "BUCHETTE LAIT MELANGE PASTEURISE 180G#19440(24022)",
+            "quantite": 3.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 9,
+            "codeArticle": "153316",
+            "libelle": "CAMEMBERT PASTEURISE 22%MG NU 240G#3044(153316)",
+            "quantite": 3.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 10,
+            "codeArticle": "24272",
+            "libelle": "CARRE PASTEURISE 21%MG 200G#3060(24272)",
+            "quantite": 3.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 11,
+            "codeArticle": "117990",
+            "libelle": "CHEVRE BUCHETTE PASTEURISE 180G#3024(117990)",
+            "quantite": 3.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 12,
+            "codeArticle": "24266",
+            "libelle": "MUNSTER PASTEURISE 27%MG 200G AOP#3689(24266)",
+            "quantite": 3.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 13,
+            "codeArticle": "27314",
+            "libelle": "PONT L EVEQUE PETIT PASTEURISE 22%MG 220G AOP#21468(27314)",
+            "quantite": 3.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 14,
+            "codeArticle": "24096",
+            "libelle": "ROUY PASTEURISE 25%MG 320G#3971(24096)",
+            "quantite": 2.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 15,
+            "codeArticle": "159301",
+            "libelle": "SAINT PAULIN PASTEURISE 26%MG ENTIER 1,8KG#20715(159301)",
+            "quantite": 1.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 16,
+            "codeArticle": "27348",
+            "libelle": "YAOURT BRASSE FRUITS MORCEAUX PANACHE 125G#4244(27348)",
+            "quantite": 6.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 17,
+            "codeArticle": "150359",
+            "libelle": "YAOURT BREBIS SOIGNON NATURE 110G#51835(150359)",
+            "quantite": 6.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 18,
+            "codeArticle": "39871",
+            "libelle": "YAOURT NATURE 125G YOPLAIT#20868(39871)",
+            "quantite": 1.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 19,
+            "codeArticle": "40133",
+            "libelle": "YAOURT NATURE SEAU 5KG#12203(40133)",
+            "quantite": 1.000,
+            "commentaire": ""
+          }
+        ],
+        "nbLignes": 19
+      }
+    }
+  ]
+}

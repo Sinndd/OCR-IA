@@ -1,0 +1,41 @@
+{
+  "commandes": [
+    {
+      "entete": {
+        "origine": "CLIENT_B",
+        "codeEtablissement": "02313",
+        "codeFournisseur": "CHAPONNAY",
+        "codePostal": "69970",
+        "numCommande": "02313-7992-2",
+        "idCommande": "02313-7992-2",
+        "dateCommande": 20240108,
+        "heureCommande": 64000,
+        "dateLivraison": 20240110,
+        "commentaireEntete": "",
+        "modeTransport": "L",
+        "typeCommande": "220",
+        "origineCommande": "D",
+        "version": "ACE"
+      },
+      "detailCommande": {
+        "produits": [
+          {
+            "numLigne": 1,
+            "codeArticle": "155472",
+            "libelle": "[A] Cheddar fondu 84T 26% 1,033K (Union Européenne) (METRO CHEF)",
+            "quantite": 1.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 2,
+            "codeArticle": null,
+            "libelle": null,
+            "quantite": null,
+            "commentaire": ""
+          }
+        ],
+        "nbLignes": 2
+      }
+    }
+  ]
+}

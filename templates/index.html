@@ -162,17 +162,17 @@
 {% block content %}
 <div class="container">
     <div class="hero">
-        <h1>🚀 Extraction Intelligente</h1>
+        <h1><i data-lucide="sparkles" class="icon"></i> Extraction Intelligente</h1>
         <p>Uploadez vos bons de commande (PDF, HTML, TXT) et laissez l'IA extraire automatiquement les données structurées</p>
     </div>
 
     <div class="upload-section">
         <form id="uploadForm" method="POST" action="{{ url_for('upload_file') }}" enctype="multipart/form-data">
             <div class="drop-zone" id="dropZone" style="max-width: 600px; margin: 0 auto;">
-                <div class="drop-zone-icon">📁</div>
+                <div class="drop-zone-icon"><i data-lucide="upload-cloud" class="icon"></i></div>
                 <h3>Glisser-déposer vos fichiers</h3>
                 <p>ou cliquez pour sélectionner</p>
-                <input type="file" id="fileInput" name="files" multiple accept=".pdf,.html,.htm,.txt" required>
+                <input type="file" id="fileInput" name="files" multiple accept=".pdf,.html,.htm,.txt" required aria-label="Sélectionner des bons de commande à uploader">
                 <button type="button" class="btn btn-secondary" onclick="document.getElementById('fileInput').click()">
                     Parcourir les fichiers
                 </button>
@@ -203,7 +203,7 @@
 
             <div class="action-buttons">
                 <button type="submit" class="btn btn-primary btn-large" id="submitBtn" disabled>
-                    ⚡ Lancer l'extraction
+                    <i data-lucide="play" class="icon"></i> Lancer l'extraction
                 </button>
             </div>
         </form>
@@ -211,6 +211,12 @@
 </div>
 
 <script>
+    function escapeHtml(str) {
+        const div = document.createElement('div');
+        div.textContent = str ?? '';
+        return div.innerHTML;
+    }
+
     const dropZone = document.getElementById('dropZone');
     const fileInput = document.getElementById('fileInput');
     const fileList = document.getElementById('fileList');
@@ -267,16 +273,17 @@
             fileItem.className = 'file-item';
             fileItem.innerHTML = `
                 <div class="file-info">
-                    <span class="file-icon">📄</span>
+                    <span class="file-icon"><i data-lucide="file-text" class="icon"></i></span>
                     <div>
-                        <div class="file-name">${file.name}</div>
+                        <div class="file-name">${escapeHtml(file.name)}</div>
                         <div class="file-size">${formatFileSize(file.size)}</div>
                     </div>
                 </div>
-                <button type="button" class="file-remove" onclick="removeFile(${index})">✕</button>
+                <button type="button" class="file-remove" onclick="removeFile(${index})" aria-label="Retirer ${escapeHtml(file.name)} de la sélection"><i data-lucide="x" class="icon"></i></button>
             `;
             fileList.appendChild(fileItem);
         });
+        lucide.createIcons();
     }
 
     function removeFile(index) {
@@ -308,7 +315,8 @@
         // Afficher la progression
         progressContainer.classList.add('active');
         submitBtn.disabled = true;
-        submitBtn.textContent = '⏳ Traitement en cours...';
+        submitBtn.innerHTML = '<i data-lucide="loader-2" class="icon" style="animation: rotation 1s linear infinite;"></i> Traitement en cours...';
+        lucide.createIcons();
         
         // Progression réaliste : monte progressivement jusqu'à 95%
         let progress = 0;
@@ -363,7 +371,8 @@
             clearInterval(progressInterval);
             progressText.textContent = 'Erreur lors du traitement';
             submitBtn.disabled = false;
-            submitBtn.textContent = '⚡ Lancer l\'extraction';
+            submitBtn.innerHTML = '<i data-lucide="play" class="icon"></i> Lancer l\'extraction';
+            lucide.createIcons();
             console.error('Erreur:', error);
         }
     });

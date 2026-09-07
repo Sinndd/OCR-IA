@@ -341,7 +341,7 @@ if __name__ == "__main__":
             
             predictor.update(text_with_prods, ftype, actual)
         
-        print(f"✅ {len(simulations)} simulations enregistrées")
+        print(f"{len(simulations)} simulations enregistrées")
         stats = predictor.get_stats()
         print(f"📊 Erreur moyenne: {stats['mean_error']}s")
     

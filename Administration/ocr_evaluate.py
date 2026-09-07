@@ -131,19 +131,24 @@ class OCREvaluator:
         patterns_dir: Path,
         agences_file: Path,
         clients_file: Path,
-        debug: bool = False
+        debug: bool = False,
+        model: str = None
     ):
         self.patterns_dir = patterns_dir
         self.agences_file = agences_file
         self.clients_file = clients_file
         self.debug = debug
-        
+
         # Initialiser l'extracteur
-        self.extractor = SmartExtractor(
+        extractor_kwargs = dict(
             patterns_dir=patterns_dir,
             agences_file=agences_file,
             clients_file=clients_file,
             debug=debug
+        )
+        if model:
+            extractor_kwargs["model"] = model
+        self.extractor = SmartExtractor(**extractor_kwargs
         )
     
     def evaluate_client(
@@ -177,7 +182,7 @@ class OCREvaluator:
         examples = self._find_examples(test_dir)
         
         if not examples:
-            print("❌ Aucun exemple trouvé")
+            print("Aucun exemple trouvé")
             return {"error": "No examples found"}
         
         print(f"🧪 {len(examples)} exemple(s) à tester\n")
@@ -193,9 +198,9 @@ class OCREvaluator:
             results.append(result)
             
             if result["success"]:
-                print(f"  ✅ Précision: {result['precision']:.1f}%")
+                print(f"  Précision: {result['precision']:.1f}%")
             else:
-                print(f"  ❌ Erreur: {result.get('error', 'Unknown')}")
+                print(f"  Erreur: {result.get('error', 'Unknown')}")
             print()
         
         # Statistiques globales
@@ -210,7 +215,7 @@ class OCREvaluator:
         
         # Afficher les erreurs détaillées si debug
         if self.debug and global_comparator.stats['errors']:
-            print(f"\n❌ Erreurs détectées:\n")
+            print(f"\nErreurs détectées:\n")
             for error in global_comparator.stats['errors'][:10]:  # Limiter à 10
                 print(f"  • {error['path']}")
                 print(f"    Attendu: {error['expected']}")
@@ -385,15 +390,23 @@ Exemples d'utilisation:
         type=Path,
         help="Fichier JSON pour sauvegarder les résultats"
     )
-    
+
+    parser.add_argument(
+        '--model',
+        type=str,
+        default=None,
+        help="Modèle LLM à utiliser (défaut: celui de SmartExtractor, qwen2.5:7b)"
+    )
+
     args = parser.parse_args()
-    
+
     # Créer l'évaluateur
     evaluator = OCREvaluator(
         patterns_dir=args.patterns_dir,
         agences_file=args.agences_file,
         clients_file=args.clients_file,
-        debug=args.debug
+        debug=args.debug,
+        model=args.model
     )
     
     # Évaluer

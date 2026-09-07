@@ -33,5 +33,10 @@
   ],
   "examples_count": 3,
   "last_updated": "2026-03-02",
-  "bc_reference": "BC_2986847_StyleD"
+  "bc_reference": "BC_2986847_StyleD",
+  "statistiques": {
+    "nb_bc_traites": 8,
+    "derniere_utilisation": "2026-08-25T15:08:29.395129",
+    "taux_reussite": 1.0
+  }
 }

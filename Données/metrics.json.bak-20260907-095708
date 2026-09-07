@@ -1,0 +1,312 @@
+{
+  "extractions": [
+    {
+      "filename": "02323-1631-1.json",
+      "client": "API",
+      "products": 5,
+      "timestamp": 1768302516.1301298,
+      "status": "corrected"
+    },
+    {
+      "filename": "1435312.json",
+      "client": "NEWREST",
+      "products": 19,
+      "timestamp": 1768302855.669426,
+      "status": "pending"
+    },
+    {
+      "filename": "6458647.json",
+      "client": "API",
+      "products": 6,
+      "timestamp": 1768570128.1533928,
+      "status": "corrected"
+    },
+    {
+      "filename": "02313-7992-1.json",
+      "client": "PRO A PRO SUD CHAPONNAY",
+      "products": 21,
+      "timestamp": 1768986751.443608,
+      "status": "validated"
+    },
+    {
+      "filename": "21174-3556556-1.json",
+      "client": "UNKNOWN",
+      "products": 5,
+      "timestamp": 1772530035.437919,
+      "status": "pending"
+    },
+    {
+      "filename": "910922-32721-1.json",
+      "client": "CLIENT_A",
+      "products": 1,
+      "timestamp": 1787668735.605002,
+      "status": "pending"
+    },
+    {
+      "filename": "910922-32721-2.json",
+      "client": "CLIENT_A",
+      "products": 9,
+      "timestamp": 1787668735.605008,
+      "status": "pending"
+    },
+    {
+      "filename": "02313-7992-2.json",
+      "client": "CLIENT_B",
+      "products": 2,
+      "timestamp": 1787669865.6209621,
+      "status": "pending"
+    },
+    {
+      "filename": "02313-7992-2.json",
+      "client": "CLIENT_B",
+      "products": 2,
+      "timestamp": 1787670241.773005,
+      "status": "pending"
+    },
+    {
+      "filename": "59000-4683575-1.json",
+      "client": "API",
+      "products": 8,
+      "timestamp": 1787670482.898012,
+      "status": "validated"
+    },
+    {
+      "filename": "2986847.json",
+      "client": "CLIENT_D",
+      "products": 2,
+      "timestamp": 1787756049.4701371,
+      "status": "corrected"
+    },
+    {
+      "filename": "137884-640501-1.json",
+      "client": "SPOT",
+      "products": 4,
+      "timestamp": 1787761929.7769978,
+      "status": "validated"
+    },
+    {
+      "filename": "02313-7992-1.json",
+      "client": "CLIENT_B",
+      "products": 15,
+      "timestamp": 1787849390.419894,
+      "status": "pending"
+    },
+    {
+      "filename": "910922-32721-1.json",
+      "client": "CLIENT_A",
+      "products": 1,
+      "timestamp": 1787849611.439446,
+      "status": "pending"
+    },
+    {
+      "filename": "910922-32721-2.json",
+      "client": "CLIENT_A",
+      "products": 1,
+      "timestamp": 1787849611.439453,
+      "status": "pending"
+    },
+    {
+      "filename": "910922-32721-3.json",
+      "client": "CLIENT_A",
+      "products": 8,
+      "timestamp": 1787849611.439453,
+      "status": "validated"
+    },
+    {
+      "filename": "910956-1435312.json",
+      "client": "NEWREST",
+      "products": 19,
+      "timestamp": 1788019100.5177112,
+      "status": "pending"
+    },
+    {
+      "filename": "02313-7992-3.json",
+      "client": "CLIENT_B",
+      "products": 3,
+      "timestamp": 1788106112.093507,
+      "status": "pending"
+    },
+    {
+      "filename": "910922-32721-3.json",
+      "client": "CLIENT_A",
+      "products": 10,
+      "timestamp": 1788106208.339056,
+      "status": "pending"
+    },
+    {
+      "filename": "02313-7992-3.json",
+      "client": "NEWREST",
+      "products": 1,
+      "timestamp": 1788106588.570751,
+      "status": "pending"
+    },
+    {
+      "filename": "910956-1435312.json",
+      "client": "CLIENT_A",
+      "products": 2,
+      "timestamp": 1788106927.396818,
+      "status": "pending"
+    },
+    {
+      "filename": "05284-1933-1.json",
+      "client": "API",
+      "products": 19,
+      "timestamp": 1788110299.6041899,
+      "status": "validated"
+    },
+    {
+      "filename": "05284-1933-1.json",
+      "client": "API",
+      "products": 19,
+      "timestamp": 1788110754.730357,
+      "status": "pending"
+    },
+    {
+      "filename": "6687-965509-1.json",
+      "client": "UNKNOWN",
+      "products": 6,
+      "timestamp": 1788511653.501927,
+      "status": "pending"
+    },
+    {
+      "filename": "6687-965509-2.json",
+      "client": "UNKNOWN",
+      "products": 1,
+      "timestamp": 1788511653.501931,
+      "status": "pending"
+    },
+    {
+      "filename": "6687-965509-3.json",
+      "client": "UNKNOWN",
+      "products": 1,
+      "timestamp": 1788511653.501934,
+      "status": "pending"
+    },
+    {
+      "filename": "7241-1216717-1.json",
+      "client": "UNKNOWN",
+      "products": 6,
+      "timestamp": 1788532248.342898,
+      "status": "validated"
+    },
+    {
+      "filename": "137884-640501-1.json",
+      "client": "SPOT",
+      "products": 4,
+      "timestamp": 1788538826.532911,
+      "status": "pending"
+    },
+    {
+      "filename": "05284-1933-1.json",
+      "client": "API",
+      "products": 19,
+      "timestamp": 1788699995.6325371,
+      "status": "pending"
+    },
+    {
+      "filename": "05284-1933-1.json",
+      "client": "API",
+      "products": 22,
+      "timestamp": 1788702028.299786,
+      "status": "pending"
+    },
+    {
+      "filename": "02313-7992-1.json",
+      "client": "API",
+      "products": 7,
+      "timestamp": 1788702217.668372,
+      "status": "pending"
+    },
+    {
+      "filename": "01142-32721-1.json",
+      "client": "API",
+      "products": 1,
+      "timestamp": 1788703080.0585222,
+      "status": "pending"
+    },
+    {
+      "filename": "01142-32721-2.json",
+      "client": "API",
+      "products": 8,
+      "timestamp": 1788703080.058524,
+      "status": "pending"
+    },
+    {
+      "filename": "01142-32721-1.json",
+      "client": "API",
+      "products": 1,
+      "timestamp": 1788703622.399182,
+      "status": "pending"
+    },
+    {
+      "filename": "01142-32721-2.json",
+      "client": "API",
+      "products": 8,
+      "timestamp": 1788703622.399186,
+      "status": "pending"
+    },
+    {
+      "filename": "59000-4683575-1.json",
+      "client": "API",
+      "products": 8,
+      "timestamp": 1788767656.717699,
+      "status": "pending"
+    }
+  ],
+  "clients": {
+    "API": {
+      "extractions": 13,
+      "products": 131,
+      "validated": 2,
+      "corrected": 2
+    },
+    "NEWREST": {
+      "extractions": 4,
+      "products": 58,
+      "validated": 0,
+      "corrected": 0
+    },
+    "PRO A PRO SUD CHAPONNAY": {
+      "extractions": 1,
+      "products": 21,
+      "validated": 1,
+      "corrected": 0
+    },
+    "UNKNOWN": {
+      "extractions": 5,
+      "products": 19,
+      "validated": 1,
+      "corrected": 0
+    },
+    "CLIENT_A": {
+      "extractions": 7,
+      "products": 32,
+      "validated": 1,
+      "corrected": 0
+    },
+    "CLIENT_B": {
+      "extractions": 4,
+      "products": 22,
+      "validated": 0,
+      "corrected": 0
+    },
+    "CLIENT_D": {
+      "extractions": 1,
+      "products": 2,
+      "validated": 0,
+      "corrected": 1
+    },
+    "SPOT": {
+      "extractions": 2,
+      "products": 8,
+      "validated": 1,
+      "corrected": 0
+    }
+  },
+  "global_stats": {
+    "total_extractions": 36,
+    "total_products": 293,
+    "total_validated": 6,
+    "total_corrected": 3
+  }
+}

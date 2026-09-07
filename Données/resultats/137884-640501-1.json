@@ -1,0 +1,55 @@
+{
+  "commandes": [
+    {
+      "entete": {
+        "origine": "SPOT",
+        "codeEtablissement": "137884",
+        "codeFournisseur": "NANCY",
+        "codePostal": "21000",
+        "numCommande": "137884-640501-1",
+        "idCommande": "137884-640501-1",
+        "dateCommande": 20260203,
+        "heureCommande": "183209",
+        "dateLivraison": 20260210,
+        "commentaireEntete": "Standard - Respecter normes CE\nEmballage individuel requis",
+        "modeTransport": "L",
+        "typeCommande": "220",
+        "origineCommande": "D",
+        "version": "ACE"
+      },
+      "detailCommande": {
+        "produits": [
+          {
+            "numLigne": 1,
+            "codeArticle": "579311",
+            "libelle": "TRANSISTOR MOSFET IRF540N TO-2",
+            "quantite": 39.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 2,
+            "codeArticle": "8926",
+            "libelle": "QUARTZ 16MHz HC-49S ±30ppm",
+            "quantite": 23.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 3,
+            "codeArticle": "3962",
+            "libelle": "MICROCONTRÔLEUR STM32F407VGT6",
+            "quantite": 319.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 4,
+            "codeArticle": "16271",
+            "libelle": "QUARTZ 16MHz HC-49S ±30ppm",
+            "quantite": 321.000,
+            "commentaire": ""
+          }
+        ],
+        "nbLignes": 4
+      }
+    }
+  ]
+}

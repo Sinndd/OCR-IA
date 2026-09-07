@@ -59,7 +59,7 @@ class JobProcessor:
         self.running = True
         self.worker_thread = threading.Thread(target=self._worker, daemon=True)
         self.worker_thread.start()
-        print("✅ Job processor started")
+        print("Job processor started")
     
     def stop(self):
         """Arrête le worker"""
@@ -86,7 +86,7 @@ class JobProcessor:
             except queue.Empty:
                 continue
             except Exception as e:
-                print(f"❌ Erreur worker: {e}")
+                print(f"Erreur worker: {e}")
     
     def _notify_update(self, job_id: str):
         """Notifie une mise à jour de job (pour WebSocket)"""
@@ -96,10 +96,10 @@ class JobProcessor:
             except Exception as e:
                 print(f"⚠️ Erreur callback: {e}")
 
-    def _send_alert(self, job_id: str, filename: str, error_msg: str):
+    def send_alert(self, job_id: str, filename: str, error_msg: str):
         """
         Déclenche une alerte critique lors de l'échec d'un job :
-        écriture dans un journal d'alerte dédié + email si SMTP configuré.
+        écriture dans un journal d'alerte dédié
         """
         timestamp = datetime.now().isoformat(timespec="seconds")
         alert_line = (
@@ -151,7 +151,7 @@ class JobProcessor:
             # Récupérer le job
             job = self.job_manager.get_job(job_id)
             if not job:
-                print(f"❌ Job {job_id} introuvable")
+                print(f"Job {job_id} introuvable")
                 return
             
             print(f"\n🔄 Traitement job {job_id}: {job['filename']}")
@@ -231,7 +231,7 @@ class JobProcessor:
             self.job_manager.update_job_step(
                 job_id,
                 JobStep.COMPLETED,
-                f"✅ Extraction terminée ({len(result.get('commandes', []))} commande(s))"
+                f"Extraction terminée ({len(result.get('commandes', []))} commande(s))"
             )
             
             self.job_manager.update_job_status(
@@ -243,12 +243,12 @@ class JobProcessor:
             
             self._notify_update(job_id)
             
-            print(f"✅ Job {job_id} terminé avec succès")
+            print(f"Job {job_id} terminé avec succès")
             
         except Exception as e:
             # En cas d'erreur
             error_msg = str(e)
-            print(f"❌ Job {job_id} échoué: {error_msg}")
+            print(f"Job {job_id} échoué: {error_msg}")
             
             self.job_manager.update_job_status(
                 job_id,
@@ -259,4 +259,4 @@ class JobProcessor:
             self._notify_update(job_id)
 
             filename = job['filename'] if job else 'inconnu'
-            self._send_alert(job_id, filename, error_msg)
+            self.send_alert(job_id, filename, error_msg)

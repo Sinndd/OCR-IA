@@ -1,0 +1,69 @@
+{
+  "commandes": [
+    {
+      "entete": {
+        "origine": "UNKNOWN",
+        "codeEtablissement": "7241",
+        "codeFournisseur": "METZ",
+        "codePostal": "75001",
+        "numCommande": "7241-1216717-1",
+        "idCommande": "7241-1216717-1",
+        "dateCommande": 20260207,
+        "heureCommande": "000000",
+        "dateLivraison": 20260214,
+        "commentaireEntete": "Contrôle qualité renforcé",
+        "modeTransport": "L",
+        "typeCommande": "220",
+        "origineCommande": "D",
+        "version": "ACE"
+      },
+      "detailCommande": {
+        "produits": [
+          {
+            "numLigne": 1,
+            "codeArticle": "4298",
+            "libelle": "DÉSINFECTANT CHLORHEXIDINE 500ml",
+            "quantite": 119.0,
+            "commentaire": "M³"
+          },
+          {
+            "numLigne": 2,
+            "codeArticle": "9361",
+            "libelle": "DÉSINFECTANT CHLORHEXIDINE 500ml",
+            "quantite": 484.0,
+            "commentaire": "LOT"
+          },
+          {
+            "numLigne": 3,
+            "codeArticle": "2611",
+            "libelle": "COMPRESSES STÉRILES 10x10cm x100",
+            "quantite": 6.0,
+            "commentaire": "SET"
+          },
+          {
+            "numLigne": 4,
+            "codeArticle": "6243",
+            "libelle": "DÉSINFECTANT CHLORHEXIDINE 500ml",
+            "quantite": 139.0,
+            "commentaire": "M³"
+          },
+          {
+            "numLigne": 5,
+            "codeArticle": "49160",
+            "libelle": "SERINGUE STÉRILE 5ml Luer-Lock",
+            "quantite": 395.0,
+            "commentaire": "KG"
+          },
+          {
+            "numLigne": 6,
+            "codeArticle": "863381",
+            "libelle": "AMOXICILLINE 1g - Flacon 12 gél",
+            "quantite": 90.0,
+            "commentaire": "PKG"
+          }
+        ],
+        "nbLignes": 6
+      }
+    }
+  ]
+}

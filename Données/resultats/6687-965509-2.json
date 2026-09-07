@@ -1,0 +1,34 @@
+{
+  "commandes": [
+    {
+      "entete": {
+        "origine": "UNKNOWN",
+        "codeEtablissement": "6687",
+        "codeFournisseur": "ANGERS",
+        "codePostal": "49000",
+        "numCommande": "6687-965509-2",
+        "idCommande": "6687-965509-2",
+        "dateCommande": 20260214,
+        "heureCommande": "000000",
+        "dateLivraison": 20260301,
+        "commentaireEntete": "Contrôle qualité renforcé",
+        "modeTransport": "L",
+        "typeCommande": "220",
+        "origineCommande": "D",
+        "version": "ACE"
+      },
+      "detailCommande": {
+        "produits": [
+          {
+            "numLigne": 1,
+            "codeArticle": "78191",
+            "libelle": "MICROCONTRÔLEUR STM32F407VGT6 LQFP1",
+            "quantite": 190.000,
+            "commentaire": ""
+          }
+        ],
+        "nbLignes": 1
+      }
+    }
+  ]
+}

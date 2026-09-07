@@ -1,0 +1,83 @@
+{
+  "commandes": [
+    {
+      "entete": {
+        "origine": "API",
+        "codeEtablissement": "01142",
+        "codeFournisseur": "CHALETTE",
+        "codePostal": "45120",
+        "numCommande": "01142-32721-2",
+        "idCommande": "01142-32721-2",
+        "dateCommande": 20250410,
+        "heureCommande": "100000",
+        "dateLivraison": 20250507,
+        "commentaireEntete": "",
+        "modeTransport": "L",
+        "typeCommande": "220",
+        "origineCommande": "D",
+        "version": "ACE"
+      },
+      "detailCommande": {
+        "produits": [
+          {
+            "numLigne": 1,
+            "codeArticle": "104525",
+            "libelle": "Amandes blanches en poudre 1K (Import) (PAS DE MARQUE)",
+            "quantite": 1.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 2,
+            "codeArticle": "151796",
+            "libelle": "Curry doux 1K (Import) (SAISSE)",
+            "quantite": 1.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 3,
+            "codeArticle": "151762",
+            "libelle": "Graines de pavot 1K (UE) (SAISSE)",
+            "quantite": 1.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 4,
+            "codeArticle": "22452",
+            "libelle": "Huile Meravella 1 L (Union Européenne) (BORGES)",
+            "quantite": 15.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 5,
+            "codeArticle": "21026",
+            "libelle": "Huile colza 1L Prix/L Livré/COLIS de 1 L Union Européenne (Union Européenne)",
+            "quantite": 15.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 6,
+            "codeArticle": "100744",
+            "libelle": "Paprika doux 1K (Import) (LA RONDE DES EP)",
+            "quantite": 1.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 7,
+            "codeArticle": "42138",
+            "libelle": "Sauce pesto alla genovese 500g (BARILLA)",
+            "quantite": 1.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 8,
+            "codeArticle": "34341",
+            "libelle": "Sauce soja 1L (KIKKOMAN)",
+            "quantite": 6.000,
+            "commentaire": ""
+          }
+        ],
+        "nbLignes": 8
+      }
+    }
+  ]
+}

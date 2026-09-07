@@ -56,7 +56,7 @@ class PatternManager:
         client_dir = self.patterns_dir / f"CLIENT_{client_id}"
         
         if not client_dir.exists():
-            print(f"❌ Client {client_id} introuvable")
+            print(f"Client {client_id} introuvable")
             return {}
         
         metadata_file = client_dir / "metadata.json"
@@ -81,7 +81,7 @@ class PatternManager:
             return metadata
         
         except Exception as e:
-            print(f"❌ Erreur lecture metadata: {e}")
+            print(f"Erreur lecture metadata: {e}")
             return {}
     
     def delete_client(self, client_id: str, confirm: bool = False) -> bool:
@@ -89,7 +89,7 @@ class PatternManager:
         client_dir = self.patterns_dir / f"CLIENT_{client_id}"
         
         if not client_dir.exists():
-            print(f"❌ Client {client_id} introuvable")
+            print(f"Client {client_id} introuvable")
             return False
         
         if not confirm:
@@ -99,10 +99,10 @@ class PatternManager:
         
         try:
             shutil.rmtree(client_dir)
-            print(f"✅ Client {client_id} supprimé")
+            print(f"Client {client_id} supprimé")
             return True
         except Exception as e:
-            print(f"❌ Erreur suppression: {e}")
+            print(f"Erreur suppression: {e}")
             return False
     
     def get_global_stats(self) -> Dict[str, Any]:
@@ -132,33 +132,33 @@ class PatternManager:
         client_dir = self.patterns_dir / f"CLIENT_{client_id}"
         
         if not client_dir.exists():
-            print(f"❌ Client {client_id} introuvable")
+            print(f"Client {client_id} introuvable")
             return False
         
         export_path = export_dir / f"CLIENT_{client_id}"
         
         try:
             shutil.copytree(client_dir, export_path)
-            print(f"✅ Client {client_id} exporté vers {export_path}")
+            print(f"Client {client_id} exporté vers {export_path}")
             return True
         except Exception as e:
-            print(f"❌ Erreur export: {e}")
+            print(f"Erreur export: {e}")
             return False
     
     def import_client(self, import_dir: Path) -> bool:
         """Importe les patterns d'un client"""
         if not import_dir.exists():
-            print(f"❌ Dossier {import_dir} introuvable")
+            print(f"Dossier {import_dir} introuvable")
             return False
         
         # Vérifier que c'est un dossier client valide
         if not import_dir.name.startswith("CLIENT_"):
-            print(f"❌ Dossier invalide (doit commencer par CLIENT_)")
+            print(f"Dossier invalide (doit commencer par CLIENT_)")
             return False
         
         metadata_file = import_dir / "metadata.json"
         if not metadata_file.exists():
-            print(f"❌ metadata.json introuvable")
+            print(f"metadata.json introuvable")
             return False
         
         # Copier vers patterns/
@@ -171,10 +171,10 @@ class PatternManager:
         
         try:
             shutil.copytree(import_dir, dest)
-            print(f"✅ Client importé dans {dest}")
+            print(f"Client importé dans {dest}")
             return True
         except Exception as e:
-            print(f"❌ Erreur import: {e}")
+            print(f"Erreur import: {e}")
             return False
 
 

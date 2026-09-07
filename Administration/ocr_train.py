@@ -32,7 +32,8 @@ class PatternTrainer:
         bc_samples: List[Path],
         expected_jsons: List[Path],
         replace: bool = False,
-        multi_json_mode: bool = False
+        multi_json_mode: bool = False,
+        prompt_file: Path = None
     ) -> bool:
         """
         Entraîne le système sur un nouveau client
@@ -49,31 +50,31 @@ class PatternTrainer:
         if not multi_json_mode:
             # Mode classique: 1 BC = 1 JSON
             if len(bc_samples) != len(expected_jsons):
-                print(f"❌ Erreur: {len(bc_samples)} BCs mais {len(expected_jsons)} JSONs")
+                print(f"Erreur: {len(bc_samples)} BCs mais {len(expected_jsons)} JSONs")
                 print(f"💡 Astuce: Si 1 BC génère plusieurs JSONs, utilisez --multi-json")
                 return False
         else:
             # Mode multi-json: 1 BC = N JSONs
             if len(bc_samples) != 1:
-                print(f"❌ Erreur en mode --multi-json: 1 seul BC attendu, mais {len(bc_samples)} fourni(s)")
+                print(f"Erreur en mode --multi-json: 1 seul BC attendu, mais {len(bc_samples)} fourni(s)")
                 return False
             if len(expected_jsons) == 0:
-                print(f"❌ Erreur: Au moins 1 JSON requis")
+                print(f"Erreur: Au moins 1 JSON requis")
                 return False
         
         if len(bc_samples) == 0:
-            print("❌ Erreur: Au moins 1 exemple requis")
+            print("Erreur: Au moins 1 exemple requis")
             return False
         
         # Vérifier que tous les fichiers existent
         for bc in bc_samples:
             if not bc.exists():
-                print(f"❌ BC introuvable: {bc}")
+                print(f"BC introuvable: {bc}")
                 return False
         
         for json_file in expected_jsons:
             if not json_file.exists():
-                print(f"❌ JSON introuvable: {json_file}")
+                print(f"JSON introuvable: {json_file}")
                 return False
         
         # Créer dossier client
@@ -88,7 +89,15 @@ class PatternTrainer:
             shutil.rmtree(client_dir)
         
         client_dir.mkdir(exist_ok=True)
-        
+
+        # Copier le prompt personnalise du client, s'il est fourni
+        if prompt_file:
+            if not prompt_file.exists():
+                print(f"⚠️  Prompt introuvable: {prompt_file} (ignoré)")
+            else:
+                shutil.copyfile(prompt_file, client_dir / "prompt.md")
+                print(f"✓ Prompt personnalisé sauvegardé: prompt.md")
+
         print(f"\n{'='*60}")
         print(f"🎓 ENTRAÎNEMENT CLIENT: {client_id}")
         print(f"📚 {len(bc_samples)} BC(s) avec {len(expected_jsons)} JSON(s)")
@@ -113,7 +122,7 @@ class PatternTrainer:
             # 1. Extraction texte du BC (une seule fois)
             bc_text = self._extract_text(bc_path)
             if not bc_text:
-                print(f"  ❌ Impossible d'extraire le texte")
+                print(f"  Impossible d'extraire le texte")
                 return False
             
             print(f"  ✓ {len(bc_text)} caractères extraits")
@@ -139,7 +148,7 @@ class PatternTrainer:
                     with open(json_path, 'r', encoding='utf-8') as f:
                         expected_json = json.load(f)
                 except Exception as e:
-                    print(f"    ❌ Erreur lecture JSON: {e}")
+                    print(f"    Erreur lecture JSON: {e}")
                     continue
                 
                 # Détection automatique de patterns
@@ -179,7 +188,7 @@ class PatternTrainer:
                 # 1. Extraction texte du BC
                 bc_text = self._extract_text(bc_path)
                 if not bc_text:
-                    print(f"  ❌ Impossible d'extraire le texte")
+                    print(f"  Impossible d'extraire le texte")
                     continue
                 
                 print(f"  ✓ {len(bc_text)} caractères extraits")
@@ -189,7 +198,7 @@ class PatternTrainer:
                     with open(json_path, 'r', encoding='utf-8') as f:
                         expected_json = json.load(f)
                 except Exception as e:
-                    print(f"  ❌ Erreur lecture JSON: {e}")
+                    print(f"  Erreur lecture JSON: {e}")
                     continue
                 
                 # 3. Détection automatique de patterns
@@ -231,7 +240,7 @@ class PatternTrainer:
             json.dump(metadata, f, indent=2, ensure_ascii=False)
         
         print(f"\n{'='*60}")
-        print(f"✅ ENTRAÎNEMENT TERMINÉ")
+        print(f"ENTRAÎNEMENT TERMINÉ")
         print(f"{'='*60}")
         print(f"\n📊 PATTERNS DÉTECTÉS:")
         print(f"  • Origines: {', '.join(patterns_detected['origines'])}")
@@ -255,7 +264,7 @@ class PatternTrainer:
         client_dir = self.patterns_base_dir / f"CLIENT_{client_id}"
         
         if not client_dir.exists():
-            print(f"❌ Client {client_id} introuvable. Utilisez --train d'abord.")
+            print(f"Client {client_id} introuvable. Utilisez --train d'abord.")
             return False
         
         # Compter exemples existants
@@ -267,7 +276,7 @@ class PatternTrainer:
         # Extraction texte
         bc_text = self._extract_text(bc_sample)
         if not bc_text:
-            print(f"❌ Impossible d'extraire le texte")
+            print(f"Impossible d'extraire le texte")
             return False
         
         # Chargement JSON
@@ -275,7 +284,7 @@ class PatternTrainer:
             with open(expected_json, 'r', encoding='utf-8') as f:
                 json_data = json.load(f)
         except Exception as e:
-            print(f"❌ Erreur lecture JSON: {e}")
+            print(f"Erreur lecture JSON: {e}")
             return False
         
         # Sauvegarde
@@ -300,7 +309,7 @@ class PatternTrainer:
             with open(metadata_file, 'w', encoding='utf-8') as f:
                 json.dump(metadata, f, indent=2, ensure_ascii=False)
         
-        print(f"✅ Exemple #{next_idx} ajouté pour {client_id}")
+        print(f"Exemple #{next_idx} ajouté pour {client_id}")
         print(f"💾 Total: {next_idx} exemple(s)")
         
         return True
@@ -327,7 +336,7 @@ class PatternTrainer:
             doc.close()
             return text
         except Exception as e:
-            print(f"❌ Erreur extraction PDF: {e}")
+            print(f"Erreur extraction PDF: {e}")
             return ""
     
     def _extract_text_from_html(self, html_path: Path) -> str:
@@ -354,7 +363,7 @@ class PatternTrainer:
             
             return content
         except Exception as e:
-            print(f"❌ Erreur extraction HTML: {e}")
+            print(f"Erreur extraction HTML: {e}")
             return ""
     
     def _extract_text_from_txt(self, txt_path: Path) -> str:
@@ -363,7 +372,7 @@ class PatternTrainer:
             with open(txt_path, 'r', encoding='utf-8') as f:
                 return f.read()
         except Exception as e:
-            print(f"❌ Erreur extraction TXT: {e}")
+            print(f"Erreur extraction TXT: {e}")
             return ""
     
     def _detect_filename_convention(self, filename: str) -> str:
@@ -578,7 +587,13 @@ Exemples d'utilisation:
         default=Path("patterns"),
         help="Dossier de sauvegarde des patterns (défaut: patterns/)"
     )
-    
+
+    parser.add_argument(
+        '--prompt',
+        type=Path,
+        help="Fichier markdown de prompt personnalisé pour ce client (optionnel)"
+    )
+
     args = parser.parse_args()
     
     trainer = PatternTrainer(patterns_base_dir=args.patterns_dir)
@@ -594,7 +609,7 @@ Exemples d'utilisation:
     
     # Mode entraînement complet
     if not args.bc_samples or not args.expected_json:
-        print("❌ Erreur: --bc-samples et --expected-json requis pour l'entraînement")
+        print("Erreur: --bc-samples et --expected-json requis pour l'entraînement")
         parser.print_help()
         exit(1)
     
@@ -603,7 +618,8 @@ Exemples d'utilisation:
         bc_samples=args.bc_samples,
         expected_jsons=args.expected_json,
         replace=args.replace,
-        multi_json_mode=args.multi_json
+        multi_json_mode=args.multi_json,
+        prompt_file=args.prompt
     )
     
     exit(0 if success else 1)

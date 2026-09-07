@@ -1,0 +1,69 @@
+{
+  "commandes": [
+    {
+      "entete": {
+        "origine": "UNKNOWN",
+        "codeEtablissement": "6687",
+        "codeFournisseur": "ANGERS",
+        "codePostal": "49000",
+        "numCommande": "6687-965509-1",
+        "idCommande": "6687-965509-1",
+        "dateCommande": 20260214,
+        "heureCommande": "000000",
+        "dateLivraison": 20260217,
+        "commentaireEntete": "Contrôle qualité renforcé",
+        "modeTransport": "L",
+        "typeCommande": "220",
+        "origineCommande": "D",
+        "version": "ACE"
+      },
+      "detailCommande": {
+        "produits": [
+          {
+            "numLigne": 1,
+            "codeArticle": "68533",
+            "libelle": "LED RGB SMD 5050 Common Anode",
+            "quantite": 277.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 2,
+            "codeArticle": "6965",
+            "libelle": "MICROCONTRÔLEUR STM32F407VGT6 LQFP1",
+            "quantite": 135.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 3,
+            "codeArticle": "999934",
+            "libelle": "LED RGB SMD 5050 Common Anode",
+            "quantite": 393.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 4,
+            "codeArticle": "1378",
+            "libelle": "QUARTZ 16MHz HC-49S ±30ppm",
+            "quantite": 415.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 5,
+            "codeArticle": "14059",
+            "libelle": "CONNECTEUR USB-C Femelle 24P SMD",
+            "quantite": 481.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 6,
+            "codeArticle": "1733",
+            "libelle": "LED RGB SMD 5050 Common Anode",
+            "quantite": 267.000,
+            "commentaire": ""
+          }
+        ],
+        "nbLignes": 6
+      }
+    }
+  ]
+}

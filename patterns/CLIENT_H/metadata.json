@@ -48,5 +48,10 @@
   ],
   "examples_count": 1,
   "last_updated": "2026-03-03",
-  "bc_reference": "BC_682671_StyleH"
+  "bc_reference": "BC_682671_StyleH",
+  "statistiques": {
+    "nb_bc_traites": 7,
+    "derniere_utilisation": "2026-08-26T18:06:47.854408",
+    "taux_reussite": 1.0
+  }
 }

@@ -1,0 +1,83 @@
+{
+  "commandes": [
+    {
+      "entete": {
+        "origine": "API",
+        "codeEtablissement": "59000",
+        "codeFournisseur": "TOULOUSE",
+        "codePostal": "59000",
+        "numCommande": "59000-4683575-1",
+        "idCommande": "59000-4683575-1",
+        "dateCommande": 20260227,
+        "heureCommande": "170800",
+        "dateLivraison": 20260306,
+        "commentaireEntete": "Standard - Respecter normes CE\nEmballage individuel requis",
+        "modeTransport": "L",
+        "typeCommande": "220",
+        "origineCommande": "D",
+        "version": "ACE"
+      },
+      "detailCommande": {
+        "produits": [
+          {
+            "numLigne": 1,
+            "codeArticle": "2195",
+            "libelle": "FILTRE HYDRAULIQUE beta25>=75",
+            "quantite": 103.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 2,
+            "codeArticle": "301222",
+            "libelle": "VERIN PNEUMATIQUE ISO-6431 D63",
+            "quantite": 445.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 3,
+            "codeArticle": "69878",
+            "libelle": "COURROIE TRAPÉZOÏDALE SPC-3550",
+            "quantite": 310.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 4,
+            "codeArticle": "6584",
+            "libelle": "CONNECTEUR ÉTANCHE IP67 M12-5P",
+            "quantite": 64.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 5,
+            "codeArticle": "8059",
+            "libelle": "COURROIE TRAPÉZOÏDALE SPC-3550",
+            "quantite": 62.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 6,
+            "codeArticle": "524289",
+            "libelle": "PLAQUE ALU 2024-T3 1000x500x8",
+            "quantite": 477.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 7,
+            "codeArticle": "609247",
+            "libelle": "BOBINE CUIVRE D2.5mm 500m",
+            "quantite": 355.000,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 8,
+            "codeArticle": "5119",
+            "libelle": "JOINT HYDRAULIQUE NBR-70 Shore",
+            "quantite": 134.000,
+            "commentaire": ""
+          }
+        ],
+        "nbLignes": 8
+      }
+    }
+  ]
+}

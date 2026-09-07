@@ -71,7 +71,7 @@ class QdrantDocumentStore:
             from qdrant_client import QdrantClient
             from qdrant_client.models import Distance, VectorParams, PointStruct
         except ImportError as e:
-            print(f"❌ Dépendances manquantes: {e}")
+            print(f"Dépendances manquantes: {e}")
             print("Installez: pip install qdrant-client sentence-transformers")
             return
         
@@ -121,7 +121,7 @@ class QdrantDocumentStore:
     def add_document(self, text: str, metadata: Dict[str, Any], expected_json: Dict = None):
         """Ajoute un document à la base Qdrant"""
         if not self.client or not self.embedder:
-            print("❌ Base vectorielle non initialisée")
+            print("Base vectorielle non initialisée")
             return
         
         from qdrant_client.models import PointStruct
@@ -167,7 +167,7 @@ class QdrantDocumentStore:
             points=[point]
         )
         
-        print(f"  ✅ Document indexé: {doc_id[:8]}... ({len(text)} chars)")
+        print(f"  Document indexé: {doc_id[:8]}... ({len(text)} chars)")
     
     def search(self, query: str, top_k: int = 3) -> List[Dict]:
         """Recherche les documents les plus similaires"""
@@ -294,7 +294,7 @@ class RAGIndexer:
                 except Exception as e:
                     print(f"  ⚠️ Erreur: {e}")
         
-        print(f"\n✅ Indexation terminée: {total_indexed} documents")
+        print(f"\nIndexation terminée: {total_indexed} documents")
         stats = self.store.get_stats()
         print(f"📊 Statistiques: {json.dumps(stats, indent=2, ensure_ascii=False)}")
 
@@ -325,7 +325,7 @@ class RAGExtractor:
             print("⚠️  Aucun exemple similaire trouvé, extraction sans RAG")
             return self._extract_without_rag(bc_text)
         
-        print(f"✅ {len(similar_docs)} exemples trouvés\n")
+        print(f"{len(similar_docs)} exemples trouvés\n")
         
         # Afficher les similarités
         for i, doc in enumerate(similar_docs, 1):
@@ -467,7 +467,7 @@ def main():
         results = store.search(args.query, top_k=args.top_k)
         
         if not results:
-            print("❌ Aucun résultat")
+            print("Aucun résultat")
         else:
             for i, result in enumerate(results, 1):
                 print(f"\n{'='*60}")
@@ -480,7 +480,7 @@ def main():
     elif args.extract:
         # Extraction avec RAG
         if not args.extract.exists():
-            print(f"❌ Fichier introuvable: {args.extract}")
+            print(f"Fichier introuvable: {args.extract}")
             return
         
         # Lire le contenu (texte ou PDF)
@@ -495,10 +495,10 @@ def main():
                 doc.close()
                 print(f"📄 PDF extrait: {len(bc_text)} caractères")
             except ImportError:
-                print("❌ PyMuPDF non installé. Installez: pip install pymupdf")
+                print("PyMuPDF non installé. Installez: pip install pymupdf")
                 return
             except Exception as e:
-                print(f"❌ Erreur lecture PDF: {e}")
+                print(f"Erreur lecture PDF: {e}")
                 return
         else:
             # Fichier texte

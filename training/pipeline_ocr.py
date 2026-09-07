@@ -78,7 +78,7 @@ class TextExtractor:
             doc.close()
             return text
         except Exception as e:
-            print(f"❌ Erreur extraction PDF: {e}")
+            print(f"Erreur extraction PDF: {e}")
             return ""
     
     @staticmethod
@@ -102,7 +102,7 @@ class TextExtractor:
             parser.feed(html)
             return ' '.join(filter(None, parser.text))
         except Exception as e:
-            print(f"❌ Erreur extraction HTML: {e}")
+            print(f"Erreur extraction HTML: {e}")
             return ""
     
     @staticmethod
@@ -112,7 +112,7 @@ class TextExtractor:
             with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
                 return f.read()
         except Exception as e:
-            print(f"❌ Erreur lecture TXT: {e}")
+            print(f"Erreur lecture TXT: {e}")
             return ""
 
 
@@ -149,10 +149,10 @@ class LLMClient:
                 print(f"⚠️ Erreur LLM ({response.status_code}): {response.text[:200]}")
                 return ""
         except requests.exceptions.ConnectionError:
-            print("❌ Ollama non accessible. Lancez: ollama serve")
+            print("Ollama non accessible. Lancez: ollama serve")
             return ""
         except Exception as e:
-            print(f"❌ Erreur LLM: {e}")
+            print(f"Erreur LLM: {e}")
             return ""
     
     def is_available(self) -> bool:
@@ -187,7 +187,7 @@ class OCRPipeline:
             try:
                 self.rag_store = DocumentStore(VECTOR_DB_DIR)
                 self.rag_extractor = RAGExtractor(self.rag_store, llm_model=model)
-                print(f"✅ RAG activé ({self.rag_store.get_stats().get('total_documents', 0)} documents)")
+                print(f"RAG activé ({self.rag_store.get_stats().get('total_documents', 0)} documents)")
             except Exception as e:
                 print(f"⚠️ RAG désactivé: {e}")
                 self.use_rag = False
@@ -226,12 +226,12 @@ class OCRPipeline:
         text = TextExtractor.extract(file_path)
         
         if not text:
-            print("❌ Échec de l'extraction du texte")
+            print("Échec de l'extraction du texte")
             self.stats["errors"] += 1
             return result
         
         result["text"] = text
-        print(f"   ✅ {len(text)} caractères extraits")
+        print(f"   {len(text)} caractères extraits")
         
         # 2. Extraction avec ou sans RAG
         if self.use_rag and self.rag_extractor:
@@ -246,7 +246,7 @@ class OCRPipeline:
             extracted = self._extract_without_rag(text)
         
         if not extracted:
-            print("❌ Échec de l'extraction JSON")
+            print("Échec de l'extraction JSON")
             self.stats["errors"] += 1
             return result
         
@@ -262,7 +262,7 @@ class OCRPipeline:
         self.stats["success"] += 1
         
         result["processing_time"] = time.time() - start_time
-        print(f"\n✅ Extraction réussie en {result['processing_time']:.1f}s")
+        print(f"\nExtraction réussie en {result['processing_time']:.1f}s")
         
         return result
     
@@ -399,7 +399,7 @@ Réponds UNIQUEMENT avec le JSON, sans explication."""
         self._save_training_pair(text, corrected_json, client)
         
         self.stats["corrections"] += 1
-        print("✅ Correction enregistrée")
+        print("Correction enregistrée")
     
     def _save_training_pair(self, text: str, expected_json: Dict, client: str):
         """Sauvegarde une paire d'entraînement"""
@@ -485,7 +485,7 @@ Réponds UNIQUEMENT avec le JSON, sans explication."""
                 # Traiter le fichier
                 file_path = Path(user_input)
                 if not file_path.exists():
-                    print(f"❌ Fichier introuvable: {file_path}")
+                    print(f"Fichier introuvable: {file_path}")
                     continue
                 
                 result = self.process_file(file_path)
@@ -515,13 +515,13 @@ Réponds UNIQUEMENT avec le JSON, sans explication."""
                             client = input("👤 Client: ").strip() or "unknown"
                             self.add_correction(result["text"], corrected, client)
                         except json.JSONDecodeError:
-                            print("❌ JSON invalide")
+                            print("JSON invalide")
                 
             except KeyboardInterrupt:
                 print("\n👋 Au revoir!")
                 break
             except Exception as e:
-                print(f"❌ Erreur: {e}")
+                print(f"Erreur: {e}")
 
 
 def main():
@@ -539,7 +539,7 @@ def main():
     # Vérifier que le LLM est disponible
     llm = LLMClient(model=args.model)
     if not llm.is_available():
-        print("❌ Ollama n'est pas accessible!")
+        print("Ollama n'est pas accessible!")
         print("💡 Lancez: ollama serve")
         print("💡 Puis: ollama pull qwen2.5:7b")
         return

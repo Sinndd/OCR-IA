@@ -1,0 +1,34 @@
+{
+  "commandes": [
+    {
+      "entete": {
+        "origine": "NEWREST",
+        "codeEtablissement": "02313",
+        "codeFournisseur": "CHAPONNAY",
+        "codePostal": "69970",
+        "numCommande": "02313-7992-3",
+        "idCommande": "02313-7992-3",
+        "dateCommande": 20240108,
+        "heureCommande": "064000",
+        "dateLivraison": 20240115,
+        "commentaireEntete": "",
+        "modeTransport": "L",
+        "typeCommande": "220",
+        "origineCommande": "D",
+        "version": "ACE"
+      },
+      "detailCommande": {
+        "produits": [
+          {
+            "numLigne": 1,
+            "codeArticle": "32732",
+            "libelle": "Cornichons fins (80/119) (Import) (LES JARDINS D'A)",
+            "quantite": 2.120,
+            "commentaire": ""
+          }
+        ],
+        "nbLignes": 1
+      }
+    }
+  ]
+}

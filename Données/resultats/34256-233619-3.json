@@ -1,0 +1,31 @@
+{
+  "entete": {
+    "_file_format": "PDF",
+    "_source_file": "BC_233619_StyleD.pdf",
+    "codeEtablissement": "34256",
+    "codeFournisseur": "BESANCON",
+    "codePostal": "33000",
+    "commentaireEntete": "Commande groupée - Multi-sitesFacturation centralisée",
+    "dateCommande": "20260201",
+    "dateLivraison": "20260216",
+    "heureCommande": "165408",
+    "idCommande": "34256-233619-3",
+    "modeTransport": "L",
+    "numCommande": "34256-233619-3",
+    "origine": "CLIENT_D",
+    "origineCommande": "D",
+    "typeCommande": "220",
+    "version": "ACE"
+  },
+  "detailCommande": {
+    "produits": [
+      {
+        "numLigne": 1,
+        "codeArticle": "45352",
+        "libelle": "PLAQUE ALU 2024-T3 1000x500x8 ",
+        "quantite": 12
+      }
+    ],
+    "nbLignes": 1
+  }
+}

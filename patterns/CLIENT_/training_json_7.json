@@ -1,0 +1,160 @@
+{
+  "commandes": [
+    {
+      "entete": {
+        "origine": "API",
+        "codeEtablissement": "05284",
+        "codeFournisseur": "CHAPONNAY",
+        "codePostal": "69970",
+        "numCommande": "05284-1933-1",
+        "idCommande": "05284-1933-1",
+        "dateCommande": 20260112,
+        "heureCommande": "060000",
+        "dateLivraison": 20260119,
+        "commentaireEntete": "Standard - Respecter normes CE\nEmballage individuel requis",
+        "modeTransport": "L",
+        "typeCommande": "220",
+        "origineCommande": "D",
+        "version": "ACE"
+      },
+      "detailCommande": {
+        "produits": [
+          {
+            "numLigne": 1,
+            "codeArticle": "157358",
+            "libelle": "Beaufilet colin pané 70g 5,6K (SANS MARQUE)",
+            "quantite": 16.8,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 2,
+            "codeArticle": "166606",
+            "libelle": "Agent démoulage 600ml (Import) (METRO CHEF)",
+            "quantite": 2.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 3,
+            "codeArticle": "152938",
+            "libelle": "Boulette agneau 33% 30g 5K (Import) (SANS MARQUE)",
+            "quantite": 20.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 4,
+            "codeArticle": "158733",
+            "libelle": "Brie 25% 3,3K (France) (PAYSAN BRETON)",
+            "quantite": 2.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 5,
+            "codeArticle": "157558",
+            "libelle": "Cantil jeune AOP 30% 2,6K (DPT: 12 15 19 43 63) (ACPV)",
+            "quantite": 2.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 6,
+            "codeArticle": "166495",
+            "libelle": "Confiture de fraises 1K (Import)",
+            "quantite": 2.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 7,
+            "codeArticle": "32734",
+            "libelle": "Cornichons EF (150 et +) (Import) (LES JARDINS D'ADRIEN)",
+            "quantite": 1.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 8,
+            "codeArticle": "164239",
+            "libelle": "Crème liquide 18% UHT 1L (Espagne) (INNOVA)",
+            "quantite": 6.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 9,
+            "codeArticle": "33245",
+            "libelle": "Epices couscous 375g (Import) (DUCROS)",
+            "quantite": 1.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 10,
+            "codeArticle": "13005",
+            "libelle": "Farine de blé ménagère T55 1K (France)",
+            "quantite": 10.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 11,
+            "codeArticle": "157558",
+            "libelle": "Lait 1/2 écrémé bio UHT 1L (France) (LA VACHE)",
+            "quantite": 6.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 12,
+            "codeArticle": "01880",
+            "libelle": "Macédoine de légumes (Union Européenne) (LES JARDINS D'ADRIEN)",
+            "quantite": 3.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 13,
+            "codeArticle": "34341",
+            "libelle": "Mayonnaise collectivité 5L (Import) (COLONA)",
+            "quantite": 2.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 14,
+            "codeArticle": "166464",
+            "libelle": "Penne bio 5K (Union Européenne) (PANZANI)",
+            "quantite": 2.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 15,
+            "codeArticle": "36907",
+            "libelle": "Rosette de Lyon 50T 250g x2 (UE) (COLOMBO)",
+            "quantite": 12.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 16,
+            "codeArticle": "34384",
+            "libelle": "Sauce soja 1L (Import) (KIKKOMAN)",
+            "quantite": 1.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 17,
+            "codeArticle": "166464",
+            "libelle": "Semoule de blé fine 5K (Union Européenne) (LUSTUCRU)",
+            "quantite": 2.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 18,
+            "codeArticle": "67179",
+            "libelle": "Tomme blanche 26% 2K (France) (MONTSALVY)",
+            "quantite": 3.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 19,
+            "codeArticle": "159320",
+            "libelle": "Échalotes en morceaux 1K (Import) (PAS DE MARQUE)",
+            "quantite": 5.0,
+            "commentaire": ""
+          }
+        ],
+        "nbLignes": 19
+      }
+    }
+  ]
+}

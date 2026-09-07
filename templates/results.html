@@ -261,17 +261,17 @@
 {% block content %}
 <div class="container">
     <a href="{{ url_for('index') }}" class="back-button">
-        ← Retour à l'extraction
+        <i data-lucide="arrow-left" class="icon"></i> Retour à l'extraction
     </a>
 
     <div class="results-header">
-        <h1>📊 Résultats de l'Extraction</h1>
+        <h1><i data-lucide="bar-chart-3" class="icon"></i> Résultats de l'Extraction</h1>
     </div>
 
     <!-- Progression Banner -->
     <div id="progressBanner" style="background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%); border-radius: 1rem; padding: 1.5rem; margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between;">
         <div style="display: flex; align-items: center; gap: 1rem;">
-            <div style="font-size: 2rem;">📋</div>
+            <div style="font-size: 2rem;"><i data-lucide="clipboard-list" class="icon"></i></div>
             <div>
                 <div style="font-size: 1.2rem; font-weight: 600; color: #ffffff;">
                     Progression de la validation
@@ -292,22 +292,22 @@
     <!-- Summary -->
     <div class="results-summary">
         <div class="summary-card">
-            <div class="summary-icon">📄</div>
+            <div class="summary-icon"><i data-lucide="file-text" class="icon"></i></div>
             <span class="summary-value">{{ results|length }}</span>
             <span class="summary-label">Fichiers générés</span>
         </div>
         <div class="summary-card">
-            <div class="summary-icon">🛒</div>
+            <div class="summary-icon"><i data-lucide="shopping-cart" class="icon"></i></div>
             <span class="summary-value">{{ total_products }}</span>
             <span class="summary-label">Produits extraits</span>
         </div>
         <div class="summary-card">
-            <div class="summary-icon">📋</div>
+            <div class="summary-icon"><i data-lucide="file-type" class="icon"></i></div>
             <span class="summary-value">{{ file_formats }}</span>
             <span class="summary-label">Format</span>
         </div>
         <div class="summary-card">
-            <div class="summary-icon">🏢</div>
+            <div class="summary-icon"><i data-lucide="building-2" class="icon"></i></div>
             <span class="summary-value">{{ detected_clients }}</span>
             <span class="summary-label">Entreprise</span>
         </div>
@@ -319,7 +319,7 @@
         <div class="result-card" id="result-card-{{ loop.index }}" data-filename="{{ result.filename }}" data-status="{{ result.status }}" style="{% if result.status == 'validated' %}border: 2px solid #10b981;{% elif result.status == 'corrected' %}border: 2px solid #f59e0b;{% endif %}">
             <div class="result-card-header">
                 <div class="result-card-title">
-                    📋 {{ result.filename }}
+                    <i data-lucide="file-json" class="icon"></i> {{ result.filename }}
                 </div>
                 <div class="result-card-subtitle">
                     {% if result.data.entete.dateCommande %}Date: {{ result.data.entete.dateCommande }}{% endif %}
@@ -364,15 +364,16 @@
                             </thead>
                             <tbody>
                                 {% for product in result.data.detailCommande.produits %}
+                                {% set libelle = product.libelle|default('', true) %}
                                 <tr>
-                                    <td>{{ product.numLigne }}</td>
+                                    <td>{{ product.numLigne|default('', true) }}</td>
                                     <td>
                                         <div style="font-family: monospace; font-size: 0.85rem;">
-                                            {{ product.codeArticle }}
+                                            {{ product.codeArticle|default('', true) }}
                                         </div>
                                     </td>
-                                    <td>{{ product.libelle[:40] }}{% if product.libelle|length > 40 %}...{% endif %}</td>
-                                    <td><strong>{{ product.quantite }}</strong></td>
+                                    <td>{{ libelle[:40] }}{% if libelle|length > 40 %}...{% endif %}</td>
+                                    <td><strong>{{ product.quantite|default('', true) }}</strong></td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -398,7 +399,7 @@
                     <button class="action-btn action-btn-primary toggle-view-btn" 
                             data-index="{{ loop.index }}"
                             onclick="toggleView(this)">
-                        👁️ Voir JSON
+                        <i data-lucide="eye" class="icon"></i> Voir JSON
                     </button>
                     <button class="action-btn validate-btn" 
                             id="validate-btn-{{ loop.index }}"
@@ -406,7 +407,7 @@
                             onclick="validateResult('{{ result.filename }}', {{ loop.index }})"
                             title="Confirmer que l'extraction est correcte"
                             {% if result.status in ['validated', 'corrected'] %}disabled{% endif %}>
-                        ✅ Valider
+                        <i data-lucide="check-circle" class="icon"></i> Valider
                     </button>
                     <button class="action-btn correct-btn" 
                             id="correct-btn-{{ loop.index }}"
@@ -414,7 +415,7 @@
                             onclick="openEditModal({{ loop.index }})"
                             title="Corriger et ré-entraîner"
                             {% if result.status in ['validated', 'corrected'] %}disabled{% endif %}>
-                        ✏️ Corriger
+                        <i data-lucide="pencil" class="icon"></i> Corriger
                     </button>
                     {% if result.status == 'validated' %}
                     <button class="action-btn" 
@@ -422,7 +423,7 @@
                             style="background: #ef4444; border-color: #ef4444;"
                             onclick="unvalidateResult('{{ result.filename }}', {{ loop.index }})"
                             title="Annuler la validation">
-                        ↩️ Annuler validation
+                        <i data-lucide="undo-2" class="icon"></i> Annuler validation
                     </button>
                     {% elif result.status == 'corrected' %}
                     <button class="action-btn" 
@@ -430,7 +431,7 @@
                             style="background: #ef4444; border-color: #ef4444;"
                             onclick="unvalidateResult('{{ result.filename }}', {{ loop.index }})"
                             title="Annuler la correction">
-                        ↩️ Annuler correction
+                        <i data-lucide="undo-2" class="icon"></i> Annuler correction
                     </button>
                     {% endif %}
                 </div>
@@ -445,9 +446,9 @@
     <div style="max-width: 900px; margin: 0 auto; background: #151515; border-radius: 1rem; border: 1px solid #2a2a2a; padding: 2rem;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
             <h2 style="font-size: 1.5rem; font-weight: 600; color: #ffffff; margin: 0;">
-                ✏️ Corriger l'extraction
+                <i data-lucide="pencil" class="icon"></i> Corriger l'extraction
             </h2>
-            <button type="button" onclick="closeEditModal()" style="background: none; border: none; color: #888; font-size: 1.5rem; cursor: pointer; padding: 0; width: 32px; height: 32px; line-height: 1;">×</button>
+            <button type="button" onclick="closeEditModal()" style="background: none; border: none; color: #888; font-size: 1.5rem; cursor: pointer; padding: 0; width: 32px; height: 32px; line-height: 1; display: inline-flex; align-items: center; justify-content: center;"><i data-lucide="x" class="icon"></i></button>
         </div>
         
         <!-- Onglets des commandes -->
@@ -464,7 +465,7 @@
                 Annuler
             </button>
             <button type="button" onclick="saveCorrection()" class="action-btn" style="background: #10b981; border-color: #10b981; cursor: pointer;">
-                💾 Sauvegarder et ré-entraîner
+                <i data-lucide="save" class="icon"></i> Sauvegarder et ré-entraîner
             </button>
         </div>
     </div>
@@ -499,12 +500,12 @@
                     // Vérifier si tous les encarts sont traités
                     checkAndRedirectIfComplete();
                 } else {
-                    alert('❌ Erreur: ' + data.error);
+                    alert('Erreur: ' + data.error);
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('❌ Erreur de communication avec le serveur');
+                alert('Erreur de communication avec le serveur');
             });
         }
     }
@@ -528,12 +529,12 @@
                     // Décrémenter le compteur
                     decrementProcessedCount();
                 } else {
-                    alert('❌ Erreur: ' + data.error);
+                    alert('Erreur: ' + data.error);
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('❌ Erreur de communication avec le serveur');
+                alert('Erreur de communication avec le serveur');
             });
         }
     }
@@ -558,7 +559,7 @@
         if (processedCount >= totalCount) {
             // Tous les encarts sont traités
             setTimeout(() => {
-                alert('✅ Tous les encarts ont été traités ! Redirection vers les statistiques...');
+                alert('Tous les encarts ont été traités ! Redirection vers les statistiques...');
                 window.location.href = '/stats';
             }, 500);
         }
@@ -605,10 +606,11 @@
                 unvalidateBtn.id = 'unvalidate-btn-' + index;
                 unvalidateBtn.style.cssText = 'background: #ef4444; border-color: #ef4444;';
                 unvalidateBtn.title = 'Annuler la validation';
-                unvalidateBtn.innerHTML = '↩️ Annuler validation';
+                unvalidateBtn.innerHTML = '<i data-lucide="undo-2" class="icon"></i> Annuler validation';
                 const filename = card.getAttribute('data-filename');
                 unvalidateBtn.onclick = () => unvalidateResult(filename, index);
                 actionsDiv.appendChild(unvalidateBtn);
+                lucide.createIcons();
             }
         } else if (status === 'corrected') {
             // Appliquer bordure orange
@@ -631,10 +633,11 @@
                 unvalidateBtn.id = 'unvalidate-btn-' + index;
                 unvalidateBtn.style.cssText = 'background: #ef4444; border-color: #ef4444;';
                 unvalidateBtn.title = 'Annuler la correction';
-                unvalidateBtn.innerHTML = '↩️ Annuler correction';
+                unvalidateBtn.innerHTML = '<i data-lucide="undo-2" class="icon"></i> Annuler correction';
                 const filename = card.getAttribute('data-filename');
                 unvalidateBtn.onclick = () => unvalidateResult(filename, index);
                 actionsDiv.appendChild(unvalidateBtn);
+                lucide.createIcons();
             }
         } else if (status === 'pending') {
             // Retirer bordure
@@ -738,10 +741,11 @@
             // Bouton supprimer
             const deleteBtn = document.createElement('button');
             deleteBtn.type = 'button';
-            deleteBtn.textContent = '🗑️';
+            deleteBtn.innerHTML = '<i data-lucide="trash-2" class="icon"></i>';
             deleteBtn.title = 'Supprimer ce produit';
             deleteBtn.style.cssText = 'background: #ef4444; border: 1px solid #dc2626; color: white; padding: 0.5rem; border-radius: 0.25rem; cursor: pointer; font-size: 0.9rem;';
             deleteBtn.onclick = () => removeProductAtIndex(idx);
+            lucide.createIcons();
             
             gridDiv.appendChild(dragHandle);
             gridDiv.appendChild(ligneDiv);
@@ -918,7 +922,7 @@
             const tab = document.createElement('button');
             tab.type = 'button';
             const numCmd = cmd.entete?.numCommande || cmd.entete?.idCommande || `Commande ${idx + 1}`;
-            tab.textContent = `📋 ${numCmd}`;
+            tab.innerHTML = `<i data-lucide="file-json" class="icon"></i> ${numCmd}`;
             tab.style.cssText = `
                 padding: 0.5rem 1rem;
                 border-radius: 0.5rem;
@@ -936,7 +940,7 @@
         // Bouton pour ajouter une nouvelle commande
         const addTab = document.createElement('button');
         addTab.type = 'button';
-        addTab.textContent = '➕ Ajouter un encart';
+        addTab.innerHTML = '<i data-lucide="plus" class="icon"></i> Ajouter un encart';
         addTab.style.cssText = `
             padding: 0.5rem 1rem;
             border-radius: 0.5rem;
@@ -949,6 +953,7 @@
         `;
         addTab.onclick = addNewCommande;
         tabsContainer.appendChild(addTab);
+        lucide.createIcons();
     }
     
     // Fonction pour basculer vers une commande spécifique
@@ -1061,20 +1066,21 @@
         
         const enteteTitle = document.createElement('h3');
         enteteTitle.style.cssText = 'color: #ffffff; font-size: 1.1rem; margin: 0;';
-        enteteTitle.textContent = `📦 En-tête - Commande ${idx + 1}/${currentEditCommandes.length}`;
+        enteteTitle.innerHTML = `<i data-lucide="package" class="icon"></i> En-tête - Commande ${idx + 1}/${currentEditCommandes.length}`;
         enteteHeader.appendChild(enteteTitle);
-        
+
         // Bouton supprimer commande (si plus d'une commande)
         if (currentEditCommandes.length > 1) {
             const deleteBtn = document.createElement('button');
             deleteBtn.type = 'button';
-            deleteBtn.innerHTML = '🗑️ Supprimer cet encart';
+            deleteBtn.innerHTML = '<i data-lucide="trash-2" class="icon"></i> Supprimer cet encart';
             deleteBtn.style.cssText = 'background: #dc2626; border: none; color: white; padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer; font-size: 0.85rem;';
             deleteBtn.onclick = () => removeCommande(idx);
             enteteHeader.appendChild(deleteBtn);
         }
-        
+
         enteteSection.appendChild(enteteHeader);
+        lucide.createIcons();
         
         const enteteGrid = document.createElement('div');
         enteteGrid.id = 'enteteEdit';
@@ -1113,7 +1119,7 @@
         
         const productsTitle = document.createElement('h3');
         productsTitle.style.cssText = 'color: #ffffff; margin-bottom: 1rem; font-size: 1.1rem;';
-        productsTitle.textContent = '🛒 Produits';
+        productsTitle.innerHTML = '<i data-lucide="shopping-cart" class="icon"></i> Produits';
         productsSection.appendChild(productsTitle);
         
         const productsContainer = document.createElement('div');
@@ -1124,10 +1130,11 @@
         const addBtn = document.createElement('button');
         addBtn.id = 'addProductBtn';
         addBtn.type = 'button';
-        addBtn.textContent = '➕ Ajouter un produit';
+        addBtn.innerHTML = '<i data-lucide="plus" class="icon"></i> Ajouter un produit';
         addBtn.style.cssText = 'margin-top: 1rem; background: #4f46e5; border: 1px solid #6366f1; color: white; padding: 0.75rem 1.5rem; border-radius: 0.5rem; cursor: pointer; font-size: 0.95rem; width: 100%;';
         addBtn.onclick = addProductToList;
         productsSection.appendChild(addBtn);
+        lucide.createIcons();
         
         editContent.appendChild(productsSection);
         
@@ -1242,8 +1249,8 @@
         // Aussi récupérer _source_file pour les patterns d'entraînement
         const sourceFile = correctedCommandes[0]?.entete?._source_file;
         
-        console.log('📄 Fichier JSON:', jsonFilename);
-        console.log('📄 Source PDF:', sourceFile);
+        console.log('Fichier JSON:', jsonFilename);
+        console.log('Source PDF:', sourceFile);
         
         // Construire les données corrigées
         // Si plusieurs commandes, envoyer le format "commandes: [...]"
@@ -1274,8 +1281,8 @@
         .then(data => {
             if (data.success) {
                 const msg = correctedCommandes.length > 1 
-                    ? `✅ ${correctedCommandes.length} commandes corrigées et sauvegardées ! Le système va apprendre de ces corrections.`
-                    : '✅ Correction sauvegardée ! Le système va apprendre de cette correction.';
+                    ? `${correctedCommandes.length} commandes corrigées et sauvegardées ! Le système va apprendre de ces corrections.`
+                    : 'Correction sauvegardée ! Le système va apprendre de cette correction.';
                 alert(msg);
                 
                 // IMPORTANT: Sauvegarder l'index AVANT de fermer le modal
@@ -1291,36 +1298,36 @@
                         fileToFetch = fileToFetch.slice(0, -5);
                     }
                     
-                    console.log('🔄 Rechargement des données pour:', fileToFetch, 'index:', savedIndex);
+                    console.log('Rechargement des données pour:', fileToFetch, 'index:', savedIndex);
                     
                     // Récupérer les données mises à jour depuis le serveur
                     fetch('/api/result/' + encodeURIComponent(fileToFetch), {
                         headers: { 'X-API-KEY': window.OCR_API_KEY }
                     })
                         .then(r => {
-                            console.log('📡 Réponse API reçue:', r.status);
+                            console.log('Réponse API reçue:', r.status);
                             return r.json();
                         })
                         .then(resp => {
-                            console.log('📦 Données reçues:', resp);
+                            console.log('Données reçues:', resp);
                             if (resp.success && resp.json) {
                                 // Mettre à jour le script tag avec les nouvelles données
                                 const jsonScript = document.getElementById('jsonData-' + savedIndex);
                                 if (jsonScript) {
                                     jsonScript.textContent = resp.json;
-                                    console.log('✅ Script tag mis à jour');
+                                    console.log('Script tag mis à jour');
                                 }
                                 
                                 // Re-render le tableau avec les nouvelles données
                                 const updatedData = JSON.parse(resp.json);
                                 renderTableView(savedIndex, updatedData);
-                                console.log('✅ Tableau re-rendu avec les nouvelles données');
+                                console.log('Tableau re-rendu avec les nouvelles données');
                             } else {
-                                console.warn('⚠️ Pas de données à afficher:', resp);
+                                console.warn('Pas de données à afficher:', resp);
                             }
                         })
                         .catch(e => {
-                            console.error('❌ Erreur lors du rechargement:', e);
+                            console.error('Erreur lors du rechargement:', e);
                         });
                     
                     // Marquer la carte comme corrigée (pas validée)
@@ -1333,12 +1340,12 @@
                     checkAndRedirectIfComplete();
                 }
             } else {
-                alert('❌ Erreur: ' + data.error);
+                alert('Erreur: ' + data.error);
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('❌ Erreur de communication avec le serveur');
+            alert('Erreur de communication avec le serveur');
         });
     }
 
@@ -1458,7 +1465,8 @@ function renderTableView(index, data) {
                 // Show table, hide JSON
                 tableView.style.display = 'block';
                 jsonView.style.display = 'none';
-                button.innerHTML = '👁️ Voir JSON';
+                button.innerHTML = '<i data-lucide="eye" class="icon"></i> Voir JSON';
+                lucide.createIcons();
                 button.classList.remove('action-btn-secondary');
                 button.classList.add('action-btn-primary');
             } else {
@@ -1472,7 +1480,8 @@ function renderTableView(index, data) {
                     try { return p1 + Number(parseFloat(p2)).toFixed(3); } catch(e){ return m; }
                 });
                 jsonContent.innerHTML = syntaxHighlight(jsonStr);
-                button.innerHTML = '📋 Voir Tableau';
+                button.innerHTML = '<i data-lucide="table" class="icon"></i> Voir Tableau';
+                lucide.createIcons();
                 button.classList.remove('action-btn-primary');
                 button.classList.add('action-btn-secondary');
             }

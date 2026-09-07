@@ -25,7 +25,7 @@ def visualize_3d(store: QdrantDocumentStore, method='tsne', save_html=True):
     print(f"{'='*70}\n")
     
     if not store.client:
-        print("❌ Client Qdrant non initialisé")
+        print("Client Qdrant non initialisé")
         return
     
     # 1. Récupération des données
@@ -67,7 +67,7 @@ def visualize_3d(store: QdrantDocumentStore, method='tsne', save_html=True):
         print("⚠️  Besoin d'au moins 3 documents pour visualisation 3D")
         return
     
-    print(f"✅ {len(vectors)} vecteurs récupérés")
+    print(f"{len(vectors)} vecteurs récupérés")
     print(f"📊 Dimension originale: {len(vectors[0])}D\n")
     
     # 2. Réduction de dimension à 3D
@@ -112,7 +112,7 @@ def visualize_3d(store: QdrantDocumentStore, method='tsne', save_html=True):
         reducer = PCA(n_components=3, random_state=42)
     
     X_3d = reducer.fit_transform(X)
-    print(f"✅ Réduction terminée: {X.shape[1]}D → 3D\n")
+    print(f"Réduction terminée: {X.shape[1]}D → 3D\n")
     
     # Pour petits datasets, vérifier si points trop proches et ajouter jitter
     if len(vectors) <= 10:
@@ -207,13 +207,13 @@ def visualize_3d(store: QdrantDocumentStore, method='tsne', save_html=True):
     if save_html:
         output_file = Path(__file__).parent / f"qdrant_3d_{method}.html"
         fig.write_html(str(output_file))
-        print(f"✅ Visualisation sauvegardée: {output_file}")
+        print(f"Visualisation sauvegardée: {output_file}")
         print(f"   Ouvrir avec: open {output_file}\n")
     
     # Afficher dans le navigateur
     try:
         fig.show()
-        print("✅ Visualisation ouverte dans le navigateur\n")
+        print("Visualisation ouverte dans le navigateur\n")
     except:
         print("⚠️  Impossible d'ouvrir automatiquement (utilisez le fichier HTML)\n")
     
@@ -273,7 +273,7 @@ def main():
     # Vérifier qu'il y a des données
     stats = store.get_stats()
     if stats.get('total_documents', 0) == 0:
-        print("❌ Aucun document dans la base")
+        print("Aucun document dans la base")
         print("   Indexez d'abord: python rag_qdrant.py --index")
         return
     

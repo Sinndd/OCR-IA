@@ -1,0 +1,104 @@
+[
+  {
+    "model": "qwen2.5:7b",
+    "nb_documents": 5,
+    "nb_success": 5,
+    "avg_precision": 90.0,
+    "avg_duration_s": 52.1,
+    "invalid_json_rate": 0.0,
+    "other_error_rate": 0.0,
+    "details": [
+      {
+        "client": "D",
+        "status": "ok",
+        "duration_s": 56.6,
+        "precision": 84.8,
+        "correct_fields": 28,
+        "total_fields": 33
+      },
+      {
+        "client": "E",
+        "status": "ok",
+        "duration_s": 60.3,
+        "precision": 85.7,
+        "correct_fields": 18,
+        "total_fields": 21
+      },
+      {
+        "client": "F",
+        "status": "ok",
+        "duration_s": 59.0,
+        "precision": 90.5,
+        "correct_fields": 19,
+        "total_fields": 21
+      },
+      {
+        "client": "G",
+        "status": "ok",
+        "duration_s": 40.2,
+        "precision": 91.1,
+        "correct_fields": 41,
+        "total_fields": 45
+      },
+      {
+        "client": "H",
+        "status": "ok",
+        "duration_s": 44.3,
+        "precision": 98.0,
+        "correct_fields": 50,
+        "total_fields": 51
+      }
+    ]
+  },
+  {
+    "model": "qwen3-vl:8b",
+    "nb_documents": 5,
+    "nb_success": 5,
+    "avg_precision": 92.1,
+    "avg_duration_s": 54.4,
+    "invalid_json_rate": 0.0,
+    "other_error_rate": 0.0,
+    "details": [
+      {
+        "client": "D",
+        "status": "ok",
+        "duration_s": 78.9,
+        "precision": 90.5,
+        "correct_fields": 19,
+        "total_fields": 21
+      },
+      {
+        "client": "E",
+        "status": "ok",
+        "duration_s": 54.8,
+        "precision": 90.5,
+        "correct_fields": 19,
+        "total_fields": 21
+      },
+      {
+        "client": "F",
+        "status": "ok",
+        "duration_s": 57.5,
+        "precision": 90.5,
+        "correct_fields": 19,
+        "total_fields": 21
+      },
+      {
+        "client": "G",
+        "status": "ok",
+        "duration_s": 39.6,
+        "precision": 91.1,
+        "correct_fields": 41,
+        "total_fields": 45
+      },
+      {
+        "client": "H",
+        "status": "ok",
+        "duration_s": 41.1,
+        "precision": 98.0,
+        "correct_fields": 50,
+        "total_fields": 51
+      }
+    ]
+  }
+]

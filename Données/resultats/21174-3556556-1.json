@@ -9,7 +9,7 @@
         "numCommande": "21174-3556556-1",
         "idCommande": "21174-3556556-1",
         "dateCommande": 20260228,
-        "heureCommande": "102714",
+        "heureCommande": "100000",
         "dateLivraison": 20260307,
         "commentaireEntete": "CRITIQUE\nContrôle qualité renforcé",
         "modeTransport": "L",
@@ -24,7 +24,7 @@
             "codeArticle": "12863",
             "libelle": "AMOXICILLINE 1g - Flacon 12 gél",
             "quantite": 79.000,
-            "commentaire": ""
+            "commentaire": "Vérifier compatibilité"
           },
           {
             "numLigne": 2,

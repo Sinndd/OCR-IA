@@ -16,7 +16,7 @@ def migrate_to_server():
     print("1️⃣  Chargement base locale...")
     local_store = QdrantDocumentStore(use_local=True)
     local_stats = local_store.get_stats()
-    print(f"   ✅ {local_stats.get('total_documents', 0)} documents trouvés\n")
+    print(f"   {local_stats.get('total_documents', 0)} documents trouvés\n")
     
     if local_stats.get('total_documents', 0) == 0:
         print("⚠️  Aucun document à migrer")
@@ -26,9 +26,9 @@ def migrate_to_server():
     print("2️⃣  Connexion au serveur Qdrant (localhost:6333)...")
     try:
         server_store = QdrantDocumentStore(use_local=False)
-        print("   ✅ Connecté\n")
+        print("   Connecté\n")
     except Exception as e:
-        print(f"   ❌ Erreur: {e}")
+        print(f"   Erreur: {e}")
         print("\n💡 Démarrez d'abord le serveur Qdrant:")
         print("   docker run -p 6333:6333 -p 6334:6334 qdrant/qdrant")
         return
@@ -77,7 +77,7 @@ def migrate_to_server():
         if not offset:
             break
     
-    print(f"\n✅ Migration terminée: {migrated} documents\n")
+    print(f"\nMigration terminée: {migrated} documents\n")
     
     # 4. Vérification
     server_stats = server_store.get_stats()

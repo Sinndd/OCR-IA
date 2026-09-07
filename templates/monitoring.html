@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}Monitoring - OCR PRO A PRO{% endblock %}
+{% block title %}Monitoring - OCR AI{% endblock %}
 
 {% block content %}
 <div class="container" style="max-width: 1400px; margin: 0 auto; padding: 2rem;">
     <div style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem;">
         <div>
-            <h1 style="font-size: 2rem; font-weight: 700; color: #ffffff; margin-bottom: 0.5rem;">
-                📡 Monitoring en temps réel
+            <h1 style="font-size: 2rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem;">
+                <i data-lucide="radio" class="icon"></i> Monitoring en temps réel
             </h1>
             <p style="color: #888; font-size: 0.95rem;">
                 Suivi live de tous les jobs d'extraction
@@ -22,27 +22,27 @@
     <!-- Stats globales (cliquables pour filtrer) -->
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1.25rem; margin-bottom: 2rem;">
         <div class="stat-card active" data-filter="all" onclick="setFilter('all')" style="background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);">
-            <div style="font-size: 1.75rem; margin-bottom: 0.25rem;">🗂️</div>
+            <div style="font-size: 1.75rem; margin-bottom: 0.25rem;"><i data-lucide="folder-open" class="icon"></i></div>
             <div style="font-size: 1.75rem; font-weight: 700; color: #fff;" id="stat-total">0</div>
             <div style="color: rgba(255,255,255,0.8); font-size: 0.85rem;">Total</div>
         </div>
         <div class="stat-card" data-filter="pending" onclick="setFilter('pending')" style="background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);">
-            <div style="font-size: 1.75rem; margin-bottom: 0.25rem;">⏳</div>
+            <div style="font-size: 1.75rem; margin-bottom: 0.25rem;"><i data-lucide="hourglass" class="icon"></i></div>
             <div style="font-size: 1.75rem; font-weight: 700; color: #fff;" id="stat-pending">0</div>
             <div style="color: rgba(255,255,255,0.8); font-size: 0.85rem;">En attente</div>
         </div>
         <div class="stat-card" data-filter="processing" onclick="setFilter('processing')" style="background: linear-gradient(135deg, #4f46e5 0%, #818cf8 100%);">
-            <div style="font-size: 1.75rem; margin-bottom: 0.25rem;">⚙️</div>
+            <div style="font-size: 1.75rem; margin-bottom: 0.25rem;"><i data-lucide="settings" class="icon"></i></div>
             <div style="font-size: 1.75rem; font-weight: 700; color: #fff;" id="stat-processing">0</div>
             <div style="color: rgba(255,255,255,0.8); font-size: 0.85rem;">En cours</div>
         </div>
         <div class="stat-card" data-filter="completed" onclick="setFilter('completed')" style="background: linear-gradient(135deg, #10b981 0%, #34d399 100%);">
-            <div style="font-size: 1.75rem; margin-bottom: 0.25rem;">✅</div>
+            <div style="font-size: 1.75rem; margin-bottom: 0.25rem;"><i data-lucide="check-circle" class="icon"></i></div>
             <div style="font-size: 1.75rem; font-weight: 700; color: #fff;" id="stat-completed">0</div>
             <div style="color: rgba(255,255,255,0.8); font-size: 0.85rem;">Terminés</div>
         </div>
         <div class="stat-card" data-filter="failed" onclick="setFilter('failed')" style="background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);">
-            <div style="font-size: 1.75rem; margin-bottom: 0.25rem;">❌</div>
+            <div style="font-size: 1.75rem; margin-bottom: 0.25rem;"><i data-lucide="x-circle" class="icon"></i></div>
             <div style="font-size: 1.75rem; font-weight: 700; color: #fff;" id="stat-failed">0</div>
             <div style="color: rgba(255,255,255,0.8); font-size: 0.85rem;">Échecs</div>
         </div>
@@ -51,10 +51,10 @@
     <!-- Liste des jobs -->
     <div class="card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
-            <h2 style="font-size: 1.5rem; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 0.5rem; margin: 0;">
-                <span>🗂️</span> Jobs <span id="filter-label" style="color: #888; font-weight: 400; font-size: 1rem;"></span>
+            <h2 style="font-size: 1.5rem; font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem; margin: 0;">
+                <span><i data-lucide="folder-open" class="icon"></i></span> Jobs <span id="filter-label" style="color: #888; font-weight: 400; font-size: 1rem;"></span>
             </h2>
-            <button class="btn btn-secondary" id="reset-filter-btn" onclick="setFilter('all')" style="display: none;">✕ Réinitialiser le filtre</button>
+            <button class="btn btn-secondary" id="reset-filter-btn" onclick="setFilter('all')" style="display: none;"><i data-lucide="x" class="icon"></i> Réinitialiser le filtre</button>
         </div>
         <div id="jobs-container">
             <p style="color: #666;">Chargement...</p>
@@ -220,10 +220,11 @@ function render() {
     if (jobs.length === 0) {
         container.innerHTML = `
             <div style="text-align: center; padding: 3rem; color: #666;">
-                <div style="font-size: 3rem; margin-bottom: 1rem;">🗂️</div>
+                <div style="font-size: 3rem; margin-bottom: 1rem;"><i data-lucide="folder-open" class="icon"></i></div>
                 <p>${allJobs.length === 0 ? "Aucun job pour l'instant" : "Aucun job pour ce filtre"}</p>
             </div>
         `;
+        lucide.createIcons();
         return;
     }
 
@@ -246,7 +247,7 @@ function createJobCard(job) {
         <div class="job-card status-${job.status}">
             <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap;">
                 <div style="min-width: 0;">
-                    <div style="color: #fff; font-weight: 600; margin-bottom: 0.15rem; word-break: break-word;">${escapeHtml(job.filename)}</div>
+                    <div style="color: var(--text-primary); font-weight: 600; margin-bottom: 0.15rem; word-break: break-word;">${escapeHtml(job.filename)}</div>
                     <div style="color: #666; font-size: 0.8rem;">
                         ID ${job.id.substring(0, 8)}...${job.client_id ? ' · Client ' + escapeHtml(job.client_id) : ''}
                     </div>

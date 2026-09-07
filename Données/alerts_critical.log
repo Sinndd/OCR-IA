@@ -1,1 +1,15 @@
 [2026-08-15T16:28:35] CRITICAL - Job 2308ccb4-08bb-4715-a7e4-228c26dc5472 FAILED - file=pdf_corrompu.pdf - error=Impossible d'extraire le texte du BC
+[2026-08-16T16:45:56] CRITICAL - Job f71d40cc-9e1e-4c0f-bb50-dd5ffc50e7c3 FAILED - file=pdf_corrompu.pdf - error=Impossible d'extraire le texte du BC
+[2026-08-16T16:47:30] CRITICAL - Job 6d520aa8-dd6a-4e79-9b12-c4de9e96aeb0 FAILED - file=pdf_corrompu.pdf - error=Impossible d'extraire le texte du BC
+[2026-08-16T16:47:56] CRITICAL - Job 6d520aa8-dd6a-4e79-9b12-c4de9e96aeb0 FAILED - file=pdf_corrompu.pdf - error=Impossible d'extraire le texte du BC
+[2026-08-16T17:11:41] CRITICAL - Job 45a3238a-9588-4368-9e35-e5cc4bd454bc FAILED - file=pdf_corrompu.pdf - error=Impossible d'extraire le texte du BC
+[2026-08-16T17:12:21] CRITICAL - Job 45a3238a-9588-4368-9e35-e5cc4bd454bc FAILED - file=pdf_corrompu.pdf - error=Impossible d'extraire le texte du BC
+[2026-08-25T19:01:39] CRITICAL - Job c39e047f-3c18-4899-8b5a-e4b515750d8e FAILED - file=test_upload_fail.pdf - error=Erreur inconnue
+[2026-08-27T18:44:21] CRITICAL - Job 902a51a8-b610-4e51-8e8f-1bf7da6cac64 FAILED - file=02313_BC_7992_FOURNISSEUR_CHAPONNAY_2.pdf - error=Erreur inconnue
+[2026-08-30T18:11:01] CRITICAL - Job 5cf2b06e-3c3d-48bf-93bf-c60c477efd4f FAILED - file=Bon_de_commande_simple_1435312_AS06611.pdf - error=Erreur inconnue
+[2026-08-30T18:32:02] CRITICAL - Job 5153f159-c81b-4461-a470-98cce27408d5 FAILED - file=05284_BC_1933.pdf - error=Erreur inconnue
+[2026-09-06T04:17:31] CRITICAL - Job fe816a0e-a028-4971-81b3-088b0820728f FAILED - file=05284_BC_1933.pdf - error=Erreur inconnue
+[2026-09-06T15:28:57] CRITICAL - Job dea894cf-5ef9-48ce-80fe-d552f43870a1 FAILED - file=BC_CLIENT_B.pdf - error=Erreur inconnue
+[2026-09-06T15:30:23] CRITICAL - Job e046d709-9311-4509-985d-f8eea8537dbb FAILED - file=BC_CLIENT_B.pdf - error=Erreur inconnue
+[2026-09-06T16:26:19] CRITICAL - Job f463a299-7ccb-4082-90b5-caebb18739b7 FAILED - file=pdf_corrompu.pdf - error=Impossible d'extraire le texte du BC
+[2026-09-06T16:26:46] CRITICAL - Job f463a299-7ccb-4082-90b5-caebb18739b7 FAILED - file=pdf_corrompu.pdf - error=Impossible d'extraire le texte du BC

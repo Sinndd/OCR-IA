@@ -33,7 +33,7 @@ def print_stats(store: QdrantDocumentStore):
 def list_all_documents(store: QdrantDocumentStore, limit: int = None):
     """Liste tous les documents de la collection"""
     if not store.client:
-        print("❌ Client Qdrant non initialisé")
+        print("Client Qdrant non initialisé")
         return
     
     print(f"\n{'='*70}")
@@ -107,11 +107,11 @@ def visualize_embeddings(store: QdrantDocumentStore):
         import matplotlib.pyplot as plt
         from sklearn.manifold import TSNE
     except ImportError:
-        print("❌ Installation requise: pip install matplotlib scikit-learn")
+        print("Installation requise: pip install matplotlib scikit-learn")
         return
     
     if not store.client:
-        print("❌ Client Qdrant non initialisé")
+        print("Client Qdrant non initialisé")
         return
     
     print(f"\n{'='*70}")
@@ -154,7 +154,7 @@ def visualize_embeddings(store: QdrantDocumentStore):
         print("⚠️  Pas assez de documents pour visualiser (minimum 2)")
         return
     
-    print(f"✅ {len(vectors)} vecteurs récupérés\n")
+    print(f"{len(vectors)} vecteurs récupérés\n")
     
     # Convertir en numpy
     X = np.array(vectors)
@@ -198,7 +198,7 @@ def visualize_embeddings(store: QdrantDocumentStore):
     # Sauvegarder
     output_file = Path(__file__).parent / "qdrant_visualization.png"
     plt.savefig(output_file, dpi=150, bbox_inches='tight')
-    print(f"✅ Visualisation sauvegardée: {output_file}\n")
+    print(f"Visualisation sauvegardée: {output_file}\n")
     
     # Afficher
     try:
@@ -216,10 +216,10 @@ def search_with_context(store: QdrantDocumentStore, query: str, top_k: int = 5):
     results = store.search(query, top_k=top_k)
     
     if not results:
-        print("❌ Aucun résultat")
+        print("Aucun résultat")
         return
     
-    print(f"✅ {len(results)} résultats trouvés\n")
+    print(f"{len(results)} résultats trouvés\n")
     
     for i, result in enumerate(results, 1):
         print(f"┌─ Résultat #{i}")
@@ -245,7 +245,7 @@ def search_with_context(store: QdrantDocumentStore, query: str, top_k: int = 5):
 def export_to_json(store: QdrantDocumentStore, output_file: Path):
     """Export tous les documents en JSON"""
     if not store.client:
-        print("❌ Client Qdrant non initialisé")
+        print("Client Qdrant non initialisé")
         return
     
     print(f"\n📤 Export en cours...")
@@ -293,7 +293,7 @@ def export_to_json(store: QdrantDocumentStore, output_file: Path):
     with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(documents, f, indent=2, ensure_ascii=False)
     
-    print(f"✅ {len(documents)} documents exportés vers: {output_file}\n")
+    print(f"{len(documents)} documents exportés vers: {output_file}\n")
 
 
 def main():

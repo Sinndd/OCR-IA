@@ -23,7 +23,7 @@ import fitz  # PyMuPDF
 # ---------- Configuration ----------
 OLLAMA_URL_DEFAULT = "http://localhost:11434/api/generate"
 DEFAULT_MODEL = "qwen2.5:7b"
-DEFAULT_NUM_CTX = 8192
+DEFAULT_NUM_CTX = 32768
 
 # Règles métier fixes
 FORCED_MODE_TRANSPORT = "L"
@@ -364,7 +364,7 @@ class SmartExtractor:
                 raise ValueError(f"Format non supporté: {suffix} (PDF, HTML, TXT uniquement)")
         
         except Exception as e:
-            print(f"❌ Erreur extraction {suffix}: {e}")
+            print(f"Erreur extraction {suffix}: {e}")
             return ""
     
     def extract_text_from_pdf(self, pdf_path: Path) -> str:
@@ -375,7 +375,7 @@ class SmartExtractor:
             doc.close()
             return text
         except Exception as e:
-            print(f"❌ Erreur extraction PDF: {e}")
+            print(f"Erreur extraction PDF: {e}")
             return ""
     
     def extract_text_from_html(self, html_path: Path) -> str:
@@ -402,7 +402,7 @@ class SmartExtractor:
             
             return text
         except Exception as e:
-            print(f"❌ Erreur extraction HTML: {e}")
+            print(f"Erreur extraction HTML: {e}")
             return ""
     
     def detect_client(
@@ -471,6 +471,25 @@ class SmartExtractor:
         
         return None
     
+    def load_client_prompt(self, client_id: str) -> Optional[str]:
+        """
+        Charge le prompt personnalise d'un client (patterns/CLIENT_X/prompt.md),
+        s'il existe. Ce prompt vient enrichir les instructions envoyees au LLM
+        pour ce client specifique.
+        """
+        prompt_file = self.patterns_dir / f"CLIENT_{client_id}" / "prompt.md"
+
+        if not prompt_file.exists():
+            return None
+
+        try:
+            content = prompt_file.read_text(encoding='utf-8').strip()
+            return content or None
+        except Exception as e:
+            if self.debug:
+                print(f"⚠️  Erreur chargement prompt.md pour {client_id}: {e}")
+            return None
+
     def load_client_patterns(self, client_id: str) -> List[Dict]:
         """
         Charge les patterns (exemples) spécifiques d'un client
@@ -637,7 +656,7 @@ PRINCIPES FONDAMENTAUX:
 1. **Analyse des exemples** : Les exemples fournis ont été sélectionnés car ils sont SIMILAIRES au BC à traiter
 2. **Flexibilité** : Adapte-toi aux variations de format du BC
 3. **Cohérence** : Maintiens la même structure de sortie que les exemples
-4. **Complétude** : Extrais TOUS les produits, du premier au dernier
+4. **Complétude** : Extrais TOUS les produits, du premier au dernier. Si le document indique un total ("Nombre de lignes: X", "Total lignes: X", etc.), vérifie que ton tableau "produits" contient bien X éléments avant de répondre.
 5. **SÉPARATION PAR DATE** : Si le BC contient plusieurs dates de livraison ("Livraison au : DATE"), crée UNE COMMANDE SÉPARÉE par date, en groupant les produits qui suivent chaque date
 
 ⚠️ RÈGLES DE STRUCTURE STRICTES (IMPÉRATIF) ⚠️:
@@ -707,10 +726,10 @@ Exemple 4: "ITEM QUELCONQUE#30650(36908)"
 4. Vérifie que les deux codes sont différents
 
 ⚠️ **ERREUR FRÉQUENTE À ÉVITER** ⚠️:
-❌ NE PAS mettre le nombre après # dans le champ codeArticle
-❌ NE PAS inverser les deux codes
-✅ TOUJOURS: codeArticle = nombre entre (xxx)
-✅ TOUJOURS: codeArticlePerso = nombre après #
+NE PAS mettre le nombre après # dans le champ codeArticle
+NE PAS inverser les deux codes
+TOUJOURS: codeArticle = nombre entre (xxx)
+TOUJOURS: codeArticlePerso = nombre après #
 
 ⚠️ SI TU INVERSES CES CODES, L'EXTRACTION EST INCORRECTE ⚠️
 ⚠️ APPLIQUE CETTE RÈGLE À CHAQUE PRODUIT SYSTÉMATIQUEMENT ⚠️
@@ -732,6 +751,15 @@ CHAMPS OBLIGATOIRES (toujours présents):
         # Préparer les listes de référence (limitées)
         ref_clients = "\n".join(f"  - {c}" for c in self.clients[:30]) if self.clients else "  (aucun)"
         ref_agences = "\n".join(f"  - {a}" for a in self.agences[:50]) if self.agences else "  (aucun)"
+
+        # Prompt personnalisé du client (patterns/CLIENT_X/prompt.md), s'il existe
+        client_prompt = self.load_client_prompt(client_id) if client_id else None
+        client_prompt_block = ""
+        if client_prompt:
+            client_prompt_block = f"""
+INSTRUCTIONS SPÉCIFIQUES AU CLIENT {client_id} (prioritaires sur les règles génériques ci-dessus en cas de conflit):
+{client_prompt}
+"""
 
         user_prompt = f"""EXEMPLES SÉLECTIONNÉS (les plus similaires à ton BC):
 
@@ -782,7 +810,7 @@ INSTRUCTIONS SPÉCIFIQUES:
    - Cherche dans l'en-tête, le titre, ou près des informations client/fournisseur
    - Format final: "codeEtablissement-numeroCommande-index" (ex: "02313-7992-1")
    - NE JAMAIS mettre "XXXXX" ou "UNKNOWN" - le numéro EST dans le BC, trouve-le !
-
+{client_prompt_block}
 TEXTE DU BON DE COMMANDE:
 {bc_text[:25000]}
 
@@ -794,6 +822,7 @@ Assure-toi d'extraire TOUS les produits présents dans le bon de commande."""
             print(f"\n[DEBUG] Prompt LLM optimisé")
             print(f"  - {len(selected_examples)} exemples sélectionnés (sur {len(examples)} disponibles)")
             print(f"  - Pattern généralisé: {'OUI' if generalized_pattern else 'NON'}")
+            print(f"  - Prompt personnalisé client: {'OUI' if client_prompt else 'NON'}")
             print(f"  - Taille prompt: {len(user_prompt)} chars")
             print(f"  - Modèle: {self.model}")
         
@@ -818,6 +847,7 @@ Assure-toi d'extraire TOUS les produits présents dans le bon de commande."""
             "prompt": user_prompt,
             "stream": False,
             "format": "json",
+            "think": False,  # Pas besoin de raisonnement pour de l'extraction structuree, et ca laisse plus de budget de contexte pour le JSON de sortie
             "options": {
                 "temperature": 0.0,
                 "num_ctx": DEFAULT_NUM_CTX,
@@ -830,7 +860,9 @@ Assure-toi d'extraire TOUS les produits présents dans le bon de commande."""
             r.raise_for_status()
             
             data = r.json()
-            raw = (data.get("response") or "").strip()
+            # Certains modeles "thinking" (ex: qwen3-vl) ecrivent leur sortie
+            # dans "thinking" plutot que "response" quand format=json est force.
+            raw = (data.get("response") or data.get("thinking") or "").strip()
             
             if not raw:
                 raise RuntimeError("LLM a retourné une réponse vide")
@@ -852,7 +884,7 @@ Assure-toi d'extraire TOUS les produits présents dans le bon de commande."""
             return parsed_json
         
         except Exception as e:
-            print(f"\n❌ Erreur LLM: {e}")
+            print(f"\nErreur LLM: {e}")
             raise
     
     def _clean_json_response(self, raw: str) -> str:
@@ -896,7 +928,7 @@ Assure-toi d'extraire TOUS les produits présents dans le bon de commande."""
                     cmd["detailCommande"]["nbLignes"] = nb_produits
             
             if self.debug:
-                print("✅ Structure JSON correcte détectée")
+                print("Structure JSON correcte détectée")
             return data
         
         # CAS 2: Structure inversée - entete et detailCommande à la racine
@@ -920,7 +952,7 @@ Assure-toi d'extraire TOUS les produits présents dans le bon de commande."""
                 normalized["commandes"][0]["detailCommande"]["nbLignes"] = nb_produits
             
             if self.debug:
-                print(f"✅ Structure corrigée: {nb_produits} produits détectés")
+                print(f"Structure corrigée: {nb_produits} produits détectés")
             
             return normalized
         
@@ -983,7 +1015,7 @@ Assure-toi d'extraire TOUS les produits présents dans le bon de commande."""
                         corrections_count += 1
         
         if corrections_count > 0:
-            print(f"✅ {corrections_count} code(s) article corrigé(s) automatiquement")
+            print(f"{corrections_count} code(s) article corrigé(s) automatiquement")
         
         return data
     
@@ -1377,7 +1409,7 @@ Assure-toi d'extraire TOUS les produits présents dans le bon de commande."""
         if client_id:
             self._update_client_stats(client_id, success=True)
         
-        print("[4/4] ✅ Traitement terminé\n")
+        print("[4/4] Traitement terminé\n")
         
         return result, client_id, filename_convention
     
@@ -1544,7 +1576,7 @@ def save_results(
         detail = commande.get("detailCommande", {})
         produits = detail.get("produits", [])
         
-        print(f"  ✅ {filename} → {len(produits)} produit(s), livraison: {date_liv}")
+        print(f"  {filename} → {len(produits)} produit(s), livraison: {date_liv}")
         nb_files += 1
     
     return nb_files
@@ -1626,7 +1658,7 @@ Exemples d'utilisation:
     args = parser.parse_args()
     
     if not args.input.exists():
-        print(f"❌ Fichier introuvable: {args.input}")
+        print(f"Fichier introuvable: {args.input}")
         exit(1)
     
     # Créer extracteur
@@ -1657,12 +1689,12 @@ Exemples d'utilisation:
         )
         
         print(f"\n{'='*60}")
-        print(f"✅ SUCCÈS: {nb_files} fichier(s) généré(s)")
+        print(f"SUCCÈS: {nb_files} fichier(s) généré(s)")
         print(f"{'='*60}")
         
     except Exception as e:
         print(f"\n{'='*60}")
-        print(f"❌ ERREUR: {e}")
+        print(f"ERREUR: {e}")
         print(f"{'='*60}")
         
         if args.debug:

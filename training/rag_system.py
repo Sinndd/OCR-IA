@@ -56,7 +56,7 @@ class DocumentStore:
             from sentence_transformers import SentenceTransformer
             import faiss
         except ImportError as e:
-            print(f"❌ Dépendances manquantes: {e}")
+            print(f"Dépendances manquantes: {e}")
             print("Installez: pip install sentence-transformers faiss-cpu")
             return
         
@@ -107,7 +107,7 @@ class DocumentStore:
     def add_document(self, text: str, metadata: Dict[str, Any], expected_json: Dict = None):
         """Ajoute un document à la base"""
         if not self.index or not self.embedder:
-            print("❌ Base vectorielle non initialisée")
+            print("Base vectorielle non initialisée")
             return
         
         import numpy as np
@@ -144,7 +144,7 @@ class DocumentStore:
         # Sauvegarder
         self._save()
         
-        print(f"  ✅ Document indexé: {doc_id[:8]}... ({len(text)} chars)")
+        print(f"  Document indexé: {doc_id[:8]}... ({len(text)} chars)")
     
     def search(self, query: str, top_k: int = 3) -> List[Dict]:
         """Recherche les documents les plus similaires"""
@@ -237,7 +237,7 @@ class RAGIndexer:
                 except Exception as e:
                     print(f"  ⚠️ Erreur: {e}")
         
-        print(f"\n✅ Indexation terminée: {total_indexed} documents")
+        print(f"\nIndexation terminée: {total_indexed} documents")
         stats = self.store.get_stats()
         print(f"📊 Total dans la base: {stats.get('total_documents', 0)} documents")
 
@@ -275,7 +275,7 @@ class RAGExtractor:
                 print(f"⚠️ Erreur LLM: {response.status_code}")
                 return ""
         except Exception as e:
-            print(f"❌ Erreur appel LLM: {e}")
+            print(f"Erreur appel LLM: {e}")
             return ""
     
     def extract_with_rag(self, text: str, top_k: int = 3, file_type: str = "pdf") -> Tuple[Dict, List[Dict]]:
@@ -338,9 +338,9 @@ class RAGExtractor:
         if quality['issues']:
             print(f"\n⚠️  Problèmes détectés ({len(quality['issues'])}):")
             for issue in quality['issues']:
-                print(f"  ❌ {issue}")
+                print(f"  {issue}")
         else:
-            print(f"\n✅ Aucun problème détecté")
+            print(f"\nAucun problème détecté")
         
         # Enregistrer le temps réel pour améliorer les prédictions futures
         actual_time = time_module.time() - start_time
@@ -367,7 +367,7 @@ class RAGExtractor:
                 print(f"⚠️  Pas de prompt spécifique pour {client_name}")
                 return ""
         except Exception as e:
-            print(f"❌ Erreur chargement prompt {client_name}: {e}")
+            print(f"Erreur chargement prompt {client_name}: {e}")
             return ""
     
     def _build_rag_prompt(self, text: str, examples: List[Dict]) -> str:
@@ -638,7 +638,7 @@ Réponds UNIQUEMENT avec le JSON."""
             expected_json=corrected_json
         )
         
-        print("✅ Correction ajoutée à la base RAG")
+        print("Correction ajoutée à la base RAG")
 
 
 def main():
@@ -672,7 +672,7 @@ def main():
     elif args.extract:
         file_path = Path(args.extract)
         if not file_path.exists():
-            print(f"❌ Fichier introuvable: {file_path}")
+            print(f"Fichier introuvable: {file_path}")
             return
         
         # Extraire le texte selon le type de fichier
@@ -689,7 +689,7 @@ def main():
             with open(file_path, 'r', encoding='utf-8') as f:
                 text = f.read()
         
-        print(f"✅ {len(text)} caractères extraits")
+        print(f"{len(text)} caractères extraits")
         
         extractor = RAGExtractor(store)
         result, examples = extractor.extract_with_rag(text, top_k=args.top_k)

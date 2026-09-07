@@ -1,0 +1,31 @@
+{
+  "entete": {
+    "_file_format": "PDF",
+    "_source_file": "BC_233619_StyleD.pdf",
+    "codeEtablissement": "34256",
+    "codeFournisseur": "BESANCON",
+    "codePostal": "33000",
+    "commentaireEntete": "Commande groupée - Multi-sitesFacturation centralisée",
+    "dateCommande": "20260201",
+    "dateLivraison": "20260204",
+    "heureCommande": "165408",
+    "idCommande": "34256-233619-1",
+    "modeTransport": "L",
+    "numCommande": "34256-233619-1",
+    "origine": "CLIENT_D",
+    "origineCommande": "D",
+    "typeCommande": "220",
+    "version": "ACE"
+  },
+  "detailCommande": {
+    "nbLignes": 1,
+    "produits": [
+      {
+        "numLigne": 1,
+        "codeArticle": "559104",
+        "libelle": "ROULEMENT A BILLES D45mm INOX",
+        "quantite": 99
+      }
+    ]
+  }
+}

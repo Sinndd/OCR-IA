@@ -516,20 +516,20 @@
 <div class="container">
     <!-- Hero Section -->
     <div class="hero">
-        <h1>🎓 Centre d'Entraînement</h1>
+        <h1><i data-lucide="graduation-cap" class="icon"></i> Centre d'Entraînement <span style="display: inline-block; vertical-align: middle; background: var(--error); -webkit-background-clip: border-box; background-clip: border-box; color: white; -webkit-text-fill-color: white; font-size: 0.9rem; font-weight: 700; line-height: 1; padding: 0.25rem 0.6rem; border-radius: 999px;">bêta</span></h1>
         <p>Entraînez le système avec vos bons de commande pour améliorer la précision de l'extraction</p>
     </div>
 
     <!-- Tabs Navigation -->
     <div class="tabs-nav">
         <button class="tab-btn active" onclick="showTab('finetune')">
-            <span class="tab-icon">🔧</span> Finetune
+            <span class="tab-icon"><i data-lucide="wrench" class="icon"></i></span> Finetune
         </button>
         <button class="tab-btn" onclick="showTab('pipeline')">
-            <span class="tab-icon">⚙️</span> Pipeline
+            <span class="tab-icon"><i data-lucide="settings" class="icon"></i></span> Pipeline
         </button>
         <button class="tab-btn" onclick="showTab('rag')">
-            <span class="tab-icon">🧠</span> RAG
+            <span class="tab-icon"><i data-lucide="brain" class="icon"></i></span> RAG
         </button>
     </div>
 
@@ -537,11 +537,11 @@
     <div id="tab-finetune" class="tab-content active">
         <div class="card" style="margin-bottom: 2rem; padding: 1.5rem;">
             <p style="color: var(--text-secondary); margin: 0; line-height: 1.6;">
-                <strong>🔧 Finetune</strong> — Ajoutez de nouveaux clients au système en fournissant un exemple de BC et le JSON attendu. 
+                <strong><i data-lucide="wrench" class="icon"></i> Finetune</strong> — Ajoutez de nouveaux clients au système en fournissant un exemple de BC et le JSON attendu, ainsi qu'un prompt personnalisé optionnel pour guider le LLM sur les spécificités de ce format.
                 Le système apprendra à reconnaître le format spécifique de chaque client pour améliorer la précision des extractions futures.
             </p>
         </div>
-        <h2 class="section-title">➕ Nouveau Client</h2>
+        <h2 class="section-title"><i data-lucide="user-plus" class="icon"></i> Nouveau Client</h2>
         <div class="card training-form">
             <form method="POST" action="{{ url_for('train') }}" enctype="multipart/form-data" id="trainingForm">
                 <div class="form-group">
@@ -562,16 +562,16 @@
                 <label class="form-label">Bon de Commande (PDF, HTML ou TXT) *</label>
                 <div class="upload-area" onclick="document.getElementById('bc_file').click()">
                     <input type="file" id="bc_file" name="bc_file" accept=".pdf,.html,.htm,.txt" required>
-                    <div class="upload-icon">📄</div>
+                    <div class="upload-icon"><i data-lucide="file-text" class="icon"></i></div>
                     <h4>Sélectionner le BC d'exemple</h4>
                     <p class="upload-text">Formats acceptés : PDF, HTML, TXT</p>
                 </div>
                 <div class="file-preview" id="bc_preview">
                     <div class="file-preview-info">
-                        <span id="bc_icon">📄</span>
+                        <span id="bc_icon"><i data-lucide="file-text" class="icon"></i></span>
                         <span id="bc_filename"></span>
                     </div>
-                    <button type="button" class="file-remove" onclick="clearFile('bc_file', 'bc_preview')">✕</button>
+                    <button type="button" class="file-remove" onclick="clearFile('bc_file', 'bc_preview')"><i data-lucide="x" class="icon"></i></button>
                 </div>
             </div>
 
@@ -579,29 +579,46 @@
                 <label class="form-label">Résultat Attendu (JSON) *</label>
                 <div class="upload-area" onclick="document.getElementById('json_file').click()">
                     <input type="file" id="json_file" name="json_file" accept=".json" required>
-                    <div class="upload-icon">📋</div>
+                    <div class="upload-icon"><i data-lucide="file-json" class="icon"></i></div>
                     <h4>Sélectionner le JSON d'exemple</h4>
                     <p class="upload-text">Format JSON uniquement</p>
                 </div>
                 <div class="file-preview" id="json_preview">
                     <div class="file-preview-info">
-                        <span>📋</span>
+                        <span><i data-lucide="file-json" class="icon"></i></span>
                         <span id="json_filename"></span>
                     </div>
-                    <button type="button" class="file-remove" onclick="clearFile('json_file', 'json_preview')">✕</button>
+                    <button type="button" class="file-remove" onclick="clearFile('json_file', 'json_preview')"><i data-lucide="x" class="icon"></i></button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Prompt Personnalisé (optionnel)</label>
+                <div class="upload-area" onclick="document.getElementById('prompt_file').click()">
+                    <input type="file" id="prompt_file" name="prompt_file" accept=".md,.txt">
+                    <div class="upload-icon"><i data-lucide="file-text" class="icon"></i></div>
+                    <h4>Sélectionner un prompt spécifique à ce client</h4>
+                    <p class="upload-text">Instructions supplémentaires pour aider le LLM (format MD ou TXT)</p>
+                </div>
+                <div class="file-preview" id="prompt_preview">
+                    <div class="file-preview-info">
+                        <span><i data-lucide="file-text" class="icon"></i></span>
+                        <span id="prompt_filename"></span>
+                    </div>
+                    <button type="button" class="file-remove" onclick="clearFile('prompt_file', 'prompt_preview')"><i data-lucide="x" class="icon"></i></button>
                 </div>
             </div>
 
             <div class="submit-area">
                 <button type="submit" class="btn btn-primary btn-large">
-                    🚀 Entraîner le Modèle
+                    <i data-lucide="play" class="icon"></i> Entraîner le Modèle
                 </button>
             </div>
         </form>
     </div>
 
     <!-- Clients List -->
-    <h2 class="section-title">📚 Clients Entraînés</h2>
+    <h2 class="section-title"><i data-lucide="book-open" class="icon"></i> Clients Entraînés</h2>
     
     {% if clients %}
     <div class="clients-grid">
@@ -625,10 +642,10 @@
 
             <div class="client-actions">
                 <a href="{{ url_for('evaluate', client_id=client.name) }}" class="action-btn action-btn-evaluate">
-                    🎯 Évaluer
+                    <i data-lucide="target" class="icon"></i> Évaluer
                 </a>
                 <button class="action-btn action-btn-view" onclick="viewClient('{{ client.name }}')">
-                    👁️ Détails
+                    <i data-lucide="eye" class="icon"></i> Détails
                 </button>
             </div>
         </div>
@@ -637,7 +654,7 @@
     {% else %}
     <div class="card">
         <div class="empty-state">
-            <div class="empty-state-icon">📭</div>
+            <div class="empty-state-icon"><i data-lucide="inbox" class="icon"></i></div>
             <h3>Aucun client entraîné</h3>
             <p>Commencez par entraîner votre premier client avec un exemple de BC et son JSON attendu</p>
         </div>
@@ -649,32 +666,32 @@
     <div id="tab-pipeline" class="tab-content">
         <div class="card" style="margin-bottom: 2rem; padding: 1.5rem;">
             <p style="color: var(--text-secondary); margin: 0; line-height: 1.6;">
-                <strong>⚙️ Pipeline</strong> — Configurez le flux de traitement des bons de commande. 
+                <strong><i data-lucide="settings" class="icon"></i> Pipeline</strong> — Configurez le flux de traitement des bons de commande.
                 Choisissez le modèle LLM, ajustez les timeouts, et définissez les paramètres de validation pour optimiser les performances selon vos besoins.
             </p>
         </div>
-        <h2 class="section-title">⚙️ Pipeline de Traitement</h2>
-        
+        <h2 class="section-title"><i data-lucide="settings" class="icon"></i> Pipeline de Traitement</h2>
+
         <!-- Pipeline Visualization -->
         <div class="card">
             <div class="pipeline-flow">
                 <div class="pipeline-step active">
-                    <div class="step-icon">📄</div>
+                    <div class="step-icon"><i data-lucide="file-text" class="icon"></i></div>
                     <div class="step-name">Extraction</div>
                 </div>
-                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-arrow"><i data-lucide="arrow-right" class="icon"></i></div>
                 <div class="pipeline-step">
-                    <div class="step-icon">🔍</div>
+                    <div class="step-icon"><i data-lucide="search" class="icon"></i></div>
                     <div class="step-name">RAG Search</div>
                 </div>
-                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-arrow"><i data-lucide="arrow-right" class="icon"></i></div>
                 <div class="pipeline-step">
-                    <div class="step-icon">🤖</div>
+                    <div class="step-icon"><i data-lucide="bot" class="icon"></i></div>
                     <div class="step-name">LLM</div>
                 </div>
-                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-arrow"><i data-lucide="arrow-right" class="icon"></i></div>
                 <div class="pipeline-step">
-                    <div class="step-icon">✅</div>
+                    <div class="step-icon"><i data-lucide="check-circle" class="icon"></i></div>
                     <div class="step-name">Validation</div>
                 </div>
             </div>
@@ -683,7 +700,7 @@
         <!-- Pipeline Configuration -->
         <div class="pipeline-config">
             <div class="config-card">
-                <h4>🤖 Modèle LLM</h4>
+                <h4><i data-lucide="bot" class="icon"></i> Modèle LLM</h4>
                 <div class="model-selector">
                     <label class="model-option selected">
                         <input type="radio" name="llm_model" value="qwen2.5:7b" checked>
@@ -704,7 +721,7 @@
             </div>
             
             <div class="config-card">
-                <h4>⏱️ Paramètres</h4>
+                <h4><i data-lucide="clock" class="icon"></i> Paramètres</h4>
                 <div class="form-group">
                     <label class="form-label">Timeout (secondes)</label>
                     <input type="number" class="form-input" value="600" min="60" max="1800">
@@ -716,7 +733,7 @@
             </div>
             
             <div class="config-card">
-                <h4>📊 Validation</h4>
+                <h4><i data-lucide="bar-chart-3" class="icon"></i> Validation</h4>
                 <div class="form-group">
                     <label class="form-label">Score minimum</label>
                     <input type="number" class="form-input" value="70" min="0" max="100">
@@ -733,7 +750,7 @@
 
         <div class="submit-area" style="margin-top: 2rem;">
             <button type="button" class="btn btn-primary btn-large" onclick="savePipelineConfig()">
-                💾 Sauvegarder la Configuration
+                <i data-lucide="save" class="icon"></i> Sauvegarder la Configuration
             </button>
         </div>
     </div><!-- End Tab Pipeline -->
@@ -742,11 +759,11 @@
     <div id="tab-rag" class="tab-content">
         <div class="card" style="margin-bottom: 2rem; padding: 1.5rem;">
             <p style="color: var(--text-secondary); margin: 0; line-height: 1.6;">
-                <strong>🧠 RAG</strong> — Gérez le système de Retrieval-Augmented Generation. 
+                <strong><i data-lucide="brain" class="icon"></i> RAG</strong> — Gérez le système de Retrieval-Augmented Generation.
                 Indexez vos patterns clients pour que le système trouve automatiquement le meilleur prompt selon le type de BC reçu. Testez des extractions et surveillez les performances.
             </p>
         </div>
-        <h2 class="section-title">🧠 Système RAG</h2>
+        <h2 class="section-title"><i data-lucide="brain" class="icon"></i> Système RAG</h2>
         
         <!-- RAG Stats -->
         <div class="rag-stats">
@@ -766,16 +783,16 @@
 
         <!-- RAG Actions -->
         <div class="card">
-            <h3 style="margin-bottom: 1.5rem;">🔧 Actions</h3>
+            <h3 style="margin-bottom: 1.5rem;"><i data-lucide="wrench" class="icon"></i> Actions</h3>
             <div class="rag-actions">
                 <button class="btn btn-primary" onclick="ragReindex()">
-                    🔄 Réindexer tous les patterns
+                    <i data-lucide="refresh-cw" class="icon"></i> Réindexer tous les patterns
                 </button>
                 <button class="btn btn-secondary" onclick="ragTest()">
-                    🧪 Tester une extraction
+                    <i data-lucide="flask-conical" class="icon"></i> Tester une extraction
                 </button>
                 <button class="btn btn-secondary" onclick="ragClear()">
-                    🗑️ Vider l'index
+                    <i data-lucide="trash-2" class="icon"></i> Vider l'index
                 </button>
             </div>
             
@@ -784,19 +801,19 @@
 
         <!-- Test Extraction -->
         <div class="card" style="margin-top: 2rem;">
-            <h3 style="margin-bottom: 1.5rem;">🧪 Test d'Extraction RAG</h3>
+            <h3 style="margin-bottom: 1.5rem;"><i data-lucide="flask-conical" class="icon"></i> Test d'Extraction RAG</h3>
             <div class="form-group">
                 <label class="form-label">Fichier à tester (PDF, HTML ou TXT)</label>
                 <div class="upload-area" onclick="document.getElementById('rag_test_file').click()">
                     <input type="file" id="rag_test_file" accept=".pdf,.html,.htm,.txt">
-                    <div class="upload-icon">📄</div>
+                    <div class="upload-icon"><i data-lucide="file-text" class="icon"></i></div>
                     <h4>Sélectionner un fichier BC</h4>
                     <p class="upload-text">Le système utilisera le RAG pour trouver le meilleur prompt</p>
                 </div>
             </div>
             <div class="submit-area">
                 <button type="button" class="btn btn-primary btn-large" onclick="runRagExtraction()">
-                    🚀 Lancer l'extraction RAG
+                    <i data-lucide="play" class="icon"></i> Lancer l'extraction RAG
                 </button>
             </div>
             <div class="console-output" id="rag-extraction-result"></div>
@@ -831,7 +848,7 @@
 
     // Pipeline Config
     function savePipelineConfig() {
-        alert('✅ Configuration sauvegardée !');
+        alert('Configuration sauvegardée !');
     }
 
     // RAG Functions
@@ -848,7 +865,7 @@
                 }
             })
             .catch(e => {
-                console.textContent += '❌ Erreur: ' + e.message + '\n';
+                console.textContent += 'Erreur: ' + e.message + '\n';
             });
     }
 
@@ -857,7 +874,7 @@
     }
 
     function ragClear() {
-        if (confirm('⚠️ Voulez-vous vraiment vider l\'index RAG ?')) {
+        if (confirm('Voulez-vous vraiment vider l\'index RAG ?')) {
             const console = document.getElementById('rag-console');
             console.textContent = '> Suppression de l\'index...\n';
             
@@ -868,7 +885,7 @@
                     document.getElementById('rag-docs-count').textContent = '0';
                 })
                 .catch(e => {
-                    console.textContent += '❌ Erreur: ' + e.message + '\n';
+                    console.textContent += 'Erreur: ' + e.message + '\n';
                 });
         }
     }
@@ -878,7 +895,7 @@
         const resultConsole = document.getElementById('rag-extraction-result');
         
         if (!fileInput.files || !fileInput.files[0]) {
-            alert('⚠️ Veuillez sélectionner un fichier');
+            alert('Veuillez sélectionner un fichier');
             return;
         }
         
@@ -895,13 +912,13 @@
         .then(r => r.json())
         .then(data => {
             if (data.error) {
-                resultConsole.textContent += '❌ ' + data.error + '\n';
+                resultConsole.textContent += 'Erreur: ' + data.error + '\n';
             } else {
                 resultConsole.textContent = '';  // Clear previous output
-                resultConsole.textContent += '✅ Score: ' + data.score + '/100\n';
-                resultConsole.textContent += '📋 Client détecté: ' + data.client + '\n';
-                resultConsole.textContent += '📦 Commandes: ' + data.nb_commandes + '\n';
-                resultConsole.textContent += '📝 Produits extraits: ' + data.nb_products + '\n';
+                resultConsole.textContent += 'Score: ' + data.score + '/100\n';
+                resultConsole.textContent += 'Client détecté: ' + data.client + '\n';
+                resultConsole.textContent += 'Commandes: ' + data.nb_commandes + '\n';
+                resultConsole.textContent += 'Produits extraits: ' + data.nb_products + '\n';
                 
                 // Afficher les informations de temps (modèle bayésien)
                 if (data.time) {
@@ -920,7 +937,7 @@
             }
         })
         .catch(e => {
-            resultConsole.textContent += '❌ Erreur: ' + e.message + '\n';
+            resultConsole.textContent += 'Erreur: ' + e.message + '\n';
         });
     }
 
@@ -931,6 +948,10 @@
 
     document.getElementById('json_file').addEventListener('change', function(e) {
         showFilePreview(e.target, 'json_preview', 'json_filename');
+    });
+
+    document.getElementById('prompt_file').addEventListener('change', function(e) {
+        showFilePreview(e.target, 'prompt_preview', 'prompt_filename');
     });
 
     function showFilePreview(input, previewId, filenameId, iconId = null) {
@@ -948,14 +969,15 @@
                 const ext = file.name.split('.').pop().toLowerCase();
                 
                 if (ext === 'pdf') {
-                    icon.textContent = '📄';
+                    icon.innerHTML = '<i data-lucide="file-text" class="icon"></i>';
                 } else if (ext === 'html' || ext === 'htm') {
-                    icon.textContent = '🌐';
+                    icon.innerHTML = '<i data-lucide="globe" class="icon"></i>';
                 } else if (ext === 'txt') {
-                    icon.textContent = '📝';
+                    icon.innerHTML = '<i data-lucide="file-text" class="icon"></i>';
                 } else {
-                    icon.textContent = '📄';
+                    icon.innerHTML = '<i data-lucide="file-text" class="icon"></i>';
                 }
+                lucide.createIcons();
             }
         }
     }
@@ -978,7 +1000,7 @@
         
         if (!/^[A-Z_]+$/.test(clientId)) {
             e.preventDefault();
-            alert('⚠️ Le nom du client doit contenir uniquement des majuscules et underscores');
+            alert('Le nom du client doit contenir uniquement des majuscules et underscores');
             return false;
         }
     });

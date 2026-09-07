@@ -171,14 +171,14 @@ def main():
     # Cas 1: Fichier spécifique
     if args.file:
         if not os.path.exists(args.file):
-            print(f"\n❌ Fichier non trouvé: {args.file}")
+            print(f"\nFichier non trouvé: {args.file}")
             sys.exit(1)
         json_files = [args.file]
     
     # Cas 2: Tous les fichiers du répertoire
     else:
         if not os.path.exists(args.dir):
-            print(f"\n❌ Répertoire non trouvé: {args.dir}")
+            print(f"\nRépertoire non trouvé: {args.dir}")
             sys.exit(1)
         
         json_files = sorted([
@@ -205,9 +205,9 @@ def main():
             display_order(data, os.path.basename(json_file))
         
         except json.JSONDecodeError as e:
-            print(f"\n❌ Erreur de parsing JSON dans {json_file}: {e}")
+            print(f"\nErreur de parsing JSON dans {json_file}: {e}")
         except Exception as e:
-            print(f"\n❌ Erreur lors de la lecture de {json_file}: {e}")
+            print(f"\nErreur lors de la lecture de {json_file}: {e}")
     
     # Résumé final
     if len(json_files) > 1:

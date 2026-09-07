@@ -1,0 +1,76 @@
+{
+  "commandes": [
+    {
+      "entete": {
+        "origine": "API",
+        "codeEtablissement": "02313",
+        "codeFournisseur": "CHAPONNAY",
+        "codePostal": "69970",
+        "numCommande": "02313-7992-1",
+        "idCommande": "02313-7992-1",
+        "dateCommande": 20240108,
+        "heureCommande": "064000",
+        "dateLivraison": 20240115,
+        "commentaireEntete": "",
+        "modeTransport": "L",
+        "typeCommande": "220",
+        "origineCommande": "D",
+        "version": "ACE"
+      },
+      "detailCommande": {
+        "produits": [
+          {
+            "numLigne": 1,
+            "codeArticle": "32732",
+            "libelle": "Cornichons fins (80/119) (Import) (LES JARDINS D'A)",
+            "quantite": 3.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 2,
+            "codeArticle": "153470",
+            "libelle": "Duo cour.jaun/vert.Minute®2,5K (UE) (BONDUELLE)",
+            "quantite": 40.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 3,
+            "codeArticle": "114820",
+            "libelle": "Farandole de champignons 1K (Import) (METRO CHEF)",
+            "quantite": 20.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 4,
+            "codeArticle": "155472",
+            "libelle": "Cheddar fondu 84T 26% 1,033K (Union Européenne) (METRO CHEF)",
+            "quantite": 1.033,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 5,
+            "codeArticle": "11845",
+            "libelle": "Mélange 3 riz gourmet 2,5K (Import) (VIVIEN PAILLE)",
+            "quantite": 2.5,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 6,
+            "codeArticle": "32180",
+            "libelle": "Pain bun brioché tran.77g x45 (Union Européenne) (SANS MARQUE)",
+            "quantite": 45.0,
+            "commentaire": ""
+          },
+          {
+            "numLigne": 7,
+            "codeArticle": "15803",
+            "libelle": "Vinaigre alcool blc.8°PET 1,5L (UE) (BEAUFOR/DESBOIS)",
+            "quantite": 1.5,
+            "commentaire": ""
+          }
+        ],
+        "nbLignes": 7
+      }
+    }
+  ]
+}

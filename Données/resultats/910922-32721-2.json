@@ -1,0 +1,34 @@
+{
+  "commandes": [
+    {
+      "entete": {
+        "origine": "CLIENT_A",
+        "codeEtablissement": "910922",
+        "codeFournisseur": "CHALETTE",
+        "codePostal": "45120",
+        "numCommande": "910922-32721-2",
+        "idCommande": "910922-32721-2",
+        "dateCommande": 20250410,
+        "heureCommande": "100000",
+        "dateLivraison": 20250416,
+        "commentaireEntete": "",
+        "modeTransport": "L",
+        "typeCommande": "220",
+        "origineCommande": "D",
+        "version": "ACE"
+      },
+      "detailCommande": {
+        "produits": [
+          {
+            "numLigne": 1,
+            "codeArticle": "52025",
+            "libelle": "[A] Amandes blanches en poudre 1K (Import) (PAS DE MARQUE)",
+            "quantite": 1.000,
+            "commentaire": ""
+          }
+        ],
+        "nbLignes": 1
+      }
+    }
+  ]
+}

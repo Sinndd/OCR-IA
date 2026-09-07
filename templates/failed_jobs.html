@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 
-{% block title %}Jobs échoués - OCR PRO A PRO{% endblock %}
+{% block title %}Jobs échoués - OCR AI{% endblock %}
 
 {% block content %}
 <div class="container" style="max-width: 1400px; margin: 0 auto; padding: 2rem;">
     <div style="margin-bottom: 2rem;">
-        <h1 style="font-size: 2rem; font-weight: 700; color: #ffffff; margin-bottom: 0.5rem;">
-            🔧 Gestion des jobs échoués
+        <h1 style="font-size: 2rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem;">
+            <i data-lucide="wrench" class="icon"></i> Gestion des jobs échoués
         </h1>
         <p style="color: #888; font-size: 0.95rem;">
             Diagnostic et relance des extractions en échec
@@ -14,15 +14,15 @@
     </div>
 
     <div id="success-message" class="flash success" style="display: none;">
-        ✅ Job relancé avec succès !
+        <i data-lucide="check-circle" class="icon"></i> Job relancé avec succès !
     </div>
 
     <div class="card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
-            <h2 style="font-size: 1.5rem; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 0.5rem; margin: 0;">
-                <span>❌</span> Jobs en échec <span id="failed-count" style="color: #888; font-weight: 400; font-size: 1rem;"></span>
+            <h2 style="font-size: 1.5rem; font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem; margin: 0;">
+                <span><i data-lucide="x-circle" class="icon"></i></span> Jobs en échec <span id="failed-count" style="color: #888; font-weight: 400; font-size: 1rem;"></span>
             </h2>
-            <button class="btn btn-secondary" onclick="refreshFailedJobs()">🔄 Rafraîchir</button>
+            <button class="btn btn-secondary" onclick="refreshFailedJobs()"><i data-lucide="refresh-cw" class="icon"></i> Rafraîchir</button>
         </div>
         <div id="failed-jobs-container">
             <p style="color: #666;">Chargement...</p>
@@ -95,10 +95,11 @@ function refreshFailedJobs() {
 function showLoadError() {
     document.getElementById('failed-jobs-container').innerHTML = `
         <div style="text-align: center; padding: 3rem; color: #666;">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">⚠️</div>
+            <div style="font-size: 3rem; margin-bottom: 1rem;"><i data-lucide="alert-triangle" class="icon"></i></div>
             <p>Impossible de charger les jobs. Réessaie dans quelques secondes.</p>
         </div>
     `;
+    lucide.createIcons();
 }
 
 function renderFailedJobs(jobs) {
@@ -108,15 +109,17 @@ function renderFailedJobs(jobs) {
     if (jobs.length === 0) {
         container.innerHTML = `
             <div style="text-align: center; padding: 3rem; color: #666;">
-                <div style="font-size: 3rem; margin-bottom: 1rem;">✅</div>
+                <div style="font-size: 3rem; margin-bottom: 1rem;"><i data-lucide="check-circle" class="icon"></i></div>
                 <p style="color: var(--success); font-weight: 600; font-size: 1.1rem;">Aucun job en échec</p>
                 <p style="margin-top: 0.25rem;">Tous les traitements sont OK</p>
             </div>
         `;
+        lucide.createIcons();
         return;
     }
 
     container.innerHTML = jobs.map(createFailedJobCard).join('');
+    lucide.createIcons();
 }
 
 function createFailedJobCard(job) {
@@ -126,12 +129,12 @@ function createFailedJobCard(job) {
         <div class="failed-job-card" id="failed-job-${job.id}">
             <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap;">
                 <div style="min-width: 0;">
-                    <div style="color: #fff; font-weight: 600; margin-bottom: 0.3rem; word-break: break-word;">${escapeHtml(job.filename)}</div>
+                    <div style="color: var(--text-primary); font-weight: 600; margin-bottom: 0.3rem; word-break: break-word;">${escapeHtml(job.filename)}</div>
                     <div style="color: #888; font-size: 0.8rem;">
                         ID ${job.id.substring(0, 8)}... · Créé le ${createdDate}${job.client_id ? ' · Client ' + escapeHtml(job.client_id) : ''}
                     </div>
                 </div>
-                <button class="btn btn-retry" onclick="retryJob('${job.id}')">🔄 Relancer</button>
+                <button class="btn btn-retry" onclick="retryJob('${job.id}')"><i data-lucide="refresh-cw" class="icon"></i> Relancer</button>
             </div>
 
             <div class="error-box">
@@ -149,7 +152,8 @@ function retryJob(jobId) {
     const card = document.getElementById(`failed-job-${jobId}`);
     const retryBtn = card.querySelector('.btn-retry');
     retryBtn.disabled = true;
-    retryBtn.innerHTML = '⏳ Relance...';
+    retryBtn.innerHTML = '<i data-lucide="loader-2" class="icon" style="animation: rotation 1s linear infinite;"></i> Relance...';
+    lucide.createIcons();
 
     fetch(`/api/retry/${jobId}`, { method: 'POST' })
         .then(r => r.json())
@@ -171,14 +175,14 @@ function retryJob(jobId) {
             } else {
                 alert('Erreur lors de la relance : ' + data.error);
                 retryBtn.disabled = false;
-                retryBtn.innerHTML = '🔄 Relancer';
+                retryBtn.innerHTML = '<i data-lucide="refresh-cw" class="icon"></i> Relancer'; lucide.createIcons();
             }
         })
         .catch(err => {
             console.error('Erreur retry:', err);
             alert('Erreur lors de la relance');
             retryBtn.disabled = false;
-            retryBtn.innerHTML = '🔄 Relancer';
+            retryBtn.innerHTML = '<i data-lucide="refresh-cw" class="icon"></i> Relancer'; lucide.createIcons();
         });
 }
 
